@@ -152,10 +152,9 @@ client.on('message', message => {
 			var n1 = parseInt(args[1]);
 			var n2 = parseInt(args[2]);
 			var n3 = parseInt(args[3]);
-			count.push(n1);	
 			if(n1 > 0 && n1 < 1000 && n2 > 0 && n2 < 1000 && n3 < (n2-n1) && n2 > n1){
-				for(var m = n1; m < n2; m+=n3){
-					count.push(m+1);
+				for(var m = n1; m <= n2; m+=n3){
+					count.push(m);
 				}
 				message.reply("Counted: " + count); 
 			} else {
