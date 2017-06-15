@@ -144,6 +144,24 @@ client.on('message', message => {
 		} else {
 			message.channel.send((message.mentions.users.first()) + " Be happy! :smile: :smiley: :rofl: :laughing: :grin: :grinning: :slight_smile: :sweat_smile: :upside_down:")
 		}
+	} else if(commandIs("count", message)){
+		var count = [];
+		if(args.length === 1){
+			
+		} else {
+			var n1 = parseInt(args[1]);
+			var n2 = parseInt(args[2]);
+			var n3 = parseInt(args[3]);
+			count.push(n1);	
+			if(n1 > 0 && n1 < 1000 && n2 > 0 && n2 < 1000 && n3 < (n2-n1) && n2 > n1){
+				for(var m = n1; m < n2; m+=n3){
+					count.push(m+1);
+				}
+				message.reply("Counted: " + count); 
+			} else {
+				message.reply("Input a number between 1-999... Usage: `.count min max interval`")
+			}
+		}
 	}
 });
 client.login('MzI0NDI3MzgzODQ5MzUzMjE5.DCJiHA.Q6Z16luW1rjfTI-nGV-Q-rM-yFQ');﻿
