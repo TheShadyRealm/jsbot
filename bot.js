@@ -145,7 +145,6 @@ client.on('message', message => {
 					count.push(m);
 				}
 				message.reply(":checkered_flag: Counted " + Math.round(n2/n3) + " numbers: " + count); 
-				console.log(n2/n3);
 			} else {
 				message.reply("Input a number between 0-999... Usage: `.count min max interval` and NO COUNTING BACKWARDS k?")
 			}
