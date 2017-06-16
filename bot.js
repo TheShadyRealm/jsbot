@@ -91,49 +91,19 @@ client.on('message', message => {
 			if(args.length === 1){
 				message.channel.send("Warn a user for misbehaving... :smiling_imp: Usage: `.warn (reason) [user]`")
 			} else {
-				message.mentions.users.first().sendMessage("You have been warned in the server for " + (args.join(" ").substring(6)))
+				message.mentions.users.first().send("You have been warned in the server for " + (args.join(" ").substring(6)))
 				message.reply("User " + (message.mentions.users.first()) + " has been warned :rage:")
 			}
 		}
 	} 
 	//help commands
 	if(commandIs("help", message)){
-		message.author.sendMessage("Commands List:\n **Global Prefix: .**\n __Mod commands__ \n **help** - shows this message \n **botinfo** - info about the bot... \n **ping** - pings server and returns with ms \n **uptime** - shows bot uptime \n **purge** - clears the last x messages \n **kick/ban** - kicks/bans the user mentioned \n **repeat** - repeats stuff \n __For Fun Commands__ \n **8ball** - 8-ball? \n **add/delcrush** - WIP trigger bs \n **roll** - roll dice \n **count** - count from min to max \n **rng** - pick x numbers between min and max \n__All of the syntaxes for these commands can be found by just typing the prefix + the command itself into chat__ :smile:")
+		message.author.send("Commands List:\n **Global Prefix: .**\n __Mod commands__ \n **help** - shows this message \n **botinfo** - info about the bot... \n **ping** - pings server and returns with ms \n **uptime** - shows bot uptime \n **purge** - clears the last x messages \n **kick/ban** - kicks/bans the user mentioned \n **repeat** - repeats stuff \n __For Fun Commands__ \n **8ball** - 8-ball? \n **add/delcrush** - WIP trigger bs \n **roll** - roll dice \n **count** - count from min to max \n **rng** - pick x numbers between min and max \n__All of the syntaxes for these commands can be found by just typing the prefix + the command itself into chat__ :smile:")
 		message.reply("A list of commands has been sent to your DMs =)")
 	} else if(commandIs("botinfo", message)){
 		message.reply("JSBot is a bot developed by <@275334018214658060> for absolute fun rofel")
 	}
 	//for fun commands
-    var i = 0;
-	var name;
-	var crushes = ["sydney", "lindsay"];
-	if(commandIs("addcrush", message)){
-		if(args.length === 1){
-			message.channel.send("Put in your crush with `.addcrush [some girl]`")
-		} else {
-			this.n = (args.join(" ").substring(10));
-			message.channel.send(this.n + ' has been added to the crush list');
-			name = true;
-		}
-	}
-	if(name === true){
-		crushes.push(this.n.toString());
-		name = false; 
-	}
-	for(var c = 0; c < crushes.length; c++){
-		if(message.content.toLowerCase().includes(crushes[c])){
-			message.channel.send("<3");
-			console.log(crushes); console.log('c = ' + c);
-		}
-	}
-	if(commandIs("delcrush", message)){
-		if(args.length === 1){
-			message.channel.send("DELETE UR CRUSH?!? `.delcrush [some girl]`")
-		} else {
-			message.channel.send(this.n + ' has been removed from the crush list');
-			crushes.splice(2,1); console.log(crushes);
-		}
-	} 
 	if(commandIs("8ball", message)){
 		var replies = ["Yes", "No", "Ask again later", "It is decidely so", "Maybe not...", "Concentrate and ask again", "Cannot predict now", "Very doubtful", "Hell no", "Frick yes", "Mayyyyyybe?", "TOTALLY dude (sarcasm intended)"]
 		var result = Math.floor((Math.random()* replies.length) + 0);
@@ -174,7 +144,8 @@ client.on('message', message => {
 				for(var m = n1; m <= n2; m+=n3){
 					count.push(m);
 				}
-				message.reply("Counted: " + count); 
+				message.reply(":checkered_flag: Counted " + Math.round(n2/n3) + " numbers: " + count); 
+				console.log(n2/n3);
 			} else {
 				message.reply("Input a number between 0-999... Usage: `.count min max interval` and NO COUNTING BACKWARDS k?")
 			}
@@ -204,5 +175,24 @@ client.on('message', message => {
 		message.delete();
 		message.reply('kill yourself')
 	}
+	//WIP THINGY TO REPLACE THE CRUSH THINGY
+	var temp = ["hi", "bye"];
+	if(message.content.includes(".addthing")){
+		this.hi = (args.join(" ").substring(10)).toString();
+		temp.push(this.hi);
+		console.log(temp.length, temp);
+	} 
+	for(var x = 0; x < temp.length; x++){
+		if(message.content.includes(temp[x])){
+			message.reply('hello');
+		}
+	}
+	if(message.content === "logthing"){
+		console.log(temp.length); console.log(temp);
+	}
+	if(message.content.includes("gtg")){
+		message.channel.send(":wave: Bye, " + message.author + ", see you later! :raised_hands: ")
+	}
+	
 });
 client.login('MzI0NDI3MzgzODQ5MzUzMjE5.DCJiHA.Q6Z16luW1rjfTI-nGV-Q-rM-yFQ');﻿
