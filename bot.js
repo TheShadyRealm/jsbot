@@ -52,6 +52,7 @@ client.on('message', message => {
 			for(var x = 0; x < badstuff.length; x++){
 				if(message.content.includes(badstuff[x])){
 					message.reply("no")
+					break;  //  Without this, if one of the badstuffs is not found, the command will execute. 
 				} else {
 					message.channel.send(args.join(" ").substring(8));
 				}
