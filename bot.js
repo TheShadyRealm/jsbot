@@ -1,5 +1,6 @@
 const Discord = require('discord.js');
 const client = new Discord.Client();
+const newUsers = [];
 
 function commandIs(str, msg){
 	return msg.content.toLowerCase().startsWith("." + str)
@@ -17,6 +18,14 @@ function hasRole(mem, role) {
 function mts(s){
 	return(s-(s%=60))/60+(9<s?':':':0')+s
 }
+
+client.on('guildMemberAdd', (guild, member) => {
+	this.channel;
+	this.chan = guild.guild.id; 
+	"310224842735616020"===this.chan?this.channel="310296871102971905":"317717365485862922"===this.chan?this.channel="325318709906243585":"288875656241217547"===this.chan&&(this.channel="316985971222642701");
+	guild.guild.channels.get(this.channel.toString()).send("Welcome " + guild +  " to the server " + guild.guild.name + "!");
+	console.log("server.welcome.id " + guild.guild.id); console.log("member.welcome.id " + guild.id); console.log("channel.welcome.id " + this.chan); 
+});
 
 client.on('ready', () => {
     console.log('The bot is online!');
@@ -75,6 +84,8 @@ client.on('message', message => {
 				message.reply("User " + this.vic + " has been kicked from the server. :boot:")
 				console.log(this.vic + ' was kicked from the server')
 			}
+		} else {
+			message.reply("You need a role titled `admin` or `moderator` to be able to use this feature :/")
 		}
 	} else if(commandIs("ban", message)){
 		if(hasRole(message.member, "Admin")){
@@ -98,7 +109,7 @@ client.on('message', message => {
 	} 
 	//help commands
 	if(commandIs("help", message)){
-		message.author.send("Commands List:\n **Global Prefix: .**\n __Mod commands__ \n **help** - shows this message \n **botinfo** - info about the bot... \n **ping** - pings server and returns with ms \n **uptime** - shows bot uptime \n **purge** - clears the last x messages \n **kick/ban** - kicks/bans the user mentioned \n **repeat** - repeats stuff \n __For Fun Commands__ \n **8ball** - 8-ball? \n **add/delcrush** - WIP trigger bs \n **roll** - roll dice \n **count** - count from min to max \n **rng** - pick x numbers between min and max \n__All of the syntaxes for these commands can be found by just typing the prefix + the command itself into chat__ :smile:")
+		message.author.send("Commands List:\n **Global Prefix: .**\n __Mod commands__ \n **help** - shows this message \n **botinfo** - info about the bot... \n **ping** - pings server and returns with ms \n **uptime** - shows bot uptime \n **purge** - clears the last x messages \n **kick/ban** - kicks/bans the user mentioned \n **repeat** - repeats stuff \n __For Fun Commands__ \n **8ball** - 8-ball? \n **add/delcrush** - WIP trigger bs \n **roll** - roll dice \n **count** - count from min to max \n **rng** - pick x numbers between min and max \n__All of the syntaxes for these commands can be found by just typing the prefix + the command itself into chat__ :smile: \n **ADD THIS BOT TO OTHER SERVERS** :smiley:: http://bit.ly/JSBot")
 		message.reply("A list of commands has been sent to your DMs =)")
 	} else if(commandIs("botinfo", message)){
 		message.reply("JSBot is a bot developed by <@275334018214658060> for absolute fun rofel")
@@ -172,7 +183,7 @@ client.on('message', message => {
 	}
 	if(message.content === "?"){
 		message.delete();
-		message.reply('kill yourself')
+		message.reply('KYS')
 	}
 	//WIP THINGY TO REPLACE THE CRUSH THINGY
 	var temp = ["hi", "bye"];
@@ -183,7 +194,7 @@ client.on('message', message => {
 	} 
 	for(var x = 0; x < temp.length; x++){
 		if(message.content.includes(temp[x])){
-			message.reply('hello');
+			console.log('hello');
 		}
 	}
 	if(message.content === "logthing"){
