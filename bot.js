@@ -45,10 +45,17 @@ client.on('message', message => {
 			message.channel.send("What did you even type...? Try: `.rank [integer]`")
 		}
 	} else if(commandIs("repeat", message)){
+		var badstuff = [".ban", ".kick", ".purge"]
 		if(args.length === 1){
 			message.channel.send("Type something for the bot to repeat! Use: `.repeat [message]`")
 		} else {
-			message.channel.send(args.join(" ").substring(8));
+			for(var x = 0; x < badstuff.length; x++){
+				if(message.content.includes(badstuff[x])){
+					message.reply("no")
+				} else {
+					message.channel.send(args.join(" ").substring(8));
+				}
+			}
 		}
 	} else if(commandIs("adminsonly", message)){
 		if(hasRole(message.member, "Admin") || hasRole(message.member, "Administrator")){
@@ -87,6 +94,7 @@ client.on('message', message => {
 			message.reply("You need a role titled `admin` or `moderator` to be able to use this feature :/")
 		}
 	} else if(commandIs("ban", message)){
+		this.vic = message.guild.member(message.mentions.users.first())
 		if(hasRole(message.member, "Admin")){
 			if(args.length === 1){
 				message.channel.send("BAN a user :hammer: Usage: `.ban [user to totally demolish]`")
