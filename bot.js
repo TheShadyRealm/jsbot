@@ -1,6 +1,5 @@
 const Discord = require('discord.js');
 const client = new Discord.Client();
-const newUsers = [];
 
 function commandIs(str, msg){
 	return msg.content.toLowerCase().startsWith("." + str)
