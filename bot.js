@@ -23,7 +23,7 @@ client.on('guildMemberAdd', (guild, member) => {
 	this.chan = guild.guild.id; 
 	"310224842735616020"===this.chan?this.channel="310296871102971905":"317717365485862922"===this.chan?this.channel="325318709906243585":"288875656241217547"===this.chan&&(this.channel="316985971222642701");
 	guild.guild.channels.get(this.channel.toString()).send("Welcome " + guild +  " to the server " + guild.guild.name + "!");
-	console.log("server.welcome.id " + guild.guild.id); console.log("member.welcome.id " + guild.id); console.log("channel.welcome.id " + this.chan); 
+	console.log("server.welcome.id " + guild.guild.id + " " + guild.guild.name); console.log("member.welcome.id " + guild.id + " " + guild.displayName); console.log("channel.welcome.id " + this.chan); 
 });
 
 client.on('ready', () => {
