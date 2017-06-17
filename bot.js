@@ -45,18 +45,23 @@ client.on('message', message => {
 			message.channel.send("What did you even type...? Try: `.rank [integer]`")
 		}
 	} else if(commandIs("repeat", message)){
-		var badstuff = [".ban", ".kick", ".purge"]
-		if(args.length === 1){
-			message.channel.send("Type something for the bot to repeat! Use: `.repeat [message]`")
-		} else {
-			for(var x = 0; x < badstuff.length; x++){
-				if(message.content.includes(badstuff[x])){
-					message.reply("no")
-					break;  //  Without this, if one of the badstuffs is not found, the command will execute. 
-				} else {
-					message.channel.send(args.join(" ").substring(8));
+		if (hasRole(message.member, "Admin") || hasRole(message.member, "Administrator") || hasRole(message.member, "Automated Response Machines")) {
+			var badstuff = [".ban", ".kick", ".purge"]
+			if(args.length === 1){
+				message.channel.send("Type something for the bot to repeat! Use: `.repeat [message]`")
+			} else {
+				for(var x = 0; x < badstuff.length; x++){
+					if(message.content.includes(badstuff[x])){
+						message.reply("no")
+						break;  //  Without this, if one of the badstuffs is not found, the command will execute. 
+					} else {
+						message.channel.send(args.join(" ").substring(8));
+					}
 				}
 			}
+		}
+		else {
+			message.reply("Stop trying to ab00se please.")
 		}
 	} else if(commandIs("adminsonly", message)){
 		if(hasRole(message.member, "Admin") || hasRole(message.member, "Administrator")){
