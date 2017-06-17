@@ -1,5 +1,5 @@
 # jsbot
-"it's all about the learning process..."
+"it's all about the learning process..." \n
 a WIP bot to get me used to js cuz i like js
 Commands List:
  Global Prefix: .
