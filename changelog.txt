@@ -24,3 +24,5 @@ v1.4.0
 - crush array finally working (lol)
 v1.5.0
 - added mute command and bug fixes with prev. commands
+v1.6.0
+- added level up system
