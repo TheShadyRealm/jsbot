@@ -78,7 +78,7 @@ client.on('message', message => {
 					msg = parseInt(args[1]) + 1;
 				}
 				message.channel.fetchMessages({limit: msg}).then(messages => message.channel.bulkDelete(messages)).catch(console.error);
-				message.reply(msg-1 + ' messages successfully deleted!').then(message => message.delete(1000))
+				message.reply(msg-1 + ' messages successfully deleted!').then(message => message.delete(1575))
 			}
 		} else {
 			message.reply("You do not have the perms to delete messages... nice try...")
@@ -116,7 +116,18 @@ client.on('message', message => {
 				message.reply("User " + (message.mentions.users.first()) + " has been warned :rage:")
 			}
 		}
-	} 
+	} else if(commandIs("mute", message)){
+		if(hasRole(message.member, "Admin") || hasRole(message.member, "Moderator")){
+			if(args.length === 1){
+				message.channel.send("MUTE :mute: (make sure you have a role called 'muted') Usage: `.mute [user]`")
+			} else {
+				this.user = message.guild.member(message.mentions.users.first())
+				this.user.addRole(message.guild.roles.find('name', 'muted')).catch(console.error)
+				message.channel.send(this.user + " has been muted :mute:")
+				console.log(this.user.displayName + ' muted in server ' + message.guild.name)
+			}
+		}
+	}
 	//help commands
 	if(commandIs("help", message)){
 		message.author.send("Commands List:\n **Global Prefix: .**\n __Mod commands__ \n **help** - shows this message \n **botinfo** - info about the bot... \n **ping** - pings server and returns with ms \n **uptime** - shows bot uptime \n **purge** - clears the last x messages \n **kick/ban** - kicks/bans the user mentioned \n **repeat** - repeats stuff \n __For Fun Commands__ \n **8ball** - 8-ball? \n **add/delcrush** - WIP trigger bs \n **roll** - roll dice \n **count** - count from min to max \n **rng** - pick x numbers between min and max \n__All of the syntaxes for these commands can be found by just typing the prefix + the command itself into chat__ :smile: \n **ADD THIS BOT TO OTHER SERVERS** :smiley:: http://bit.ly/JSBot")
@@ -133,8 +144,6 @@ client.on('message', message => {
 		} else {
 		message.reply(replies[result])
 		}
-	} else if(commandIs("nobody")){
-		message.reply("HE IS THE AWESOMEST PERSON EVER")
 	} else if(commandIs("roll", message)){
 		var nbr = parseInt(args[1]);
 		var arr = [];
@@ -197,7 +206,7 @@ client.on('message', message => {
 		message.delete();
 		message.reply('KYS')
 	}
-	//WIP THINGY TO REPLACE THE CRUSH THINGY
+	//actually working crush array (any other ideas for it tho?)
 	if(message.content.includes(".addcrush")){
 		this.hi = (args.join(" ").substring(10)).toString();
 		temp.push(this.hi);
