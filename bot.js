@@ -1,9 +1,10 @@
 const Discord = require('discord.js');
 const client = new Discord.Client();
 var temp = [];
+var prefix = "."
 
 function commandIs(str, msg){
-	return msg.content.toLowerCase().startsWith("." + str)
+	return msg.content.toLowerCase().startsWith(prefix + str)
 }
 function pluck(array) {
 	return array.map(function(item) { return item["name"]; });
