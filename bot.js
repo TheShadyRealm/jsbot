@@ -1,5 +1,6 @@
 const Discord = require('discord.js');
 const client = new Discord.Client();
+var temp = ["sydney", "lindsay"];
 
 function commandIs(str, msg){
 	return msg.content.toLowerCase().startsWith("." + str)
@@ -53,15 +54,11 @@ client.on('message', message => {
 				for(var x = 0; x < badstuff.length; x++){
 					if(message.content.includes(badstuff[x])){
 						message.reply("no")
-						break;  //  Without this, if one of the badstuffs is not found, the command will execute. 
 					} else {
 						message.channel.send(args.join(" ").substring(8));
 					}
 				}
 			}
-		}
-		else {
-			message.reply("Stop trying to ab00se please.")
 		}
 	} else if(commandIs("adminsonly", message)){
 		if(hasRole(message.member, "Admin") || hasRole(message.member, "Administrator")){
@@ -70,7 +67,7 @@ client.on('message', message => {
 			message.reply("You're not an `Admin`... yet...")
 		}
 	} else if(commandIs("purge", message)){
-		if(hasRole(message.member, "Admin") || hasRole(message.member, "Moderator")){
+		if(hasRole(message.member, "Admin") || hasRole(message.member, "Moderator") || hasRole(message.member, "Administrator")){
 			if(args.length >= 3){
 				message.channel.send("The pr0per way to delete would be: `.purge (# of messages to delete)`")
 			} else {
@@ -81,7 +78,7 @@ client.on('message', message => {
 					msg = parseInt(args[1]) + 1;
 				}
 				message.channel.fetchMessages({limit: msg}).then(messages => message.channel.bulkDelete(messages)).catch(console.error);
-				message.reply(msg-1 + ' messages successfully deleted!')
+				message.reply(msg-1 + ' messages successfully deleted!').then(message => message.delete(1000))
 			}
 		} else {
 			message.reply("You do not have the perms to delete messages... nice try...")
@@ -199,19 +196,34 @@ client.on('message', message => {
 		message.reply('KYS')
 	}
 	//WIP THINGY TO REPLACE THE CRUSH THINGY
-	var temp = ["hi", "bye"];
-	if(message.content.includes(".addthing")){
+	if(message.content.includes(".addcrush")){
 		this.hi = (args.join(" ").substring(10)).toString();
 		temp.push(this.hi);
+		message.reply(this.hi + " has been added to the list")
 		console.log(temp.length, temp);
-	} 
+	} else if(message.content.includes(".clearcrush")){
+		message.channel.send("")
+		temp = ["sydney", "lindsay"];
+	} else if(message.content.includes(".delcrush")){
+		this.del = (args.join(" ").substring(10)).toString();
+		this.cow;
+		for(var d = 0; d < temp.length; d++){
+			if(message.content.includes(this.del[d])){
+				console.log(d);
+				this.cow = d; 
+				console.log(this.cow);
+				temp.splice(this.cow, 1)
+			}
+		}
+		message.channel.send(this.del + " has been removed from the list")
+	}
 	for(var x = 0; x < temp.length; x++){
 		if(message.content.includes(temp[x])){
-			console.log('hello');
+			message.channel.send('<3');
 		}
 	}
 	if(message.content === "logthing"){
-		console.log(temp.length); console.log(temp);
+		console.log(temp.length, temp)
 	}
 	if(message.content.includes("gtg")){
 		message.channel.send(":wave: Bye, " + message.author + ", see you later! :raised_hands: ")
