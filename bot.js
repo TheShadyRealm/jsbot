@@ -1,6 +1,6 @@
 const Discord = require('discord.js');
 const client = new Discord.Client();
-var temp = ["sydney", "lindsay"];
+var temp = [];
 
 function commandIs(str, msg){
 	return msg.content.toLowerCase().startsWith("." + str)
@@ -203,7 +203,7 @@ client.on('message', message => {
 		console.log(temp.length, temp);
 	} else if(message.content.includes(".clearcrush")){
 		message.channel.send("")
-		temp = ["sydney", "lindsay"];
+		temp = [];
 	} else if(message.content.includes(".delcrush")){
 		this.del = (args.join(" ").substring(10)).toString();
 		this.cow;
