@@ -133,6 +133,8 @@ client.on('message', message => {
 		} else {
 		message.reply(replies[result])
 		}
+	} else if(commandIs("nobody")){
+		message.reply("HE IS THE AWESOMEST PERSON EVER")
 	} else if(commandIs("roll", message)){
 		var nbr = parseInt(args[1]);
 		var arr = [];
