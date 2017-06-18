@@ -1,0 +1,24 @@
+jsbot changelog:
+v1.0 
+- first ver. on github
+v1.1.0 
+- added count command
+v1.1.1
+- fixed unreliable counting with count command
+v1.2.0
+- added warn command
+- added rng command
+- added uptime command
+- added fancy emoticons to replies on other fun commands
+v1.2.1
+- fixed minor bugs and compatiblity issues
+- replaced crush array (still not working)
+v1.2.2
+- removed console.log commands
+v1.3.0
+- added welcome message
+- minor bug fixes included
+v1.3.1
+- fixed non-admin admin commands exploit 
+v1.4.0
+- crush array finally working (lol)
