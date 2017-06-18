@@ -134,10 +134,12 @@ client.on('message', message => {
 		message.author.send("Commands List:\n **Global Prefix: .**\n __Mod commands__ \n **help** - shows this message \n **botinfo** - info about the bot... \n **ping** - pings server and returns with ms \n **uptime** - shows bot uptime \n **purge** - clears the last x messages \n **kick/ban** - kicks/bans the user mentioned \n **repeat** - repeats stuff \n __For Fun Commands__ \n **8ball** - 8-ball? \n **add/delcrush** - WIP trigger bs \n **roll** - roll dice \n **count** - count from min to max \n **rng** - pick x numbers between min and max \n__All of the syntaxes for these commands can be found by just typing the prefix + the command itself into chat__ :smile: \n **ADD THIS BOT TO OTHER SERVERS** :smiley:: http://bit.ly/JSBot")
 		message.reply("A list of commands has been sent to your DMs =)")
 	} else if(commandIs("botinfo", message)){
-		message.reply("JSBot is a bot developed by <@275334018214658060> for absolute fun rofel")
+		message.reply("JSBot is a bot developed TOTALLY BY <@!288870010724810763> NOT <@275334018214658060> for absolute fun rofel")
 	}
 	//for fun commands
-	if(commandIs("8ball", message)){
+	if(commandIs("potato")){
+		message.channel.reply("you are a potato!")
+	} else if(commandIs("8ball", message)){
 		var replies = ["Yes", "No", "Ask again later", "It is decidely so", "Maybe not...", "Concentrate and ask again", "Cannot predict now", "Very doubtful", "Hell no", "Frick yes", "Mayyyyyybe?", "TOTALLY dude (sarcasm intended)"]
 		var result = Math.floor((Math.random()* replies.length) + 0);
 		if(args.length === 1){
