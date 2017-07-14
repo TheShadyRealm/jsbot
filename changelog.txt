@@ -26,3 +26,11 @@ v1.5.0
 - added mute command and bug fixes with prev. commands
 v1.6.0
 - added level up system
+v1.7.0
+- removed level up system
+v2.0.0
+- many bug fixes and less console errors (does not mean more catch(console.error)s! i fixed them manually)
+- a lot more commands (.duel, .playchess, .rem, .kill, .cclist, .unmute, and other hidden ones)
+- better way of sending messages
+- updated help command
+- don't add this to your servers ples thx (way too trash for that also it's meant for servers that know many of these inside jokes that i put in the bot) :3
