@@ -15,8 +15,23 @@ var thinking = {};
 var CHESS = '.playchess';
 var MOVETIME = 300;
 var SIDENAMES = {w:'Black', b:'White'};
+var numID = [];
+var userID = [];
+var guessNumID = [];
+var yw = require('weather-yahoo');
+var ans = {};
+var Forecast = require('forecast');
 let points = JSON.parse(fs.readFileSync("./points.json", "utf8"));
-
+var forecast = new Forecast({
+  service: 'darksky',
+  key: config.apikey,
+  units: 'fahrenheit',
+  cache: true,     
+  ttl: {            
+    minutes: 27,
+    seconds: 45
+  }
+});
 function mts(s){
 	return(s-(s%=60))/60+(9<s?':':':0')+s
 }
@@ -26,6 +41,14 @@ function strip(s) {
 
 function get_fen_img(id) {
     return 'http://www.fen-to-image.com/image/20/single/coords/' + chesses[id].fen().split(' ')[0];
+}
+
+function convert(t){
+  var orig = new Date(t * 1000);
+  var hour = orig.getHours();
+  var min = orig.getMinutes();
+  var sec = orig.getSeconds();
+  return hour + (9<min?':':':0') + min + (9<sec?':':':0') + sec;
 }
 
 client.on('guildMemberAdd', (guild, member) => {
@@ -42,34 +65,42 @@ client.on('guildMemberAdd', (guild, member) => {
 	} else if(chan === "333471257838485524"){ //new pentagon
 		channel = "333472444931112971"
 	}
-	guild.guild.channels.get(channel.toString()).send("Welcome " + guild +  " to the server " + guild.guild.name + "!").catch(console.error);
-	if(channel === "310296871102971905"){
-		guild.addRole(guild.guild.roles.find('name', 'The Underground Railroad')).catch(console.error);
-	} else if((channel === "325318709906243585") || (channel = "333472444931112971")){
-		guild.addRole(guild.guild.roles.find('name', 'Citizen')).catch(console.error);
-	} else if(channel === "268089881610158082"){
+	if(channel != undefined){
+		guild.guild.channels.get(channel.toString()).send("Welcome " + guild +  " to the server " + guild.guild.name + "!").catch(console.error);
+		if(channel === "310296871102971905"){
+			guild.addRole(guild.guild.roles.find('name', 'The Underground Railroad')).catch(console.error);
+		} else if((channel === "325318709906243585") || (channel = "333472444931112971")){
+			guild.addRole(guild.guild.roles.find('name', 'Citizen')).catch(console.error);
+		} else if(channel === "268089881610158082"){
 		guild.addRole(guild.guild.roles.find('name', 'Visitors')).catch(console.error);
+		} 
+		console.log("server.welcome.id " + guild.guild.id + " " + guild.guild.name); console.log("member.welcome.id " + guild.id + " " + guild.displayName); console.log("channel.welcome.id " + chan); 
+	} else {
+		return;
 	}
-	console.log("server.welcome.id " + guild.guild.id + " " + guild.guild.name); console.log("member.welcome.id " + guild.id + " " + guild.displayName); console.log("channel.welcome.id " + this.chan); 
 });
 
 client.on('guildMemberRemove', (guild, member) => {
-	this.goodbye;
-	this.good = guild.guild.id; 
-	console.log(this.good);
-	if(this.good === "310224842735616020"){ //blueberries
-		this.goodbye = "310296871102971905";
-	} else if(this.good === "317717365485862922"){ //pentagon
-		this.goodbye = "325318709906243585";
-	} else if(this.good === "268057683804946437"){ //rchz
-		this.goodbye = "268089881610158082";
-	} else if(this.good === "272473930520854529"){ //edreams
-		this.goodbye = "292476293037948950";
-	} else if(this.good === "333471257838485524"){ //new pentagon
-		this.goodbye = "333472444931112971"
+	var goodbye;
+	var good = guild.guild.id; 
+	console.log(good, goodbye);
+	if(good === "310224842735616020"){ //blueberries
+		goodbye = "310296871102971905";
+	} else if(good === "317717365485862922"){ //pentagon
+		goodbye = "325318709906243585";
+	} else if(good === "268057683804946437"){ //rchz
+		goodbye = "268089881610158082";
+	} else if(good === "272473930520854529"){ //edreams
+		goodbye = "292476293037948950";
+	} else if(good === "333471257838485524"){ //new pentagon
+		goodbye = "333472444931112971"
 	}
-	guild.guild.channels.get(this.goodbye.toString()).send("Goodbye :cry:... " + guild +  " has left the server " + guild.guild.name + "...");
-	console.log("server.goodbye.id " + guild.guild.id + " " + guild.guild.name); console.log("member.goodbye.id " + guild.id + " " + guild.displayName); console.log("channel.goodbye.id " + this.good); 
+	if(goodbye != undefined){
+		guild.guild.channels.get(goodbye.toString()).send("Goodbye :cry:... " + guild +  " has left the server " + guild.guild.name + "...");
+		console.log("server.goodbye.id " + guild.guild.id + " " + guild.guild.name); console.log("member.goodbye.id " + guild.id + " " + guild.displayName); console.log("channel.goodbye.id " + good); 
+	} else {
+		return;
+	}
 });
 
 client.on('ready', () => {
@@ -79,11 +110,177 @@ client.on('ready', () => {
 });
 
 client.on('message', message => {
-	var msg1 = strip(message.content);
-	if(message.author.bot) return;
-	if(message.content === "?" && message.guild.id != '268057683804946437' && message.guild.id != "272473930520854529"){
+	if(message.content.includes("=_=") && message.author.id === '272473368840634378'){
 		message.delete();
-		message.reply('KYS')
+		message.reply("STOP IT")
+	}
+	if(message.author.bot) return;
+	var args = message.content.split(/[ ]+/);
+	var msg1 = strip(message.content);
+	var randomN;
+	var maxN;
+	if(message.content.startsWith(prefix + "guessnumberstart")){
+		var authorID = message.author.id;
+        var difficulty = ['easy', 'medium', 'hard', 'expert'];
+        var valid;
+		var difftype;
+        var checkValid = (args.join(" ").substring(18)).toString();
+		if(userID.includes(message.author.id)){
+			message.reply("Didn't you already start a game?")
+			return;
+		} else {
+			if(checkValid === difficulty[0]){
+				valid = true; difftype = 0; maxN = 1000;
+				var randomN = ~~((Math.random()* maxN) + 0);
+				userID.push(authorID);
+				numID.push(randomN);
+				guessNumID.push(1);
+				console.log(userID, numID, guessNumID);
+			} else if(checkValid === difficulty[1]){
+				valid = true; difftype = 1; maxN = 100000;
+				var randomN = ~~((Math.random()* maxN) + 0);
+				userID.push(authorID);
+				numID.push(randomN);
+				guessNumID.push(1);
+				console.log(userID, numID, guessNumID);
+			} else if(checkValid === difficulty[2]){
+				valid = true; difftype = 2; maxN = 10000000;
+				var randomN = ~~((Math.random()* maxN) + 0);
+				userID.push(authorID);
+				numID.push(randomN);
+				guessNumID.push(1);
+				console.log(userID, numID, guessNumID);
+			} else if(checkValid === difficulty[3]){
+				valid = true; difftype = 3; maxN = 1000000000;
+				var randomN = ~~((Math.random()* maxN) + 0);
+				userID.push(authorID);
+				numID.push(randomN);
+				guessNumID.push(1);
+				console.log(userID, numID, guessNumID);
+			} else {
+				valid = false;
+				const embed = new Discord.RichEmbed()
+				.setColor('#ffe135')
+				.setAuthor(message.member.displayName, message.author.displayAvatarURL)
+				.setTitle('What the hell!')
+				.setDescription('You attempted to set the difficulty to: `' + checkValid + '`... try `easy, medium, hard, or expert` instead...')
+				.setTimestamp()
+				message.channel.send({embed})
+				return;
+			}
+			this.max = maxN
+			const embed = new Discord.RichEmbed()
+			.setColor('#ffe135')
+			.setAuthor(message.member.displayName, message.author.displayAvatarURL)
+			.setTitle('New game started!')
+			.setDescription('Difficulty set to: `' + difficulty[difftype] + '`... numbers will range from `0` to `' + maxN + '`')
+			.setTimestamp()
+			message.channel.send({embed})
+		}
+	} else if(message.content.startsWith(prefix + "guessnumber")){
+		if(userID.includes(message.author.id)){
+			var checkID = userID.indexOf(message.author.id);
+			var incr = ['Higher', 'Lower', 'You got it']; var incr1;
+			var descIncr = ['higher than', 'lower than', 'exactly']; var descIncr1;
+			var checkNum = numID[checkID];
+			var guessNum = guessNumID[checkID];
+			var checkGuess = parseInt(args[1]); console.log(checkGuess);
+			if(isNaN(checkGuess) === true) return;
+			if(checkGuess > this.max){
+				message.reply("It's from 0 to **" + this.max + "**... quick reminder")
+				return;
+			}
+			if(checkGuess === checkNum){
+				descIncr1 = 2; incr1 = 2;
+				userID.splice(checkID, 1);
+				numID.splice(checkID, 1); 
+				guessNumID.splice(checkID, 1);
+			} else if(checkGuess > checkNum){
+				descIncr1 = 1; incr1 = 1;
+				guessNumID[checkID]++;
+			} else if(checkGuess < checkNum){
+				descIncr1 = 0; incr1 = 0;
+				guessNumID[checkID]++;
+			}
+		} else {
+			const embed = new Discord.RichEmbed()
+			.setColor('#FF00FF')
+			.setAuthor(message.member.displayName, message.author.displayAvatarURL)
+			.setTitle('OH NOES')
+			.setDescription('Try starting a game first?')
+			.setImage('https://vignette4.wikia.nocookie.net/khanacademy/images/2/24/Cs-ohnoes.svg/revision/latest/scale-to-width-down/180?cb=20140917102823')
+			.setTimestamp()
+			message.channel.send({embed})
+			return;
+		}
+		const embed = new Discord.RichEmbed()
+		.setColor('#FF00FF')
+		.setAuthor(message.member.displayName, message.author.displayAvatarURL)
+		.setTitle(incr[incr1] + '!')
+		.setDescription('The number is ' + descIncr[descIncr1] + ' `' + checkGuess + '`')
+		.setFooter('Guess #' + guessNum)
+		.setTimestamp()
+		message.channel.send({embed})
+	} else if(message.content.startsWith(prefix + "weather")){
+		var zip = (args.join(" ").substring(8));
+		yw.getSimpleWeather(zip).then(function(res){
+		ans=res;
+		var t = JSON.stringify(res)
+		var high = t.substr(t.indexOf('"day"') + 20, 2);
+		var low = t.substr(t.indexOf('"day"') + 31, 2);
+		var descDesc = t.substr(t.indexOf('condition') + 12);
+		var sub = descDesc.indexOf('"}')
+		var desc = descDesc.substr(0, sub);
+		var emoji;
+		var latString = (t.substr(t.indexOf('lat')+6));
+		var findLat = latString.indexOf("long")-3;
+		var lat = latString.substr(0, findLat);
+		var longString = (t.substr(t.indexOf('long')+7));
+		var findLong = longString.indexOf("}")-1;
+		var lonG = longString.substr(0, findLong);
+		forecast.get([lat + ',' + lonG], true, function(err, weather) {
+			if(err) return console.dir(err);
+			var o = JSON.stringify(weather);
+			var temp = Math.round(o.substr(o.indexOf('temperature')+13, 5));
+			var feelslike = Math.round(o.substr(o.indexOf('apparentTemperature')+21, 5));
+			var humidityH = o.substr(o.indexOf('humidity')+12);
+			var humidityCount = humidityH.indexOf(',');
+			var humidity = humidityH.substr(0, humidityCount)
+			var precipProb = o.substr(o.indexOf('precipProbability')+19);
+			var precipCount = (precipProb.indexOf(',"'));
+			var precip = precipProb.substr(0, precipCount);
+			var sunriseSun = o.substr(o.indexOf('sunriseTime')+13);
+			var sunriseCount = sunriseSun.indexOf(",");
+			var sunrise = convert(sunriseSun.substr(0, sunriseCount));
+			var sunsetSun = o.substr(o.indexOf('sunsetTime')+12);
+			var sunsetCount = sunsetSun.indexOf(",");
+			var sunset = convert(sunsetSun.substr(0, sunsetCount));
+			if(desc === 'Sunny'){
+				emoji = ":sunny:"
+			} else if(desc === 'Cloudy'){
+				emoji = ":cloud:"
+			} else if(desc === 'Mostly Sunny'){
+				emoji = ":white_sun_cloud:"
+			} else if(desc === 'Partly Cloudy'){
+				emoji = ":partly_sunny:"
+			} else if(desc === 'Mostly Clear'){
+				emoji = ":large_blue_circle:"
+			} else if(desc === 'Mostly Cloudy'){
+				emoji = ":cloud::cloud:"
+				} else if(desc === 'Scattered Showers'){
+				emoji = ":cloud_rain:"
+			}
+			const embed = new Discord.RichEmbed()
+			.setAuthor(message.member.displayName, message.author.displayAvatarURL)
+			.setColor('#F0DB4E')
+			.setTitle('Weather and other info for `' + zip + '`')
+			.addField(emoji + ' ' + desc + ' ' + temp + '°F', ':arrow_up: High: ' + high + '°F \n:arrow_down: Low: ' + low + '°F\n:dash: Feels Like: ' + feelslike + '°F\n:thermometer: Humidity: ' + humidity + '%\n:droplet: Chance of Precipitation: ' + precip + '%\n:sunrise_over_mountains: Sunrise: ' + sunrise + ' UTC\n:city_sunset: Sunset: ' + sunset + ' UTC\n:straight_ruler: Coordinates: [' + lat + ', ' + lonG + ']')
+			.setFooter('Provided by darksky and YAHOO WEATHER', 'https://canoe-camping.com/wp-content/uploads/2016/06/weather-ying-and-yang.jpg')
+			.setTimestamp()
+			message.channel.send({embed})
+			});
+		});		
+	return;
 	}
 	//leveling system
 	/*
@@ -107,7 +304,6 @@ client.on('message', message => {
 	});
 	*/
 	//mod commands
-	var args = message.content.split(/[ ]+/);
 	if(message.content.startsWith(prefix + "ping")){
 		message.reply('**Pong!** Time taken: ' + ~~(client.ping) + 'ms')
 	} else if(message.content.startsWith(prefix + "rank")){
@@ -158,7 +354,7 @@ client.on('message', message => {
 				}
 			}
 		} else {
-			message.reply("You do not have the perms to delete messages... nice try...")
+			message.reply("You do not have the perms to delete messages... nice try...").catch(console.error);
 		}
 	} else if(message.content.startsWith(prefix + "kick")){
 		this.vic = message.guild.member(message.mentions.users.first())
@@ -170,6 +366,8 @@ client.on('message', message => {
 					message.channel.send("Kick a user (u sure about dat boi?) Usage: `.kick [user to kick]`")
 				} else {
 					this.vic.kick().catch(console.error);
+					message.reply("User " + this.vic + " has been kicked from the server. :boot:")
+					console.log(this.vic + ' was kicked from the server')
 				}
 			} else {
 				message.reply("Are you trying to kick someone that's superior to you? Or am I too low on the role hierarchy :cry:")
@@ -236,9 +434,9 @@ client.on('message', message => {
 	}
 	//help commands
 	if(message.content.startsWith(prefix + "help")){
-		message.author.send("Commands List:\n **Global Prefix: .**\n __Mod commands__ \n **help** - shows this message \n **botinfo** - info about the bot... \n **ping** - pings server and returns with ms \n **uptime** - shows bot uptime \n **warn [user] (reason)** - warns a user for being a meme \n **purge [# of msgs]** - clears the last x messages \n **kick/ban [user]** - kicks/bans the user mentioned \n **mute/unmute [user]** - mutes and unmutes a user \n **repeat [text]** - repeats stuff \n __For Fun Commands__ \n **8ball [question]** - 8-ball? \n **add/deltrash [text]** - add trashy triggers \n **roll (amt of dice)** - roll dice \n **kill [user]** - become a serial killer =) \n **count [min, max] (count by)** - count from min to max \n **rng [min, max, amt of numbers]** - pick x numbers between min and max \n **happiness [user]** - tell a user to stop being salty :) \n **cclist** - lists all custom commands \n **rem** - ゼロから始める異世界生活 :heart: \n **duel [user]** - duel a user (this is totally rng btw) \n **playchess [move in algebraic notation]** - play the bot in a game of chess... but you'll lose...\n__Code for this bot can be found here: https://github.com/TheShadyRealm/jsbot :smile: (holy crap jsbot is in javascript??? :scream:)__ \n **Invite link (highly not recommended):** :smiley:: http://bit.ly/JSBot")
+		message.author.send("Commands List:\n **Global Prefix: .**\n __Mod commands__ \n **help** - shows this message \n **botinfo** - info about the bot... \n **ping** - pings server and returns with ms \n **uptime** - shows bot uptime \n **warn [user] (reason)** - warns a user for being a meme \n **purge [# of msgs]** - clears the last x messages \n **kick/ban [user]** - kicks/bans the user mentioned \n **mute/unmute [user]** - mutes and unmutes a user \n **repeat [text]** - repeats stuff \n __For Fun Commands__ \n **8ball [question]** - 8-ball? \n **add/deltrash [text]** - add trashy triggers \n **roll (amt of dice)** - roll dice \n **kill [user]** - become a serial killer =) \n **count [min, max] (count by)** - count from min to max \n **rng [min, max, amt of numbers]** - pick x numbers between min and max \n **happiness [user]** - tell a user to stop being salty :) \n **cclist** - lists all custom commands \n **rem** - ゼロから始める異世界生活 :heart: \n **duel [user]** - duel a user (this is totally rng btw) \n **playchess [move in algebraic notation]** - play the bot in a game of chess... but you'll lose...\n **guessnumberstart [easy, medium, hard, expert]/guessnumber [number]** - guessnumberstart to start a game of guess the number and guessnumber to guess the number :eyes: \n__Code for this bot can be found here: https://github.com/TheShadyRealm/jsbot :smile: (holy crap jsbot is in javascript??? :scream:)__ \n **Invite link (highly not recommended):** :smiley:: http://bit.ly/JSBot")
 		message.reply("A list of commands has been sent to your DMs =)")
-	} else if(message.content.startsWith("botinfo", message)){
+	} else if(message.content.startsWith(prefix + "botinfo")){
 		message.reply("JSBot is a bot garbagely coded by <@275334018214658060> for absolute fun and dank memes rofel")
 	}
 	//for fun commands
@@ -282,7 +480,13 @@ client.on('message', message => {
 				for(var m = n1; m <= n2; m+=n3){
 					count.push(m);
 				}
-				message.reply(":checkered_flag: Counted " + Math.round(n2/n3) + " numbers: " + count); 
+				const embed = new Discord.RichEmbed()
+				.setAuthor(message.member.displayName, message.author.displayAvatarURL)
+				.setColor('#F0DB4E')
+				.setTitle(":checkered_flag: Counted " + Math.round(n2/n3) + " numbers: ")
+				.setDescription(count.join(', '))
+				.setTimestamp()
+				message.channel.send({embed})
 			} else {
 				message.reply("Input a number between 0-999... Usage: `.count min max interval` and NO COUNTING BACKWARDS k?")
 			}
@@ -299,7 +503,13 @@ client.on('message', message => {
 				for(var n = 0; n < r3; n++){
 					rnum.push(Math.floor((Math.random() * r2) + r1))
 				}
-				message.reply("Your Number(s): " + rnum); 
+				const embed = new Discord.RichEmbed()
+				.setAuthor(message.member.displayName, message.author.displayAvatarURL)
+				.setColor('#F0DB4E')
+				.setTitle("Your Number(s):")
+				.setDescription(rnum.join(', '))
+				.setTimestamp()
+				message.channel.send({embed})
 			} else {
 				message.reply("Input a number between one and a million... Usage: `.rng min max # of numbers to generate`")
 			}
@@ -308,13 +518,35 @@ client.on('message', message => {
 		var upt = Math.round((Date.now() - this.date)/1000);
 		message.reply("**This bot has been alive for:** " + mts(upt));
 	} else if(message.content.startsWith(prefix + "kill")){
-		var method = [" 360 noscoped ", " knifed ", " threw a combustable lemon at ", " shot a portal inside of ", " threw a knife that lodged into ", " took a gun from the table and immediately turned and shot ", " attached a grenade to an arrow and shot ", " blew a poison dart at ", " thrusted a sword hard into ", " ate "]
-		this.res = (Math.floor(Math.random() * (method.length - 1)) + 0)
-		if(message.author.id === message.guild.member(message.mentions.users.first()).id){
-			message.channel.send("if you want to kill yourself, i recommend draino... way more effective than bleach tbh")
+		if(message.guild.member(message.mentions.users.first()) === null){
+			message.reply("stop trying to exploit this bot smh...")
+			return;
+		} else if((message.guild.member(message.mentions.users.first()).id) === '324427383849353219'){
+			console.log('hi')
+			message.reply("you really think you can kill me? HA think again!")
+			return;
 		} else {
-			message.channel.send(message.author + method[this.res] + message.guild.member(message.mentions.users.first()) + " :skull_crossbones: **RIP** :skull_crossbones:").catch(console.error)
-			message.reply("You received " + (Math.floor(Math.random() * 100) + 1) + " style points")
+			var method = [" 360 noscoped ", 
+			" knifed ", 
+			" threw a combustable lemon at ", 
+			" shot a portal inside of ", 
+			" threw a knife that lodged into ", 
+			" took a gun from the table and immediately turned and shot ", 
+			" attached a grenade to an arrow and shot ", 
+			" blew a poison dart at ", 
+			" thrusted a sword hard into ", 
+			" ate "];
+			this.res = (Math.floor(Math.random() * (method.length - 1)) + 0)
+			if(message.author.id === message.guild.member(message.mentions.users.first()).id){
+				message.channel.send("if you want to kill yourself, i recommend draino... way more effective than bleach tbh")
+			} else {
+				const embed = new Discord.RichEmbed()
+				.setAuthor(message.member.displayName, message.author.displayAvatarURL)
+				.setColor('#F0DB4E')
+				.setTitle(":skull_crossbones: **RIP** :skull_crossbones:")
+				.addField(message.member.displayName + method[this.res] + message.guild.member(message.mentions.users.first()).displayName, 'and received ' + (Math.floor(Math.random() * 100) + 1) + " style points")
+				message.channel.send({embed})
+			}
 		}
 	} else if(message.content.startsWith(prefix + "cclist")){
 		message.reply("**list of custom (useless af) commands:** 'arcanestrats', 'calculus', 'cancer', 'ecksdee', 'exposed', 'fail', 'fidgetspinner', 'gj', 'gotem', 'hate', 'heckoff', 'hierarchy', 'justno', 'pranked', 'questionmark', 'roflcopter', 'salty', 'siblingdrama', 'trash'")
@@ -357,7 +589,15 @@ client.on('message', message => {
 		'https://wallpaperscraft.com/image/re_zero_rem_anime_girl_art_112246_3840x2160.jpg',
 		'http://img15.deviantart.net/a6c5/i/2016/183/f/1/re_zero_rem_and_ram_by_edge_mokku-da8glfe.png',
 		'https://images4.alphacoders.com/724/thumb-1920-724619.png',
-		'https://s-media-cache-ak0.pinimg.com/236x/a0/8d/7f/a08d7f3ba972b9bf8beb56ce25b2e798.jpg'
+		'https://s-media-cache-ak0.pinimg.com/236x/a0/8d/7f/a08d7f3ba972b9bf8beb56ce25b2e798.jpg',
+		'https://images.discordapp.net/attachments/273219844894359554/335591269810044939/b9a0c86b9ebb8c72f890a3c958f12907.png?width=236&height=300',
+		'https://images.discordapp.net/attachments/146404426746167296/335589791531794433/231fb89e7f32d3c011ef9539c07eeb16.jpg?width=226&height=301',
+		'https://images.discordapp.net/attachments/146404426746167296/335589623893983253/9HmseU9.jpg?width=367&height=301',
+		'https://images.discordapp.net/attachments/273219844894359554/334893983228755968/tam5.jpg?width=213&height=300',
+		'https://images.discordapp.net/attachments/273219844894359554/334893089519042560/645359f869541b6679c2a0c51f2ffe8adf88b92ee4b2c-mFvTsK.jpg?width=213&height=300',
+		'https://images.discordapp.net/attachments/273219844894359554/334883162117373962/451j71W.jpg?width=280&height=300',
+		'https://images.discordapp.net/attachments/334534179268067338/335615383228776458/37d1ce59.jpg?width=400&height=225',
+		'https://images-ext-1.discordapp.net/external/pSQR_Xl_NgpL981-vZBxe3oE362Zy_iSuhMZXrB0CwU/https/cdn.discordapp.com/attachments/235218122469146635/235219129995493377/e928d67928f9c0cafc5a2fc476f3a61b.jpg?width=177&height=251'
 		];
 		var randpic = ~~((Math.random() * list.length) + 0)
 		const embed = new Discord.RichEmbed()
@@ -498,6 +738,8 @@ client.on('message', message => {
 			delete thinking[id];
 		}
         var id = message.author.id + '!?#' + message.guild.id;
+		console.log(id);
+		console.log(chesses[id]);
         chessmsg1[id] = (args.join(" ").substring(11)).toString();
         if(chesses[id] === undefined) {
             chesses[id] = new Chess();
@@ -567,18 +809,51 @@ client.on('message', message => {
 			clearInterval(x);
 			message.channel.send("wb to school :)")
 		}
-	}
-	
+	} else if(message.content.startsWith(prefix + "calc")){
+		var method = (args.join(" ").substring(5)).toString();
+		var num1 = parseInt(args[1]);
+		var num2;
+		var ymbol;
+		if(method.includes("+")){
+			symbol = '+'
+			num2 = parseInt(method.substr(method.indexOf(symbol) + 1));	
+			var returns = num1 + num2;
+		} else if(method.includes("-")){
+			symbol = '-'
+			num2 = parseInt(method.substr(method.indexOf(symbol) + 1));
+			var returns = num1 - num2;
+		} else if(method.includes("/")){
+			symbol = '/'
+			num2 = parseInt(method.substr(method.indexOf(symbol) + 1));
+			var returns = num1 / num2;
+		} else if(method.includes("*")){
+			symbol = '*'
+			num2 = parseInt(method.substr(method.indexOf(symbol) + 1));
+			var returns = num1 * num2;
+		} else {
+			return;
+		}
+		if(isNaN(num1) || isNaN(num2)){
+			message.reply("2b or not 2b... that is the question...")
+			return;
+		}
+		const embed = new Discord.RichEmbed()
+		.setAuthor(message.member.displayName, message.author.displayAvatarURL)
+		.setColor('#98ff98')
+		.setTitle(':gear: Simple Calculation :gear: ')
+		.addField('Expression: `' + num1 + '`' + symbol +  '`' + num2 + '`', 'Result: `' + returns + '`')
+		message.channel.send({embed})
+	} 
 	//actually working crush array (any other ideas for it tho?)
-	if(message.content.startsWith(prefix + ".addtrash")){
+	if(message.content.startsWith(prefix + "addtrash")){
 		this.hi = (args.join(" ").substring(10)).toString();
 		temp.push(this.hi);
 		message.reply(this.hi + " has been added to the list")
 		console.log(temp.length, temp);
-	} else if(message.content.startsWith(prefix + ".cleartrash") && message.author.id === '275334018214658060'){
+	} else if(message.content.startsWith(prefix + "cleartrash") && message.author.id === '275334018214658060'){
 		message.channel.send("The list has been cleared")
 		temp = [];
-	} else if(message.content.startsWith(prefix + ".deltrash")){
+	} else if(message.content.startsWith(prefix + "deltrash")){
 		this.del = (args.join(" ").substring(10)).toString();
 		this.cow;
 		for(var d = 0; d < temp.length; d++){
@@ -601,23 +876,33 @@ client.on('message', message => {
 		message.channel.send(":wave: Bye, " + message.author + ", see you later! :raised_hands: ")
 	}
 	if(message.content.toLowerCase().includes("ravi") && message.guild.id === "333471257838485524"){
-		message.delete();
-		message.channel.send("shhhhhh... don't wake up the legendary dick tater... :sleeping:")
+		message.channel.send("absolutely desipses anime")
 	} 
+	if(message.content === "?" && message.guild.id != '268057683804946437' && message.guild.id != "272473930520854529"){
+		message.delete();
+		message.reply('KYS')
+	}
 	let responseObject = {
 		"ayy": "ayylmao",
 		"wat": "say what?",
 		"meme": "dank",
 		"ded": "is it rly tho?",
-		"...": "triple periods r the best aren't they ;)",
+		"...": "DOT DOT DOT",
 		"ok": "ko",
 		"cancer": "means crab in latin",
 		"pr0 strats": "something you may never have... :thinking:",
 		"fuck you" : "why you gotta be so rude...",
-		"=_=" : "right back at ya",
+		"=_=" : '"**just stop it already...** you dont need to do that... are you doing that just to aggrivate me?"',
 		"what" : "is going on",
 		"aya" : "is the worst sister ever",
-		"carcar" : "is the worst brother ever"
+		"carcar" : "is the worst brother ever",
+		"hi" : "KonCha (props if you know what that is lul)",
+		"bye" : "sayo o/",
+		"k" : "lmnopqrstuvwxyz",
+		"stop" : "gooooooooooooooooooo",
+		"let's go" : "lensko",
+		"LET'S GO" : "LENSKO",
+		":thinkerizing:" : ":thinking: **[deep breathing]** :thinking: "
 	};
 	if(responseObject[message.content]){
 		message.channel.send(responseObject[message.content]);
