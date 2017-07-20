@@ -110,10 +110,6 @@ client.on('ready', () => {
 });
 
 client.on('message', message => {
-	if(message.content.includes("=_=") && message.author.id === '272473368840634378'){
-		message.delete();
-		message.reply("STOP IT")
-	}
 	if(message.author.bot) return;
 	var args = message.content.split(/[ ]+/);
 	var msg1 = strip(message.content);
@@ -241,7 +237,7 @@ client.on('message', message => {
 		forecast.get([lat + ',' + lonG], true, function(err, weather) {
 			if(err) return console.dir(err);
 			var o = JSON.stringify(weather);
-			var temp = Math.round(o.substr(o.indexOf('temperature')+13, 5));
+			var temp = parseInt(o.substr(o.indexOf('temperature')+13, 5));
 			var feelslike = Math.round(o.substr(o.indexOf('apparentTemperature')+21, 5));
 			var humidityH = o.substr(o.indexOf('humidity')+12);
 			var humidityCount = humidityH.indexOf(',');
@@ -274,7 +270,7 @@ client.on('message', message => {
 			.setAuthor(message.member.displayName, message.author.displayAvatarURL)
 			.setColor('#F0DB4E')
 			.setTitle('Weather and other info for `' + zip + '`')
-			.addField(emoji + ' ' + desc + ' ' + temp + '°F', ':arrow_up: High: ' + high + '°F \n:arrow_down: Low: ' + low + '°F\n:dash: Feels Like: ' + feelslike + '°F\n:thermometer: Humidity: ' + humidity + '%\n:droplet: Chance of Precipitation: ' + precip + '%\n:sunrise_over_mountains: Sunrise: ' + sunrise + ' UTC\n:city_sunset: Sunset: ' + sunset + ' UTC\n:straight_ruler: Coordinates: [' + lat + ', ' + lonG + ']')
+			.addField(emoji + ' ' + desc + ' ' + temp + '°F', ':arrow_up: High: ' + high + '°F \n:arrow_down: Low: ' + low + '°F\n:dash: Feels Like: ' + feelslike + '°F\n:thermometer: Humidity: ' + humidity + '%\n:droplet: Chance of Precipitation: ' + precip + '%\n:sunrise_over_mountains: Sunrise: ' + sunrise + ' PST\n:city_sunset: Sunset: ' + sunset + ' PST\n:straight_ruler: Coordinates: [' + lat + ', ' + lonG + ']')
 			.setFooter('Provided by darksky and YAHOO WEATHER', 'https://canoe-camping.com/wp-content/uploads/2016/06/weather-ying-and-yang.jpg')
 			.setTimestamp()
 			message.channel.send({embed})
@@ -611,6 +607,18 @@ client.on('message', message => {
 			message.channel.send("Mention someone to duel them... you can't duel pixels on a computer screen...")
 		} else if(((message.guild.member(message.mentions.users.first())).displayName)=== message.member.displayName){ //if duels itself
 			message.channel.send('yea listen up kid... if you want to duel yourself i can just come in there and destroy you and your clone... now choose someone else kthx')
+		}  else if((message.guild.member(message.mentions.users.first()).id) === '272780089488572428'){ //if duels shady
+			message.channel.send("Let the duel between " + message.author + " and " + message.guild.member(message.mentions.users.first()) + " begin! " + message.guild.member(message.mentions.users.first()) + " will go first!")
+			message.channel.send('**' + message.guild.member(message.mentions.users.first()).displayName + '** hugs **' + message.member.displayName + '** tighly :hugging::blush:')
+			message.channel.send("After 1 round... **" + message.author + "** has been seduced by **" + message.guild.member(message.mentions.users.first()) + ", who wins with too much HP remaining... :heart:**")
+		} else if((message.guild.member(message.mentions.users.first()).id) === '275334018214658060'){ //if duels me
+			message.channel.send("Let the duel between " + message.author + " and " + message.guild.member(message.mentions.users.first()) + " begin! " + message.guild.member(message.mentions.users.first()) + " will go first!")
+			message.channel.send('**' + message.guild.member(message.mentions.users.first()).displayName + '** fires a particle accelerator at **' + message.member.displayName + '** for infinity and beyond damage!')
+			message.channel.send("After 1 round... **" + message.author + "** has been defeated by **<@275334018214658060>, who wins with 1 HP remaining! (cuz he's a human unlike you all)**")	
+		} else if(message.author.id === '275334018214658060'){ //if i duel
+			message.channel.send("Let the duel between " + message.author + " and " + message.guild.member(message.mentions.users.first()) + " begin! " + message.author + " will go first!")
+			message.channel.send('**' + message.member.displayName + '** fires a particle accelerator at **' + message.guild.member(message.mentions.users.first()).displayName + '** for infinity and beyond damage!')
+			message.channel.send("After 1 round... **" + message.guild.member(message.mentions.users.first()) + "** has been defeated by **<@275334018214658060>, who wins with 1 HP remaining! (cuz he's a human unlike you all)**")	
 		} else if((message.guild.member(message.mentions.users.first()).id) === '324427383849353219'){ //if duels jsbot
 			message.channel.send("Let the duel between " + message.author + " and " + message.guild.member(message.mentions.users.first()) + " begin! " + message.guild.member(message.mentions.users.first()) + " will go first!")
 			message.channel.send('**JSBot** aimed its rocket launcher at **' + message.member.displayName + '** ... it deals 99999999 damage!')
@@ -881,6 +889,10 @@ client.on('message', message => {
 	if(message.content === "?" && message.guild.id != '268057683804946437' && message.guild.id != "272473930520854529"){
 		message.delete();
 		message.reply('KYS')
+	}
+	if(message.content.includes("=_=") && message.author.id === '272473368840634378'){
+		message.delete();
+		message.reply("STOP IT")
 	}
 	let responseObject = {
 		"ayy": "ayylmao",
