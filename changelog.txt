@@ -34,3 +34,7 @@ v2.0.0
 - better way of sending messages
 - updated help command
 - don't add this to your servers ples thx (way too trash for that also it's meant for servers that know many of these inside jokes that i put in the bot) :3
+v2.1.0
+- weather command added
+- calculator kinda thing added
+- used embeds to make responses look better
