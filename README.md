@@ -12,7 +12,7 @@
 - **kick/ban [user]** - kicks/bans the user mentioned 
 - **mute/unmute [user]** - mutes and unmutes a user 
 - **repeat [text]** - repeats stuff 
-- *** | For Fun Commands | ***
+- ***| For Fun Commands | ***
 - **8ball [question]** - 8-ball? 
 - **add/deltrash [text]** - add trashy triggers 
 - **roll (amt of dice)** - roll dice 
