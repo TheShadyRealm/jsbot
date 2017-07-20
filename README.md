@@ -24,5 +24,6 @@
 - rem - ゼロから始める異世界生活 :heart: 
 - duel [user] - duel a user (this is totally rng btw) 
 - playchess [move in algebraic notation] - play the bot in a game of chess... but you'll lose...
+- weather [zip code] - WIP but it shows a bunch of stuff with the weather
 - Code for this bot can be found here: https://github.com/TheShadyRealm/jsbot :smile: (holy crap jsbot is in javascript??? :scream:) 
 - Invite link (highly not recommended): :smiley:: http://bit.ly/JSBot
