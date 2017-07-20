@@ -2,7 +2,7 @@
 "it's all about the learning process..." 
 - // Commands List: //
 - Global Prefix: . (a period)
-- *** | Mod commands |***
+- ***| Mod commands |***
 - **help** - shows this message 
 - **botinfo** - info about the bot... 
 - **ping** - pings server and returns with ms 
