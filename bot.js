@@ -105,7 +105,7 @@ client.on('guildMemberRemove', (guild, member) => {
 
 client.on('ready', () => {
     console.log(`Ready to serve in ${client.channels.size} channels on ${client.guilds.size} servers, for a total of ${client.users.size} users.`);
-	client.user.setGame('Betsruner is fat')
+	client.user.setGame('WE BROKE YUZURU 2017 (GONE SO WRONG)')
 	this.date = Date.now();
 });
 
@@ -115,6 +115,14 @@ client.on('message', message => {
 	var msg1 = strip(message.content);
 	var randomN;
 	var maxN;
+	/*if(message.guild.id === '333471257838485524'){
+		var x = Math.random();
+		console.log(x);
+		if (x < 0.1) {
+			message.channel.send('AGREED')
+		}
+	}
+	*/
 	if(message.content.startsWith(prefix + "guessnumberstart")){
 		var authorID = message.author.id;
         var difficulty = ['easy', 'medium', 'hard', 'expert'];
@@ -263,8 +271,12 @@ client.on('message', message => {
 				emoji = ":large_blue_circle:"
 			} else if(desc === 'Mostly Cloudy'){
 				emoji = ":cloud::cloud:"
-				} else if(desc === 'Scattered Showers'){
+			} else if(desc === 'Scattered Showers'){
 				emoji = ":cloud_rain:"
+			} else if(desc === 'Thunderstorms'){
+				emoji = ":thunder_cloud_rain:"
+			} else if(desc === 'Clear'){
+				emoji = ':white_circle:'
 			}
 			const embed = new Discord.RichEmbed()
 			.setAuthor(message.member.displayName, message.author.displayAvatarURL)
@@ -277,6 +289,59 @@ client.on('message', message => {
 			});
 		});		
 	return;
+	}
+	if(message.content.startsWith(prefix + "lovecalc") || message.content.startsWith(prefix + "lc")){
+		console.log('calculating love for:', args[1], args[2])
+		if(args.length === 1){
+			message.reply("Calculate the chance of love between two users... :kissing_heart: `.lovecalc [user 1] [user 2]`")
+			return;
+		}
+		if(args[1] === undefined || args[2] === undefined){
+			message.reply('Make sure to mention 2 people for this command to work... :blush:')
+			return;
+		}
+		if(!args[1].includes('<') || !args[2].includes('<')){
+			message.reply('Make sure you mention the user... :kissing_heart:')
+			return;
+		}
+		var user1 = args[1].split('');
+		var user2 = args[2].split('');
+		var alg = user1.concat(user2);
+		var numcount = 0;
+		var multiplier = 2;
+		var addiplier = 3;
+		var finalnumber;
+		for(var i = 0; i < alg.length; i++){
+			if(parseInt(alg[i]) === 3){
+				numcount++;
+			} 
+			if(parseInt(alg[i]) === 4 || parseInt(alg[i]) === 9 || parseInt(alg[i]) === 8){
+				multiplier++;
+			}
+			if(parseInt(alg[i]) === 7){
+				addiplier++;
+			}
+		}
+		console.log(multiplier, numcount, addiplier)
+		finalnumber = numcount*multiplier+addiplier;
+		if(finalnumber > 100){
+			finalnumber = finalnumber - 80;
+		} 
+		if(finalnumber <= 40){
+			symbol = ':broken_heart:'
+		} else if(finalnumber < 80 && finalnumber > 40){
+			symbol = ':heart:'
+		} else {
+			symbol = '::kissing_heart: :two_hearts: :kissing_heart:'
+		}
+		const embed = new Discord.RichEmbed()
+		.setAuthor(message.member.displayName, message.author.displayAvatarURL)
+		.setColor('#F0DB4E')
+		.setTimestamp()
+		.setFooter("Love Calculator (gone lovely)", 'https://cdn.shopify.com/s/files/1/1061/1924/products/Beating_Pink_Heart_Emoji_large.png?v=1480481034')
+		.setTitle('Love calculator... :revolving_hearts:')
+		.setDescription('The results of the love calculation between ' + args[1] + ' and ' + args[2] + ' is **' + finalnumber + '%** ' + symbol)
+		message.channel.send({embed})
 	}
 	//leveling system
 	/*
@@ -310,7 +375,7 @@ client.on('message', message => {
 		} else {
 			message.channel.send("What did you even type...? Try: `.rank [integer]`")
 		}
-	} else if(message.content.startsWith(prefix + "repeat")){
+	} else if(message.content.startsWith(prefix + "repeat") && message.author.id != '272473368840634378'){
 		if(message.member.permissionsIn(message.channel).has('MANAGE_MESSAGES')){
 			var badstuff = [".ban", ".kick", ".purge"];
 			if(args.length === 1){
@@ -430,8 +495,8 @@ client.on('message', message => {
 	}
 	//help commands
 	if(message.content.startsWith(prefix + "help")){
-		message.author.send("Commands List:\n **Global Prefix: .**\n __Mod commands__ \n **help** - shows this message \n **botinfo** - info about the bot... \n **ping** - pings server and returns with ms \n **uptime** - shows bot uptime \n **warn [user] (reason)** - warns a user for being a meme \n **purge [# of msgs]** - clears the last x messages \n **kick/ban [user]** - kicks/bans the user mentioned \n **mute/unmute [user]** - mutes and unmutes a user \n **repeat [text]** - repeats stuff \n __For Fun Commands__ \n **8ball [question]** - 8-ball? \n **add/deltrash [text]** - add trashy triggers \n **roll (amt of dice)** - roll dice \n **kill [user]** - become a serial killer =) \n **count [min, max] (count by)** - count from min to max \n **rng [min, max, amt of numbers]** - pick x numbers between min and max \n **happiness [user]** - tell a user to stop being salty :) \n **cclist** - lists all custom commands \n **rem** - ゼロから始める異世界生活 :heart: \n **duel [user]** - duel a user (this is totally rng btw) \n **playchess [move in algebraic notation]** - play the bot in a game of chess... but you'll lose...\n **guessnumberstart [easy, medium, hard, expert]/guessnumber [number]** - guessnumberstart to start a game of guess the number and guessnumber to guess the number :eyes: \n__Code for this bot can be found here: https://github.com/TheShadyRealm/jsbot :smile: (holy crap jsbot is in javascript??? :scream:)__ \n **Invite link (highly not recommended):** :smiley:: http://bit.ly/JSBot")
-		message.reply("A list of commands has been sent to your DMs =)")
+		message.author.send("Commands List:\n **Global Prefix: .**\n __Mod commands__ \n **help** - shows this message \n **botinfo** - info about the bot... \n **ping** - pings server and returns with ms \n **uptime** - shows bot uptime \n **warn [user] (reason)** - warns a user for being a meme \n **purge [# of msgs]** - clears the last x messages \n **kick/ban [user]** - kicks/bans the user mentioned \n **mute/unmute [user]** - mutes and unmutes a user \n **repeat [text]** - repeats stuff \n __For Fun Commands__ \n **8ball [question]** - 8-ball? \n **add/deltrash [text]** - add trashy triggers \n **roll (amt of dice)** - roll dice \n **kill [user]** - become a serial killer =) \n **count [min, max] (count by)** - count from min to max \n **rng [min, max, amt of numbers]** - pick x numbers between min and max \n **happiness [user]** - tell a user to stop being salty :) \n **cclist** - lists all custom commands \n **rem** - ゼロから始める異世界生活 :heart: \n **duel [user]** - duel a user (this is totally rng btw) \n **playchess [move in algebraic notation]** - play the bot in a game of chess... but you'll lose...\n **guessnumberstart [easy, medium, hard, expert]/guessnumber [number]** - guessnumberstart to start a game of guess the number and guessnumber to guess the number :eyes:\n **weather [zip code]** - WIP but it shows a bunch of stuff with the weather\n__Code for this bot can be found here: https://github.com/TheShadyRealm/jsbot :smile: (holy crap jsbot is in javascript??? :scream:)__ \n **Invite link (highly not recommended):** :smiley:: http://bit.ly/JSBot")
+		message.reply("a list of commands has been sent to your DMs =)")
 	} else if(message.content.startsWith(prefix + "botinfo")){
 		message.reply("JSBot is a bot garbagely coded by <@275334018214658060> for absolute fun and dank memes rofel")
 	}
@@ -459,10 +524,14 @@ client.on('message', message => {
 			message.reply("1-100 dice... stop trying to exploit the system :nerd:")
 		}
 	} else if(message.content.startsWith(prefix + "happiness")){
-		if(args.length === 1){
-			message.reply("Mention someone first (to make them happy)!")
+		if(message.guild.member(message.mentions.users.first()) === null){
+			message.reply("https://www.youtube.com/watch?v=8anp1xJXkU0")
 		} else {
-			message.channel.send((message.mentions.users.first()) + " Be happy! :smile: :smiley: :rofl: :laughing: :grin: :grinning: :slight_smile: :sweat_smile: :upside_down:")
+			if(args.length === 1){
+				message.reply("Mention someone first (to make them happy)!")
+			} else {
+				message.channel.send((message.mentions.users.first()) + " Be happy! :smile: :smiley: :rofl: :laughing: :grin: :grinning: :slight_smile: :sweat_smile: :upside_down:")
+			}
 		}
 	} else if(message.content.startsWith(prefix + "count")){
 		var count = [];
@@ -517,8 +586,9 @@ client.on('message', message => {
 		if(message.guild.member(message.mentions.users.first()) === null){
 			message.reply("stop trying to exploit this bot smh...")
 			return;
+		} else if(message.author.id === '315123695129591823'){
+			message.reply("<@315123695129591823> attempted to stab " + (message.guild.member(message.mentions.users.first()).id) + " but miserably failed and stabbed himself instead...")
 		} else if((message.guild.member(message.mentions.users.first()).id) === '324427383849353219'){
-			console.log('hi')
 			message.reply("you really think you can kill me? HA think again!")
 			return;
 		} else {
@@ -593,7 +663,20 @@ client.on('message', message => {
 		'https://images.discordapp.net/attachments/273219844894359554/334893089519042560/645359f869541b6679c2a0c51f2ffe8adf88b92ee4b2c-mFvTsK.jpg?width=213&height=300',
 		'https://images.discordapp.net/attachments/273219844894359554/334883162117373962/451j71W.jpg?width=280&height=300',
 		'https://images.discordapp.net/attachments/334534179268067338/335615383228776458/37d1ce59.jpg?width=400&height=225',
-		'https://images-ext-1.discordapp.net/external/pSQR_Xl_NgpL981-vZBxe3oE362Zy_iSuhMZXrB0CwU/https/cdn.discordapp.com/attachments/235218122469146635/235219129995493377/e928d67928f9c0cafc5a2fc476f3a61b.jpg?width=177&height=251'
+		'https://images-ext-1.discordapp.net/external/pSQR_Xl_NgpL981-vZBxe3oE362Zy_iSuhMZXrB0CwU/https/cdn.discordapp.com/attachments/235218122469146635/235219129995493377/e928d67928f9c0cafc5a2fc476f3a61b.jpg?width=177&height=251',
+		'https://images-ext-1.discordapp.net/external/QOwbD0gpnwZzys19C4auHnIf3-6obdOtWzxYsyXQkg4/https/cdn.discordapp.com/attachments/235218122469146635/251116408547573760/e751777e23971c4a4132b70c6d4e8632.png?width=213&height=250',
+		'https://images-ext-2.discordapp.net/external/C_cXEFCQEZKxidwiU42_Kr0ypQKOvs-2IEZh9nsSMQw/https/camo.githubusercontent.com/9889b97ceb46ee1310ff70d159f66477f48621bc/68747470733a2f2f63646e2e646973636f72646170702e636f6d2f656d6f6a69732f3233303631303830323737303537353336302e706e67',
+		'https://camo.githubusercontent.com/37b83e0f005b8b5ba13cefad82153928eb6e5207/68747470733a2f2f63646e2e646973636f72646170702e636f6d2f656d6f6a69732f3233303631303830333439313836343537362e706e67',
+		'https://images-ext-2.discordapp.net/external/Wx8N0RYNJX1LJ8yAMUxcxr7wQA9BO-j3qO4dIarFUb4/https/cdn.discordapp.com/attachments/235218122469146635/271328499837566976/rem.jpeg?width=186&height=250',
+		'https://images-ext-2.discordapp.net/external/DIIk6i4iDYg8s6ambJEkjO-PLDrwuax7LjmbGDnZAiw/https/cdn.discordapp.com/attachments/333500092382314516/333775873658585088/cffccf79a4a3c743260d90cade83a483.jpg?width=184&height=250',
+		'https://images-ext-1.discordapp.net/external/qUpkynseQ2375HMjLMWfRM6RHHRWXiYg2TNZoqVk5TQ/https/cdn.discordapp.com/attachments/333740780852084736/333782096583852043/re_zero_rem_by_berrycakeroll-dad959a.png?width=206&height=251',
+		'https://images-ext-1.discordapp.net/external/_HElIn9Mw01SnSv6DRsbdFf_qPnbDlT0XaND49npaNM/https/cdn.discordapp.com/attachments/235218122469146635/314487701183397888/874db792-3d2a-495e-848a-449751ef03d5.jpg?width=188&height=251',
+		'https://images-ext-1.discordapp.net/external/1fxJPMTQvHM73gZz12ud5C2dvz02c6CandzA1LWfBqc/https/cdn.discordapp.com/attachments/235218122469146635/237092503424204800/v0aMPDngydiTGHyFH8aCurXSHPuZKgyIJtGsvXNLTqs.png?width=206&height=250',
+		'https://images-ext-1.discordapp.net/external/rQKZfBGy_dBf_HHH0Y9r2rdfEo_iGlj639WGKGReCH8/https/cdn.discordapp.com/attachments/235218122469146635/251113908851441664/d-Tubc2mw3lImA1pQ7yIkTxvKvWS4ng2MrZvyBpMG4U.png?width=180&height=250',
+		'https://images-ext-2.discordapp.net/external/DJ-2lHK2u2qQ426cipqXO6r3PwOlyJxlneRhfgVYgD4/https/cdn.discordapp.com/attachments/333500092382314516/333779130489372672/re-zero-19-03-rem.jpg?width=400&height=225',
+		'https://camo.githubusercontent.com/96fa5ff82f824fe2fd6cb6f2d026794aff39ed3d/68747470733a2f2f63646e2e646973636f72646170702e636f6d2f656d6f6a69732f3233303631303830333131383730323539332e706e67',
+		'https://camo.githubusercontent.com/7b758b6979c5e18375bdcac9a97725a472a3625c/68747470733a2f2f63646e2e646973636f72646170702e636f6d2f656d6f6a69732f3331323033363835323538323434393135322e706e67',
+		'https://camo.githubusercontent.com/9889b97ceb46ee1310ff70d159f66477f48621bc/68747470733a2f2f63646e2e646973636f72646170702e636f6d2f656d6f6a69732f3233303631303830323737303537353336302e706e67'
 		];
 		var randpic = ~~((Math.random() * list.length) + 0)
 		const embed = new Discord.RichEmbed()
@@ -838,6 +921,10 @@ client.on('message', message => {
 			symbol = '*'
 			num2 = parseInt(method.substr(method.indexOf(symbol) + 1));
 			var returns = num1 * num2;
+		} else if(method.includes("^")){
+			symbol = '^'
+			num2 = parseInt(method.substr(method.indexOf(symbol) + 1));
+			var returns = Math.pow(num1, num2);
 		} else {
 			return;
 		}
@@ -851,7 +938,10 @@ client.on('message', message => {
 		.setTitle(':gear: Simple Calculation :gear: ')
 		.addField('Expression: `' + num1 + '`' + symbol +  '`' + num2 + '`', 'Result: `' + returns + '`')
 		message.channel.send({embed})
-	} 
+		message.reply
+	} else if(message.content.startsWith(prefix + "whoisagoodgirl")){
+		message.channel.send("**Watashi desu ne~ (=^3^=) Nyaa~ :cat:**")
+	}
 	//actually working crush array (any other ideas for it tho?)
 	if(message.content.startsWith(prefix + "addtrash")){
 		this.hi = (args.join(" ").substring(10)).toString();
