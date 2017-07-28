@@ -25,6 +25,10 @@
 - **duel [user]** - duel a user (this is totally rng btw) 
 - **playchess [move in algebraic notation]** - play the bot in a game of chess... but you'll lose...
 - **guessnumberstart [easy, medium, hard, expert]/guessnumber [number]** - guessnumberstart to start a game of guess the number and guessnumber to guess the number :eyes:
+- **regionaltype [text]** - make some text into regional text
+- **sans** - "It's a beautiful day outside... birds are singing... flowers are blooming... on days like these kids like you... should be burning in HELL :fire:
+- **stopwatch** (start/stop) - start/stop/check on your stopwatch :watch: 
 - **weather [zip code]** - WIP but it shows a bunch of stuff with the weather
+- **copypasta** [name]/copypasta list - in case you're in need of a quick chat filler... :wink: 
 - Code for this bot can be found here: https://github.com/TheShadyRealm/jsbot :smile: (holy crap jsbot is in javascript??? :scream:) 
 - Invite link (highly not recommended): :smiley:: http://bit.ly/JSBot
