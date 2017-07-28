@@ -38,3 +38,8 @@ v2.1.0
 - weather command added
 - calculator kinda thing added
 - used embeds to make responses look better
+v2.2.0
+- more embeds!
+- copypastas!
+- stopwatches!
+- this way of changelogging is dumb!
