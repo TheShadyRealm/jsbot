@@ -20,7 +20,10 @@ var userID = [];
 var guessNumID = [];
 var yw = require('weather-yahoo');
 var ans = {};
+var mutedArr = [];
 var Forecast = require('forecast');
+var stopwatchID = [];
+var stopwatchDate = [];
 let points = JSON.parse(fs.readFileSync("./points.json", "utf8"));
 var forecast = new Forecast({
   service: 'darksky',
@@ -39,6 +42,9 @@ function strip(s) {
     return s.replace(/^\s+|\s+$/g, '');
 }
 
+function toLetters(x){
+	return x.replace(/[^A-Za-z0-9]/g, '');
+}
 function get_fen_img(id) {
     return 'http://www.fen-to-image.com/image/20/single/coords/' + chesses[id].fen().split(' ')[0];
 }
@@ -105,7 +111,7 @@ client.on('guildMemberRemove', (guild, member) => {
 
 client.on('ready', () => {
     console.log(`Ready to serve in ${client.channels.size} channels on ${client.guilds.size} servers, for a total of ${client.users.size} users.`);
-	client.user.setGame('WE BROKE YUZURU 2017 (GONE SO WRONG)')
+	client.user.setGame("la sauvegarde de la salle d'attente, c'est de la triche !")
 	this.date = Date.now();
 });
 
@@ -115,14 +121,6 @@ client.on('message', message => {
 	var msg1 = strip(message.content);
 	var randomN;
 	var maxN;
-	/*if(message.guild.id === '333471257838485524'){
-		var x = Math.random();
-		console.log(x);
-		if (x < 0.1) {
-			message.channel.send('AGREED')
-		}
-	}
-	*/
 	if(message.content.startsWith(prefix + "guessnumberstart")){
 		var authorID = message.author.id;
         var difficulty = ['easy', 'medium', 'hard', 'expert'];
@@ -334,6 +332,18 @@ client.on('message', message => {
 		} else {
 			symbol = '::kissing_heart: :two_hearts: :kissing_heart:'
 		}
+		if(args[1] === '<@!275334018214658060>' && args[2] === '<@!272780089488572428>' || args[2] === '<@!275334018214658060>' && args[1] === '<@!272780089488572428>'){
+			finalnumber = 100;
+			symbol = '::kissing_heart: :two_hearts: :kissing_heart:'
+		}
+		if(args[1] === '<@!275334018214658060>' && args[2] === '<@!245342510598062080>' || args[2] === '<@!275334018214658060>' && args[1] === '<@!245342510598062080>'){
+			finalnumber = 100;
+			symbol = '::kissing_heart: :two_hearts: :kissing_heart:'
+		}
+		if(args[1] === '<@!275334018214658060>' && args[2] === '<@!272473368840634378>' || args[2] === '<@!275334018214658060>' && args[1] === '<@!272473368840634378>'){
+			finalnumber = 101;
+			symbol = '::kissing_heart: :two_hearts: :kissing_heart:'
+		}
 		const embed = new Discord.RichEmbed()
 		.setAuthor(message.member.displayName, message.author.displayAvatarURL)
 		.setColor('#F0DB4E')
@@ -342,6 +352,176 @@ client.on('message', message => {
 		.setTitle('Love calculator... :revolving_hearts:')
 		.setDescription('The results of the love calculation between ' + args[1] + ' and ' + args[2] + ' is **' + finalnumber + '%** ' + symbol)
 		message.channel.send({embed})
+	}
+	if(message.content.startsWith(prefix + "serverinfo")){
+		var emojis = [];
+		var emojiID = message.guild.emojis.map(m=>m.id)
+		var emojiNames = message.guild.emojis.map(m=>m.name)
+		for(var i = 0; i < emojiID.length; i++){
+			emojis.push('<:' + emojiNames[i] + ':' + emojiID[i] + '>' )
+		}
+		var ecf = message.guild.explicitContentFilter.toString();
+		var ecfText;
+		var vl = message.guild.verificationLevel.toString();
+		var vlText;
+		if(ecf === '0'){
+			ecfText = "None"
+		}
+		if(ecf === '1'){
+			ecfText = "Scan messages from members without a role"
+		}
+		if(ecf === '2'){
+			ecfText = "Scan  messages sent by all members"
+		}
+		if(vl === '0'){
+			vlText = "None"
+		}
+		if(vl === '1'){
+			vlText = "Low"
+		}
+		if(vl === '2'){
+			vlText = "Medium"
+		}
+		if(vl === '3'){
+			vlText = "(╯°□°）╯︵ ┻━┻"
+		}
+		if(vl === '4'){
+			vlText = "┻━┻彡 ヽ(ಠ益ಠ)ノ彡┻━┻"
+		}
+		const embed = new Discord.RichEmbed()
+		.setColor(15784782)
+		.setImage(message.guild.iconURL)
+		.setAuthor(message.guild.name, message.guild.iconURL)
+		.setDescription("Server ID: " + message.guild.id)
+		.addField("Default Channel", message.guild.defaultChannel, true)
+		.addField("Default Role", message.guild.defaultRole, true)
+		.addField("Region", message.guild.region, true)
+		.addField("Total Members", message.guild.memberCount, true)
+		.addField("Roles", message.guild.roles.size, true)
+		.addField("Emoji Count", message.guild.emojis.size, true)
+		.addField("Channels" + ' (' + message.guild.channels.size + ' total)', 'Text: ' + message.guild.channels.filter(c=>c.type==="text").size + ', Voice: ' + message.guild.channels.filter(c=>c.type==="voice").size, true)
+		.addField("Explicit Content Filter", ecfText, true)
+		.addField("Verification Level", vlText, true)
+		.addField("Owner", message.guild.owner + " (ID: " + message.guild.ownerID + ')')
+		.addField("Created", message.guild.createdAt.toString(), true)
+		message.channel.send({embed})
+		message.channel.send('**Full Emoji List:** ' + emojis.join(''))
+	}
+	var regional = [];
+	if(message.content.startsWith(prefix + "regionaltype")){
+		if(args.length === 1){
+			message.reply("Regionalize some text... :smiley: `.regionaltype [text a-z letters, 1-9 numbers]`")
+		} else { 
+			for(var x = 1; x < args.length; x++){
+				var z = toLetters(args[x].toString()).toLowerCase().split('');
+				for(var i = 0; i < z.length; i++){
+					if(z[i] === '0'){
+						z[i] = ':zero:'
+					} else if(z[i] === '1'){
+						z[i] = ':one:'
+					} else if(z[i] === '2'){
+						z[i] = ':two:'
+					} else if(z[i] === '3'){
+						z[i] = ':three:'
+					} else if(z[i] === '4'){
+						z[i] = ':four:'
+					} else if(z[i] === '5'){
+						z[i] = ':five:'
+					} else if(z[i] === '6'){
+						z[i] = ':six:'
+					} else if(z[i] === '7'){
+						z[i] = ':seven:'
+					} else if(z[i] === '8'){
+						z[i] = ':eight:'
+					} else if(z[i] === '9'){
+						z[i] = ':nine:'
+					} else {
+						z[i] = ':regional_indicator_' + z[i] + ':'
+					}
+				}
+				regional.push(z.join(' '));
+			}
+			var messageToSend = regional.join('   ')
+			message.channel.send(messageToSend);
+		}
+	}
+	var pastanames = ['navyseal', 'daddy', 'showdownmod', 'gw', 'vietnam', '400ping', 'ja', 'republican', 'boneless', 'anime', 'never', 'assaulthelicopter', 'saveglitch', 'fattyboomboom', 'wheelchair', 'animejp', 'animeen', 'riot', 'goodshit', 'sun', 'shia', 'americantest', 'dankvirus', 'memedog', 'system32', 'davinci', 'papyseal', 'fail', 'calculus']
+	var copypastas = ['What the fuck did you just fucking say about me, you little bitch? I’ll have you know I graduated top of my class in the Navy Seals, and I’ve been involved in numerous secret raids on Al-Quaeda, and I have over 300 confirmed kills. I am trained in gorilla warfare and I’m the top sniper in the entire US armed forces. You are nothing to me but just another target. I will wipe you the fuck out with precision the likes of which has never been seen before on this Earth, mark my fucking words. You think you can get away with saying that shit to me over the Internet? Think again, fucker. As we speak I am contacting my secret network of spies across the USA and your IP is being traced right now so you better prepare for the storm, maggot. The storm that wipes out the pathetic little thing you call your life. You’re fucking dead, kid. I can be anywhere, anytime, and I can kill you in over seven hundred ways, and that’s just with my bare hands. Not only am I extensively trained in unarmed combat, but I have access to the entire arsenal of the United States Marine Corps and I will use it to its full extent to wipe your miserable ass off the face of the continent, you little shit. If only you could have known what unholy retribution your little “clever” comment was about to bring down upon you, maybe you would have held your fucking tongue. But you couldn’t, you didn’t, and now you’re paying the price, you goddamn idiot. I will shit fury all over you and you will drown in it. You’re fucking dead, kiddo.',
+		":angel: daddy's :heart::sweat_drops::eggplant: little fidget spinner:dizzy: when daddy :revolving_hearts: feels horny he lifts :truck: me up:point_up:️ and puts me on:on: his huge :weary::sweat_drops:dick:eggplant: and I spin :cyclone: and spin :cyclone: whirrrrrr :flushed::flushed:I get:ideograph_advantage: so:sos: dizzy:dizzy: but daddy:revolving_hearts: keeps spinning :dizzy: me untill I squirt:fountain::fountain: leaving me all wet:sweat_drops: and his cummies :baby_bottle::baby_bottle: are all inside:diamond_shape_with_a_dot_inside: me:flushed: god I'm such a:flushed: spinny :dizzy_face:dizzy:dizzy_face::dizzy_face: little slut for daddy!",
+		"I sexually Identify as a Showdown Mod. Ever since I was a girl I dreamed of soaring over the chatrooms dropping hot sticky locks on disgusting chat trolls. People say to me that being a Showdown Mod is Impossible and I’m fucking retarded but I don’t care, I’m beautiful. I’m having a plastic surgeon install a Hitler moustache, 30mm banhammers and Z4-R3L Hellfire Lockers on my body. From now on I want you guys to call me \"Aurora\" and respect my right to mute from above and ban needlessly. If you can't accept me you’re a modophobe and need to check your usergroup privilege. Thank you for being so understanding.",
+		":flag_us::flag_us::flag_us: Shoutout :speaking_head: to :arrow_right:️ George Washington :grin: and :heavy_plus_sign: the boys :man:‍:boy:‍:boy: for inventing :thinking: freedom :ok_hand: :flag_us::flag_us::flag_us:",
+		"Six hasn't been the same since he left Vietnam. He can seldom close his eyes without opening them again at fear of Charlies lurking in the jungle trees. Not that you could ever see the bastards, mind you. They were swift, and they knew their way around the jungle like nothing else. He remembers the looks on the boys' faces as he walked into that village and... oh, Jesus. The memories seldom left him, either. Sometimes he'd reminisce - even hear - Tex's southern drawl. He remembers the smell of Brooklyn's cigarettes like nothing else. He always kept a pack of Lucky's with him. The boys are gone, now. He knows that; it's just that he forgets, sometimes. And, every now and then, the way that seven looks at him with avid concern in his eyes... it makes him think. Sets him on edge. Makes him feel like he's back there... in the jungle.",
+		"Hello am 48 year man from somalia. Sorry for my bed england. I selled my wife for internet connection for play \"conter strik\" and i want to become the goodest player like you I play with 400 ping on brazil and i am global elite 2. pls no copy pasterio my story",
+		"Hi, sorry for englise......is 2nd language jajaja :D.... My friend tell me dat this Sampsons actor is name Ms Kebab Apple?? ..... Is dis confirm? Jajajajaja xD ...... I think kebab is a food xD my friend also say \"Bart Sampson\" say to her \"eat my pants\" WTF jajajajaja xD",
+		"Did you ever hear the tragedy of Donald Trump The Wise? I thought not. It’s not a story the Democrats would tell you. It’s a Republican legend. Donald Trump was a Dark President of the Republican Party, so tremendous and so wise he could use the executive branch to influence the taxpayers to create walls… He had such a knowledge of the conservative side that he could even keep the ones who supported him from fact-checking his statements. The right side of the political spectrum is a pathway to many abilities some consider to be unnatural. He became so powerful… the only thing he was afraid of was losing his power, which eventually, of course, he did. Unfortunately, he taught his apprentice everything he knew, then his apprentice shocked him for being gay. Ironic. He could save others from theocracy, but not himself.",
+		"ya pizza what u want?\nlemme get uhhhhhhhhhh\nboneless pizza wit a 2 liter of coke\nfuk kind of pizza??\nand 2 liter machine broke\nwe got 1 liter tho\nfuk u mean B\naight look lemme get that pizza boneless\nuh? pizza dont got bone on it\ntf did i just say then\nyou said, lemme get it boneless\nlike pizza got a dam bone in it\nyall got bones in ya sht then\nnah\nso whats the problem\nD1CK HEAD\nname one pizza that got bone on it\njust dont put them shts in my pizza bruh\nhow many times i gotta say it\nbruh just explain to me\nhow the fuk pizza can be boneless?\nif it dont got bone in it iss boneless\nson what school u go to\ndawg i don't understand the problem\njust make my sht boneless",
+		"Yes anime are for kids. Kids at the age of 5 and above have a perfectly fit brain to be nurtured by the values passed through anime. Any kid that has only watched retarded cartoons throughout his childhood will probably never even touch them as a teenager. Simply because the idea of anime being “stupid Chinese stuff for nerds“ will already have sinked in. As a result they will have no real values in their lives. I believe this to be the reason of at least 80% teenage population nowadays turning into SWAGfags and YOLOtards. They only watch shit like that spongebob squaretard, the most disgusting, moronic cartoon ever made. Remade batman series, remade pokemon series, remade YU-Gi-Oh series that have lost any good messages the original script wanted to pass on... Our generation grew up by watching Dragon Ball probably under the age of 10. Why shouldnt the generations after us do the same? Show the little ones around you the culture of anime. Let them grow a properly functioning brain. Anime is the only way.",
+		"Oh my god. It finally happened. We're finally at the end. Let's do it. Oh boy. Here we go oh my god. Oh my god. We've done it. We've reached the legendary three digit level. click never ever ever ever do this. This is the dumbest thing you could possibly do. Reach level one hundred on steam. Listen, ok? Never do this. Never.",
+		"I sexually Identify as an Attack Helicopter. Ever since I was a boy I dreamed of soaring over the oilfields dropping hot sticky loads on disgusting foreigners. People say to me that a person being a helicopter is Impossible and I’m fucking retarded but I don’t care, I’m beautiful. I’m having a plastic surgeon install rotary blades, 30 mm cannons and AMG-114 Hellfire missiles on my body. From now on I want you guys to call me “Apache” and respect my right to kill from above and kill needlessly. If you can’t accept me you’re a heliphobe and need to check your vehicle privilege. Thank you for being so understanding.",
+		"NOW HOLD THE FUCK UP:triumph::rage:did i just see you :eyes::fearful:do the save glitch :scream::confounded:in this speedrun? :dizzy_face::imp:if only you were a real:ok_hand::clap: speed-runner:runner::dash: like i am, :sunglasses::innocent:you would know:thinking::rolling_eyes: that the save glitch glitch:joy::joy::joy: is completely out of bounds. :wave::x::no_pedestrians:so unless you mistyped :keyboard::computer:the title saying:speaking_head::speaking_head: INBOUNDS :speaking_head::speaking_head:when you mean the out of bounds, :scream::rolling_eyes:then i can forgive that :innocent::confused:But what is UNFORGIVABLE:imp::imp::imp: is performing the save glitch:no_good::x::x: in the inboundaries category :astonished::thermometer_face::mask:i cannot believe:cold_sweat::cold_sweat: people like this:smiling_imp::japanese_ogre: exist, disgusting:cry::sob::frowning2:️",
+		"Welcome to Africa, lady. If it's your first time in the concrete jungle, just sit back and relax. Everything is going to be okay, heh heh heh heh. Now we are stopping a robot. People from overseas, they like that one. Because they say \"What do you mean, ROBOT?!\" Because in South Africa we call a traffic light a robot. They love that one. Over there we have some very naughty hyenas eating the rubbish. Ah! These hyenas, they make such a big mess! Over there is a shop owner chilling with his black panther. Nobody is going to steal nothing when he's chilling with that black beauty. Nobody. Ah, ah, ah! Let me tell you it is your lucky day! Over there is the king of the concrete jungle- the Lion King! [Something in another language] And here we have some local musicians about to kick some funky tunes. (Oh my God, look at their freaky fashion! I should get 'em to open for me.) Oh fuck. (The fuck? DROP YOUR FUCKING WEAPON! DROP YOUR FUCKING WEAPON! SHUT THE FUCK UP! DROP YOUR FUCKING WEAPON! SHUT THE FUCK UP!) [gunfire]",
+		"My dad had a bad habit of bursting into his teenaged son's bedroom without knocking. Normally it was fine cos I could hear him walking down the hallway, but he had his leg amputated and lived his last few years in a wheelchair. Rolling is much quite than walking... So, one time I was jerking to porn on my computer, and he burst in right when I was at the point of no return. I just dropped out of my chair and hit the floor, spurting cum everywhere. The was a silence for a few seconds then I just heard him roll backwards and quietly close the door. Neither of us ever mentioned it.",
+		"アニメは人生の不可欠な部分です。ジェンダーやレースのも関わらず、すべてアニメはかわいいです。しかし、すべてのアニメが日本語であるとは限ねー、ほとんどの人が考えるように。アニメは日本、韓国、中国、アメリカ、またはスウェーデンから来ることができる。アニメ女子は大きくて丸い目をある、と彼らの髪の上に広がる目と彼らの顔から離れて。彼らはにおいをすることさえしない非常に小さな鼻をおそらく持っている。彼らの口はほとんどいつも開いている、そうでない場合彼らは隠されたオルガスムを持っている。だから彼らは微笑っている、またはちょうど悲しい。彼らの髪はめっちゃに長く、足首又はその下まで伸びている。彼ら髪の色は、通常、赤、青、青、緑、ピンク、またはほかのような人工の色です。茶色、金髪、黒髪のアニメを持つことは可能ですが、ほとんどのアニメは髪の色を染めたあった。彼らのバストサイズは常にかなり大きいです。これの良い例は、初音ミクです。彼女はシアン色の髪をしている。彼女の髪は彼女のブーツに行く、約六十九メートル。彼女は短いスカートを持っており、全体的にかなりみだらなです。彼女は歌っているので、口が開いている。しかし神は彼女がオルガスムの真ん中にいるかどうか知っている。彼女がアニメであることを知って、チャンスは彼女です。なぜか分かないが、企業はアニメ女子と動物を混ぜている。そしてそれはかなりくそ暑いです。彼らは猫の女子とキツネの女の子のような融合物を作った。それらのすべてはまだかなりかわいいですが、彼らは何らかの理由でパンティーを唯一着る。僕は誰も見ていないときに彼ら自身と遊ぶと聞いた。そのため、すべてのアニメゲームは「十八」以上です。彼ら作るは僕たちの望みを猫用疑う、またなぜ僕たちは彼らのための勃起を得る。しかし正直なところ、誰もそれを気にしない。僕たちはすべて、淫のアニメを見るのが大好きです、ね？ 僕たちはまたそれらを性交したい。めっちゃ硬い。それから、僕たちはできないと分かり、悲しくなる。だから僕たちは代わりに自慰する。アニメの男の子はあまり面白くないですが、彼らはまだかなりかわいいですね。僕がバイセクシャルではないので、これを解読するのは難しいことです。さようなら。",
+		"Anime is an essential part of life. Every single anime is cute no matter gender or race. However, not all anime are Japanese, as most people think. Anime can come from Japan, Korea, China, or even America and Sweden. Anime girls have big round eyes that extend over their hair and off their face. They have a very small nose that they probably don’t even use to smell with. Their mouth is almost always open, and if it isn’t open they’re just having a hidden orgasm, so they are either smiling or just plain sad. Their hair is very long, and extends either down to their ankles or below. Their hair color is usually an artificial color like red, blue, teal, green, pink, or otherwise. It is possible to have brown, blonde, or black haired anime, but most anime have dyed hair colors. Their bust size is always quite large. A good example of this is Hatsune Miku. She has teal colored hair and it goes down about 69 meters down to her boots. She has a short skirt and is overall pretty lewd. She is singing so her mouth is open, but god knows if she’s in the middle of an orgasm. Knowing she’s an anime, chances are she is. I don’t know why, but companies have put anime girls with animals. And it’s pretty damn hot. They created fusions like catgirls, fox girls, and many others. All of them are still pretty cute, but they only wear panties for some reason. I heard they play with themselves when nobody is watching. That’s why all anime games are 18+. They make us question our sexuality and why we get a boner for felines. But let’s be honest, nobody cares about that. We all love seeing lewd anime. Right? We also want to fuck them. Real hard. And we get sad when we realize we cannot. That is what masturbation is for. Anime boys aren’t very interesting but they’re still pretty cute I guess. It’s kind of hard for me to decipher this because I’m not bisexual. Bye.",
+		"O-oooooooooo AAAAE-A-A-I-A-U- JO-oooooooooooo AAE-O-A-A-U-U-A- E-eee-ee-eee AAAAE-A-E-I-E-A-JO-ooo-oo-oo-oo EEEEO-A-AAA-AAAA",
+		" 👌👀👌👀👌👀👌👀👌👀 good shit go౦ԁ sHit👌 thats ✔ some good👌👌shit right👌👌th 👌 ere👌👌👌 right✔there ✔✔if i do ƽaү so my selｆ 💯 i say so 💯 thats what im talking about right there right there (chorus: ʳᶦᵍʰᵗ ᵗʰᵉʳᵉ) mMMMMᎷМ💯 👌👌 👌НO0ОଠＯOOＯOОଠଠOoooᵒᵒᵒᵒᵒᵒᵒᵒᵒ👌 👌👌 👌 💯 👌 👀 👀 👀 👌👌Good shit",
+		"I sexually Identify as an the sun. Ever since I was a boy I dreamed of slamming hydrogen isotopes into each other to make helium & light and send it throught the galaxy. People say to me that a person being a star is Impossible and I’m fucking retarded but I don’t care, I’m beautiful. I’m having a plastic surgeon inflate me with hydrogen and raise my temperature to over 6000 °C. From now on I want you guys to call me “Sol” and respect my right to give you vitamin D and probably sunburns. If you can’t accept me you’re a fusionphobe and need to check your astral privilege. Thank you for being so understanding.",
+		"DO IT JUST DO IT. Don't let your dreams be dreams, Yesterday you said tomorrow, SO JUST DO IT MAKE YOUR DREAMS COME TRUE, JUST DOOOOO IT. Some people dream of success while you're gonna wake up and work HARD AT IT NOTHING IS IMPOSSIBLE. You should get to the point where anyone else would quit and you're not gonna stop there! NO WHAT ARE YOU WAITING FOR? DO IT! JUST DO IT! YES YOU CAN, JUST DO IT! If you're tired of starting over, STOP GIVING UP.",
+		"✓ Obesity ✓ 💥🔫 ✓ Laziness ✓ Stupidity ✓ 🌵 ✓ McDonald's ✓ Donald Trump ✓ $70k College ✓ Bad healthcare ✓ Bad food ✓ Bad music ✓ Fahrenheit ✓ Pounds ✓ Inches ✓ AMERICAN TEST PASSED",
+		"bᎽ ᏒᎬᎪᎠᎥᏁᎶ ᏆhᎥs mᎬssᎪᎶᎬ ᎽᎾu ᎪᏒᎬ ᏁᎾᎳ ᎥᏁfᎬᏟᏆᎬᎠ ᎳᎥᏆh ᏆhᎬ ᎠᎪᏁᏦ ᏢᎪsᏆᎪ ᏉᎥᏒus. ᏆᎾ ᎶᎬᏆ ᏒᎥᎠ Ꮎf ᏆhᎬ ᎠᎪᏁᏦ ᏢᎪsᏆᎪ ᏉᎥᏒus, ᎽᎾu musᏆ ᏢᎪss ᎥᏆ ᎾᏁ ᏆᎾ ᏆhᎬ ᏟhᎪT ヽ༼ຈل͜ຈ༽ﾉ I'm cured!!",
+		"╭━━━━╮ This is memedog. Help\n╰┃ ┣▇━▇ memedog take over\n ┃ ┃  ╰━▅╮ Discord by pasting\n ╰┳╯ ╰━━┳╯ him in 10 other\n  ╰╮ ┳━━╯ discord servers or he\n ▕▔▋ ╰╮╭━╮ will never be a meme dog.\n╱▔╲▋╰━┻┻╮╲╱▔▔▔╲\n▏  ▔▔▔▔▔▔▔  O O┃\n╲╱▔╲▂▂▂▂╱▔╲▂▂▂╱\n ▏╳▕▇▇▕ ▏╳▕▇▇▕\n ╲▂╱╲▂╱ ╲▂╱╲▂╱",
+		"Hello, I have been informed that you have the system32 virus. The system32 virus does a UDP attack on your router on any open port so your internet throttles and lags and it has a very bad frame drop from 30 fps!, Not only that, It stops you from adding some people on steam and downloading some of the most recent games!, It uses up more of your HardDrive per launch on your computer etc, To delete this do: open cmd type in \"cd system\" without the quote marks then type in del system32 Press enter And there you go! Your system32 virus is deleted! (Its a fake copy of the system file that does all virus and downloads secret trojans, AV can't detect them since its in the computer's windows file and if its in there it could potentially damage your computer because it leaves logs there. Thank you! -Twitch Support",
+		"“wtf his ult did like 3k damage how is that legit” – leonardo da vinci 1496, founder of the Illuminati",
+		"WHAT THE SPAGHETTI DID YOU JUST SAY ABOUT ME, YOU HUMAN? I’LL HAVE YOU KNOW I GRADUATED TOP OF MY CLASS IN THE ROYAL KNIGHTS, AND I’VE BEEN INVOLVED IN NUMEROUS SECRET RAIDS ON SNOWDIN, AND I HAVE OVER 300 CONFIRMED PUZZLES. I AM TRAINED IN BLUE ATTACKS AND I’M THE TOP MONSTER IN THE ENTIRE UNDERGROUND. YOU ARE NOTHING TO ME BUT JUST ANOTHER TARGET. I WILL WIPE YOU OUT WITH COOL DUDE BONES THE LIKES OF WHICH HAS NEVER BEEN SEEN BEFORE ON THIS EARTH, MARK MY SUPERIOR WORDS. YOU THINK YOU CAN GET AWAY WITH SAYING THAT NONSENSE TO ME OVER THE UNDERNET? NYEH HEH HEH! THINK AGAIN, HUMAN. AS WE SPEAK I AM CONTACTING MY SECRET NETWORK OF DOGS ACROSS THE UNDERGROUND AND YOUR CELL PHONE IS BEING TRACKED RIGHT NOW SO YOU BETTER PREPARE FOR YOUR CAPTURE, HUMAN. THE CAPTURE THAT WILL ALLOW ME TO PROVE TO UNDYNE ONCE AND FOR ALL HOW GREAT I AM! YOU’RE FINISHED, HUMAN. I CAN BE ANYWHERE, ANYTIME, AND I CAN DATE YOU IN OVER SEVEN HUNDRED WAYS, AND THAT’S JUST WITH MY RATTLING BONES. NOT ONLY AM I EXTENSIVELY TRAINED IN BLUE ATTACKS, BUT I AM AN EXCELLENT COOK AND I WILL USE MY COOKING SKILLS TO SHOW MY SUPERIOR LOVE FOR PASTA!!! IF ONLY YOU COULD HAVE KNOWN WHAT GRAND RETRIBUTION YOUR LITTLE “CLEVER” FLIRTING WAS ABOUT TO BRING DOWN UPON YOU, MAYBE YOU WOULD HAVE HELD YOUR TONGUE. BUT YOU COULDN’T, YOU DIDN’T, AND NOW YOU’RE PAYING THE PRICE, SILLY HUMAN. BEING THE GREAT PAPYRUS, I HAVE NEVER BEEN BEATEN IN DATING, AND I NEVER WILL! NYEH HEH HEH!",
+		"▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄\n████▌▄▌▄▐▐▌█████\n████▌▄▌▄▐▐▌▀████\n▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀",
+		"Listen kid. I swear to you, I have the top grades in my advanced placement calculus class. You little punk, you will never bring me down in my level of solving for x. Plebs like you have no clue what I needed to do to get a 99.9% in my final. And that's uncurved. Everyone else got 54% or lower. I say to you, screw you kid. I hate every little drop of your blood, which is exactly 4,384,382,172,495,382,384 little blood cells in you that I despise, and I did that by making my own formula dealing with looking at someone's eye color. You kid. You'll never surpass me in the 6 computer programming languages that I created, and the additional 58 that I know. I started learning advanced statistics even before I began to study English. I became a master at integral calculus with multiple variables at age 5. Little puny plebeians such as you can never imagine to become as good as me."
+		]
+	for(var i = 0; i < pastanames.length; i++) {
+		if(message.content.startsWith(prefix + "copypasta")){
+			if(args[1] === undefined){return;}
+			var checkpasta = args[1].toString();
+			if(args.length === 1 || args.length > 2){return;}
+			if(checkpasta === pastanames[i]){						
+				message.channel.send(copypastas[i])
+				return;
+			} else if(checkpasta === 'list'){
+				message.channel.send({embed: {
+					color: 15784782,
+					title: ":newspaper: Copypasta name list: (can i get a Kreygasm :wink:)",
+					description: pastanames.join(', ')
+				}})
+				break;
+			}
+		}
+	}		
+	var tosend;
+	var loc = stopwatchID.indexOf(message.author.id);
+	var stopwatchTime = (Date.now() - stopwatchDate[loc])/1000;
+	if(message.content.startsWith(prefix + "stopwatch")){
+		if(args[1] === 'end'){
+			if(!stopwatchID.includes(message.author.id)) return;
+			tosend = 'Your stopwatch stopped at: **' + mts(stopwatchTime) + '**'
+			stopwatchID.splice(loc, 1)
+			stopwatchDate.splice(loc, 1)
+		} else if(args[1] === 'start'){
+			if(stopwatchID.includes(message.author.id)) return;
+			stopwatchID.push(message.author.id)
+			stopwatchDate.push(Date.now())
+			tosend = 'Your stopwatch has started... type `.stopwatch` to check on it :clock10: '
+		} else if(args[1]){
+			return;
+		} else {
+			if(!args[1] && !stopwatchID.includes(message.author.id)){
+				tosend = 'Start, stop, and keep track of your stopwatch... `.stopwatch (start/stop)` to start/stop and `.stopwatch` to see how your stopwatch is doing... :watch:'
+			} else if(!args[1] && stopwatchID.includes(message.author.id)){
+				tosend =  message.author + ", your stopwatch has been running for: " + mts(stopwatchTime)
+			}
+		}
+		message.channel.send({embed: {
+			color: 15784782,
+			title: ":stopwatch: Stopwatch",
+			description: tosend
+		}})
 	}
 	//leveling system
 	/*
@@ -366,15 +546,10 @@ client.on('message', message => {
 	*/
 	//mod commands
 	if(message.content.startsWith(prefix + "ping")){
-		message.reply('**Pong!** Time taken: ' + ~~(client.ping) + 'ms')
-	} else if(message.content.startsWith(prefix + "rank")){
-		if(args.length === 1){
-			message.channel.send("Nice rank you got there... try using: `.rank [integer]`")
-		} else if (args.length === 2){
-			message.channel.send('wow ur a rank ' + args[1] + ", **aren't you great**")
-		} else {
-			message.channel.send("What did you even type...? Try: `.rank [integer]`")
-		}
+		message.channel.send({embed: {
+		color: 15784782,
+		description: (':ping_pong: **Pong!** Time taken: ' + ~~(client.ping) + 'ms')
+		}})
 	} else if(message.content.startsWith(prefix + "repeat") && message.author.id != '272473368840634378'){
 		if(message.member.permissionsIn(message.channel).has('MANAGE_MESSAGES')){
 			var badstuff = [".ban", ".kick", ".purge"];
@@ -409,6 +584,8 @@ client.on('message', message => {
 					} else {
 						message.channel.send("You can't delete a letter amount of messages... that's like going 'meme' miles per hour...")
 					}
+				} else if((args.join(" ").substring(7)) < 0){
+					message.channel.send("Make sure it's a positive integer...")
 				} else {
 					message.channel.fetchMessages({limit: msg}).then(messages => message.channel.bulkDelete(messages)).catch(console.error);
 					message.reply(msg-1 + ' messages successfully deleted!').then(message => message.delete(1575))
@@ -418,87 +595,143 @@ client.on('message', message => {
 			message.reply("You do not have the perms to delete messages... nice try...").catch(console.error);
 		}
 	} else if(message.content.startsWith(prefix + "kick")){
+		var tosend;
 		this.vic = message.guild.member(message.mentions.users.first())
+		if(args.length === 1){
+			message.reply("Kick a user (u sure about dat boi?) Usage: `.kick [user to kick]`")
+			return;
+		}
 		if(message.guild.member(message.mentions.users.first()) === null){
-			message.reply("stop trying to exploit this bot smh...")
+			message.reply("be sure you mention the person you want to kick...")
+			return;
 		} else {
 			if(message.member.permissionsIn(message.channel).has('KICK_MEMBERS') && this.vic.kickable === true){
-				if(args.length === 1){
-					message.channel.send("Kick a user (u sure about dat boi?) Usage: `.kick [user to kick]`")
-				} else {
+				if(message.member.highestRole.position > this.vic.highestRole.position){
 					this.vic.kick().catch(console.error);
-					message.reply("User " + this.vic + " has been kicked from the server. :boot:")
+					tosend = "User " + this.vic + " has been kicked from the server. :dash:"
 					console.log(this.vic + ' was kicked from the server')
+				} else {
+					tosend = "Are you trying to kick someone that has a higher role than you...?"
 				}
 			} else {
-				message.reply("Are you trying to kick someone that's superior to you? Or am I too low on the role hierarchy :cry:")
+				tosend = "Are you trying to kick someone that's superior to you? Or am I too low on the role hierarchy :cry:"
 			}
 		}
+		message.channel.send({embed: {
+			color: 15784782,
+			title: ':boot: Kick user: ' + this.vic.displayName,
+			description: message.author + ", " + tosend
+		}})
 	} else if(message.content.startsWith(prefix + "ban")){
+		var tosend;
 		this.vic = message.guild.member(message.mentions.users.first())
-		if(message.guild.member(message.mentions.users.first()) === null){
-			message.reply("stop trying to exploit this bot smh...")
+		if(args.length === 1){
+			message.reply("BAN a user :hammer: Usage: `.ban [user to totally demolish]`")
+			return;
+		}
+		if(this.vic === null){
+			message.reply("be sure you mention the person you want to ban...")
+			return;
 		} else {
 			if(message.member.permissionsIn(message.channel).has('BAN_MEMBERS') && this.vic.bannable === true){
-				if(args.length === 1){
-					message.channel.send("BAN a user :hammer: Usage: `.ban [user to totally demolish]`")
-				} else {
+				if(message.member.highestRole.position > this.vic.highestRole.position){
 					this.vic.ban().catch(console.error);
-					message.reply("User " + this.vic + " has been banned from the server. :rage:")
+					tosend = ("user " + this.vic + " has been banned from the server. :rage:")
 					console.log(this.vic + ' was banned from the server')
+				} else {
+					tosend = "Are you trying to ban someone that has a higher role than you...?"
 				}
 			} else {
-				message.reply("Are you trying to ban someone that's superior to you? Or am I too low on the role hierarchy :cry:")
+				tosend = "I can't ban this person... they have a higher role than I do... don't they... or maybe you don't have permission to ban..."
 			}
 		}
+		message.channel.send({embed: {
+			color: 15784782,
+			title: ':hammer: Ban user: ' + this.vic.displayName,
+			description: message.author + ", " + tosend
+		}})
 	} else if(message.content.startsWith(prefix + "warn")){
 		if(message.member.permissionsIn(message.channel).has('MANAGE_MESSAGES', 'MANAGE_ROLES')){
 			if(args.length === 1){
 				message.channel.send("Warn a user for misbehaving... :smiling_imp: Usage: `.warn [user] (reason)`")
 			} else {
-				var x = (message.mentions.users.first().toString().length) + 2;
+				console.log(args[1].length)
+				var x = args[1].length + 1;
 				console.log(x);
-				message.mentions.users.first().send("You have been warned in the server for **" + (args.join(" ").substring(6 + x)) + "**")
-				message.reply("User " + (message.mentions.users.first()) + " has been warned for **" + (args.join(" ").substring(6 + x)) + "**")
+				message.mentions.users.first().send("You have been warned in the server " + message.guild.name + " for **" + (args.join(" ").substring(6 + x)) + "**")
+				message.reply("user " + (message.mentions.users.first()) + " has been warned for **" + (args.join(" ").substring(6 + x)) + "**")
 			}
 		}
 	} else if(message.content.startsWith(prefix + "mute")){
+		var tosend;
+		if(args.length === 1){
+			message.reply("channel mute someone :mute: from the channel. Usage: `.mute [user]`")
+			return;
+		} 
 		if(message.guild.member(message.mentions.users.first()) === null){
-			message.reply("stop trying to exploit this bot smh...")
+			message.reply("What are trying to do... mute air?")
+			return;
 		} else {
-			if(message.member.permissionsIn(message.channel).has('MANAGE_ROLES')){
-				if(args.length === 1){
-					message.channel.send("channel mute someone :mute: from the channel. Usage: `.mute [user]`")
+			if(message.member.permissionsIn(message.channel).has('MANAGE_ROLES') && !message.guild.member(message.mentions.users.first()).permissionsIn(message.channel).has('ADMINISTRATOR')){
+				if(mutedArr.includes(message.guild.member(message.mentions.users.first()).id)){
+					tosend = "Didn't you already mute this user?"
 				} else {
 					message.channel.overwritePermissions(message.guild.member(message.mentions.users.first()), {
 						SEND_MESSAGES: false, ATTACH_FILES: false
 					}).catch(console.error)
-					message.reply(message.guild.member(message.mentions.users.first()) + " has been muted in this channel... i think... :mute:")
+					tosend = message.guild.member(message.mentions.users.first()) + " has been muted in this channel... i think... :white_check_mark: "
+					mutedArr.push(message.guild.member(message.mentions.users.first()).id)
 				}
+			} else {
+				tosend = "Make sure you have permissions to mute this user... or maybe they just can't be muted... damn what a god"
 			}
 		}
+		message.channel.send({embed: {
+			color: 15784782,
+			title: 'Muting user: ' + (message.guild.member(message.mentions.users.first()).displayName) + ' :mute:' ,
+			description: ':loudspeaker: ' + message.author + ', ' + tosend
+		}})
 	} else if(message.content.startsWith(prefix + "unmute")){
+		var tosend;
+		if(args.length === 1){
+			message.reply("unmute someone from the channel. Usage: `.unmute [user]`")
+			return;
+		}
 		if(message.guild.member(message.mentions.users.first()) === null){
-			message.reply("stop trying to exploit this bot smh...")
+			message.reply("So first you tried to mute air... now you're trying to unmute the protons and electrons?")
+			return;
 		} else {
 			if(message.member.permissionsIn(message.channel).has('MANAGE_ROLES')){
-				if(args.length === 1){
-					message.channel.send("unmute someone from the channel. Usage: `.unmute [user]`")
-				} else {
+				if(mutedArr.includes(message.guild.member(message.mentions.users.first()).id)){
+					mutedArr.splice(mutedArr.indexOf((message.guild.member(message.mentions.users.first()).id)), 1)
 					message.channel.overwritePermissions(message.guild.member(message.mentions.users.first()), {
 						SEND_MESSAGES: true, ATTACH_FILES: true
 					}).catch(console.error)
-					message.reply(message.guild.member(message.mentions.users.first()) + " has been unmuted in this channel... but were they ever muted...??? :thinking:")
+					tosend = message.guild.member(message.mentions.users.first()) + " has been unmuted in this channel...:thinking:"
+				} else {
+					tosend = "Pretty sure you didn't mute this user... at least not with me..."
 				}
 			}
 		}
+		message.channel.send({embed: {
+			color: 15784782,
+			title: 'Unmuting user: ' + (message.guild.member(message.mentions.users.first()).displayName) + ' :speaker:' ,
+			description: ':loudspeaker: ' + message.author + ', ' + tosend
+		}})
 	}
 	//help commands
 	if(message.content.startsWith(prefix + "help")){
-		message.author.send("Commands List:\n **Global Prefix: .**\n __Mod commands__ \n **help** - shows this message \n **botinfo** - info about the bot... \n **ping** - pings server and returns with ms \n **uptime** - shows bot uptime \n **warn [user] (reason)** - warns a user for being a meme \n **purge [# of msgs]** - clears the last x messages \n **kick/ban [user]** - kicks/bans the user mentioned \n **mute/unmute [user]** - mutes and unmutes a user \n **repeat [text]** - repeats stuff \n __For Fun Commands__ \n **8ball [question]** - 8-ball? \n **add/deltrash [text]** - add trashy triggers \n **roll (amt of dice)** - roll dice \n **kill [user]** - become a serial killer =) \n **count [min, max] (count by)** - count from min to max \n **rng [min, max, amt of numbers]** - pick x numbers between min and max \n **happiness [user]** - tell a user to stop being salty :) \n **cclist** - lists all custom commands \n **rem** - ゼロから始める異世界生活 :heart: \n **duel [user]** - duel a user (this is totally rng btw) \n **playchess [move in algebraic notation]** - play the bot in a game of chess... but you'll lose...\n **guessnumberstart [easy, medium, hard, expert]/guessnumber [number]** - guessnumberstart to start a game of guess the number and guessnumber to guess the number :eyes:\n **weather [zip code]** - WIP but it shows a bunch of stuff with the weather\n__Code for this bot can be found here: https://github.com/TheShadyRealm/jsbot :smile: (holy crap jsbot is in javascript??? :scream:)__ \n **Invite link (highly not recommended):** :smiley:: http://bit.ly/JSBot")
-		message.reply("a list of commands has been sent to your DMs =)")
+		message.author.send("Commands List:\n **Global Prefix: .**\n __Mod commands__ \n **help** - shows this message \n **botinfo** - info about the bot... \n **ping** - pings server and returns with ms \n **uptime** - shows bot uptime \n **warn [user] (reason)** - warns a user for being a meme \n **purge [# of msgs]** - clears the last x messages \n **kick/ban [user]** - kicks/bans the user mentioned \n **mute/unmute [user]** - mutes and unmutes a user \n **repeat [text]** - repeats stuff \n __For Fun Commands__ \n **8ball [question]** - 8-ball? \n **add/deltrash [text]** - add trashy triggers \n **roll (amt of dice)** - roll dice \n **kill [user]** - become a serial killer =) \n **count [min, max] (count by)** - count from min to max \n **rng [min, max, amt of numbers]** - pick x numbers between min and max \n **happiness [user]** - tell a user to stop being salty :) \n **cclist** - lists all custom commands \n **rem** - ゼロから始める異世界生活 :heart: \n **sans** - \"It's a beautiful day outside... birds are singing... flowers are blooming... on days like these kids like you... should be burning in HELL :fire:\n **duel [user]** - duel a user (this is totally rng btw) \n **playchess [move in algebraic notation]** - play the bot in a game of chess... but you'll lose...\n **guessnumberstart [easy, medium, hard, expert]/guessnumber [number]** - guessnumberstart to start a game of guess the number and guessnumber to guess the number :eyes:\n **weather [zip code]** - WIP but it shows a bunch of stuff with the weather\n **calc [expression]** - simple calculator `x (+, -, /, *, ^ for now) y` \n **lovecalc/lc [user 1] [user 2]** - calculate love chances between 2 users... :kissing_heart:\n **stopwatch (start/stop)** - start/stop/check on your stopwatch :watch: \n **copypasta [name]/copypasta list** - in case you're in need of a quick chat filler... :wink: \n **regionaltype [text A-Z or 0-9]** - turns text into regional emots :b: \n__Code for this bot can be found here: https://github.com/TheShadyRealm/jsbot :smile: (holy crap jsbot is in javascript??? :scream:)__ \n **Invite link (highly not recommended):** :smiley:: http://bit.ly/JSBot")
+		message.channel.send({embed: {
+			color: 15784782,
+			description: '<@' + message.author.id + '>, a list of commands and stuff has been sent to your DMs :smiley:'
+		}})
 	} else if(message.content.startsWith(prefix + "botinfo")){
-		message.reply("JSBot is a bot garbagely coded by <@275334018214658060> for absolute fun and dank memes rofel")
+		message.channel.send({embed:{
+			color: 15784782,
+			title: 'SOME INFORMATION ON THIS BOT :thinking:',
+			description: ":robot: <@324427383849353219> is a bot garbagely coded by <@275334018214658060> for absolute fun and dank memes **ROFEL HAHA XD** :laughing: (:bulb:**hint:** do not invite this bot to your server or it will cause mass destruction and chaos)"
+		}})
 	}
 	//for fun commands
 	if(message.content.startsWith(prefix + "8ball")){
@@ -507,11 +740,22 @@ client.on('message', message => {
 		if(args.length === 1){
 			message.channel.send("Ask the legendary 8-ball a question! `.8ball [question]`")
 		} else {
-		message.reply(replies[result])
+		message.channel.send({embed: {
+			color: 15784782,
+			fields: [{
+				name: ":question::question: Question :grey_question::grey_question:",
+				value: (args.join(" ").substring(7))
+				},
+				{
+				name: ":8ball: 8ball's response",
+				value: replies[result]
+			}]
+		}})
 		}
 	} else if(message.content.startsWith(prefix + "roll")){
 		var nbr = parseInt(args[1]);
 		var arr = [];
+		var pluralcheck;
 		if(args.length === 1){
 			nbr = 1;
 		} 
@@ -519,7 +763,16 @@ client.on('message', message => {
 			for(var r = 0; r < nbr; r++){
 				arr.push(Math.floor((Math.random() * 6) + 1))
 			}
-			message.reply(":game_die: You rolled a " + arr + "! :game_die:");
+		if(nbr === 1){
+			pluralcheck = 'die'
+		} else {
+			pluralcheck = 'dice'
+		}
+			message.channel.send({embed: {
+				color: 15784782,
+				title: ':game_die: You rolled ' + nbr + ' ' + pluralcheck + '! The resulting roll(s):',
+				description: arr.join(', ')
+			}})
 		} else {
 			message.reply("1-100 dice... stop trying to exploit the system :nerd:")
 		}
@@ -530,12 +783,16 @@ client.on('message', message => {
 			if(args.length === 1){
 				message.reply("Mention someone first (to make them happy)!")
 			} else {
-				message.channel.send((message.mentions.users.first()) + " Be happy! :smile: :smiley: :rofl: :laughing: :grin: :grinning: :slight_smile: :sweat_smile: :upside_down:")
+				message.channel.send({embed: {
+					color: 15784782,
+					title: ':smile: :smiley: :rofl: :laughing: :grin: :grinning: :slight_smile: :sweat_smile: :upside_down:',
+					description: '<@' + (message.guild.member(message.mentions.users.first()).id) + '>, you have been told by <@' + message.author.id + '> to be happy!'
+				}})
 			}
 		}
 	} else if(message.content.startsWith(prefix + "count")){
 		var count = [];
-		if(args.length === 1){
+		if(args.length != 4){
 			message.reply("Input a number between 0-999... Usage: `.count min max interval` and NO COUNTING BACKWARDS k?")
 		} else {
 			var n1 = parseInt(args[1]);
@@ -568,20 +825,22 @@ client.on('message', message => {
 				for(var n = 0; n < r3; n++){
 					rnum.push(Math.floor((Math.random() * r2) + r1))
 				}
-				const embed = new Discord.RichEmbed()
-				.setAuthor(message.member.displayName, message.author.displayAvatarURL)
-				.setColor('#F0DB4E')
-				.setTitle("Your Number(s):")
-				.setDescription(rnum.join(', '))
-				.setTimestamp()
-				message.channel.send({embed})
+				message.channel.send({embed: {
+					color: 15784782,
+					title: ':briefcase: Your randomly generated number(s): :scroll: ',
+					description: rnum.join(', ')
+				}})
 			} else {
 				message.reply("Input a number between one and a million... Usage: `.rng min max # of numbers to generate`")
 			}
 		}
 	} else if(message.content.startsWith(prefix + "uptime")){
 		var upt = Math.round((Date.now() - this.date)/1000);
-		message.reply("**This bot has been alive for:** " + mts(upt));
+		message.channel.send({embed: {
+			color: 15784782,
+			title: ':timer: JSBot Uptime:',
+			description: '<@' + message.author.id + '>, This bot has been alive for **' + mts(upt) + '** :clock10:'
+		}})
 	} else if(message.content.startsWith(prefix + "kill")){
 		if(message.guild.member(message.mentions.users.first()) === null){
 			message.reply("stop trying to exploit this bot smh...")
@@ -616,7 +875,8 @@ client.on('message', message => {
 		}
 	} else if(message.content.startsWith(prefix + "cclist")){
 		message.reply("**list of custom (useless af) commands:** 'arcanestrats', 'calculus', 'cancer', 'ecksdee', 'exposed', 'fail', 'fidgetspinner', 'gj', 'gotem', 'hate', 'heckoff', 'hierarchy', 'justno', 'pranked', 'questionmark', 'roflcopter', 'salty', 'siblingdrama', 'trash'")
-	} else if(message.content.startsWith(prefix + "rem")){
+	}
+	if(message.content.startsWith(prefix + "rem")){
 		var list = ['https://vignette1.wikia.nocookie.net/rezero/images/0/02/Rem_Anime.png/revision/latest?cb=20160730213532',
 		'https://images6.alphacoders.com/710/710132.png',
 		'http://i.imgur.com/sGwXxVx.jpg',
@@ -683,7 +943,43 @@ client.on('message', message => {
 		.setColor(8375551)
 		.setImage(list[randpic]);
 		message.channel.send({embed});
-	} else if(message.content.startsWith(prefix + "duel")){
+	} else if(message.content.startsWith(prefix + "sans")){
+		var list = ['http://orig02.deviantart.net/a518/f/2016/210/3/c/sans_wink_by_vocaloidaddict44-dabsjhy.png',
+		'http://vignette4.wikia.nocookie.net/deathbattlefanon/images/5/54/Sans_undertale_you_re_gonna_have_a_bad_time_by_pikminaaa-d9kg0tl.png/revision/latest?cb=20170219002207',
+		'https://vignette4.wikia.nocookie.net/joke-battles/images/3/38/Sans_by_flintofmother3-d9dl8qh.png/revision/latest?cb=20160526065756',
+		'http://img06.deviantart.net/0ccd/i/2016/179/1/e/let_s_draw_sans__speed_drawing_video__by_smudgeandfrank-da80s3t.png',
+		'https://s-media-cache-ak0.pinimg.com/236x/31/25/d9/3125d97253c85b481201ee8ffece0d1d--headphones-cool-cats.jpg',
+		'http://img09.deviantart.net/4049/i/2015/311/8/d/undertale_sans_by_i_am_bleu-d9fv9zi.jpg',
+		'http://img08.deviantart.net/2d68/i/2016/175/7/2/undertale__sans_by_secretnarcissist-d9ia2hz.png',
+		'https://s-media-cache-ak0.pinimg.com/736x/e2/87/1e/e2871eec56795f8e97d2c799f2d45cef--gaster-blaster-sans-brody.jpg',
+		'http://img11.deviantart.net/d32b/i/2016/008/6/d/fang_sans_by_fasli-d9n904e.png',
+		'http://orig02.deviantart.net/6372/f/2016/249/3/3/you_are_my_most_beautiful_dream___insomne_sans_by_neykstar-dags2q8.png',
+		'http://pre11.deviantart.net/290c/th/pre/f/2016/033/b/a/sans_by_neykstar-d9q7dl8.png',
+		'https://cdn.shopify.com/s/files/1/1258/7281/products/Sans_Sticker_large.png?v=1478406430',
+		'http://img11.deviantart.net/1bfe/i/2016/244/b/0/attack_on_titantale_sans_by_joselyn565-dag5vej.png',
+		'http://orig07.deviantart.net/b617/f/2015/342/c/b/sans_by_wiki234-d9jg4y8.png',
+		'https://s-media-cache-ak0.pinimg.com/originals/15/76/dc/1576dc4805dc2971a99d69c09ff832d7.png',
+		'https://vignette1.wikia.nocookie.net/undertale-au/images/c/cc/Underswap_sans_battle_sprite_by_moises87-da60qh7.png/revision/latest?cb=20161127212313',
+		'http://s4.thingpic.com/images/nB/ykYcdAo7ptUUeNcGk8mcFbGi.png',
+		'https://vignette2.wikia.nocookie.net/undertale/images/7/7f/SansArtwork.jpg/revision/latest?cb=20160310171514',
+		'https://a.wattpad.com/cover/76557179-352-k23560.jpg',
+		'http://orig07.deviantart.net/28a5/f/2016/020/c/5/sans_ational_by_elimate98-d9oq179.png',
+		'https://img11.deviantart.net/581a/i/2015/278/f/b/sans_from_undertale__render_by_nibroc_rock-d9c1q5q.png',
+		'https://vignette3.wikia.nocookie.net/undertale-au/images/4/41/Underlust_sans_by_neykstar-dae2aqi.png/revision/latest?cb=20161205180008',
+		'http://orig04.deviantart.net/1eef/f/2016/129/1/b/underswap_sans___blueberry_by_neykstar-da1vr8r.png',
+		'https://vignette2.wikia.nocookie.net/undertale/images/6/6a/Sans.jpg/revision/latest?cb=20160424104545&path-prefix=pl',
+		'http://orig02.deviantart.net/b192/f/2016/001/8/e/sans_by_crowik-d9mduia.jpg',
+		'https://s-media-cache-ak0.pinimg.com/originals/cd/54/84/cd5484c5f2d68ece5779e4d32516df4a.jpg',
+		'https://d.wattpad.com/story_parts/189417248/images/141a762ae6a3f5b7.gif',
+		'http://orig08.deviantart.net/9f2a/f/2016/005/f/f/sans_01_by_kuzukago-d9iajzh.png'
+		]
+		var randpic = ~~((Math.random() * list.length) + 0)
+		const embed = new Discord.RichEmbed()
+		.setColor(15784782)
+		.setImage(list[randpic])
+		message.channel.send({embed})
+	}
+	if(message.content.startsWith(prefix + "duel")){
 		if(args.length === 1){
 			message.channel.send("Duel someone for fun =) `.duel [user]`")
 		} else if(message.guild.member(message.mentions.users.first()) === null) { //if duels nobody (shut up alex)
@@ -819,7 +1115,7 @@ client.on('message', message => {
 				.setColor('#D3D3D3')
 				.setAuthor(message.member.displayName, message.author.displayAvatarURL)
 				.setTitle(chessmsg1[id])
-				.setImage('http://i.imgur.com/w4TR9IT.png')
+				.setImage('http://pm1.narvii.com/5949/392c549cd5a6700d724f12d9bfcd0ac5e3261814_hq.jpg')
 				.addField(winner, chesses[id].pgn({newline_char: '\n'}), true)
 				message.reply({embed})
 			}	
@@ -940,34 +1236,7 @@ client.on('message', message => {
 		message.channel.send({embed})
 		message.reply
 	} else if(message.content.startsWith(prefix + "whoisagoodgirl")){
-		message.channel.send("**Watashi desu ne~ (=^3^=) Nyaa~ :cat:**")
-	}
-	//actually working crush array (any other ideas for it tho?)
-	if(message.content.startsWith(prefix + "addtrash")){
-		this.hi = (args.join(" ").substring(10)).toString();
-		temp.push(this.hi);
-		message.reply(this.hi + " has been added to the list")
-		console.log(temp.length, temp);
-	} else if(message.content.startsWith(prefix + "cleartrash") && message.author.id === '275334018214658060'){
-		message.channel.send("The list has been cleared")
-		temp = [];
-	} else if(message.content.startsWith(prefix + "deltrash")){
-		this.del = (args.join(" ").substring(10)).toString();
-		this.cow;
-		for(var d = 0; d < temp.length; d++){
-			if(message.content.includes(this.del[d])){
-				console.log(d);
-				this.cow = d; 
-				console.log(this.cow);
-				temp.splice(this.cow, 1)
-			}
-		}
-		message.channel.send(this.del + " has been removed from the list")
-	}
-	for(var x = 0; x < temp.length; x++){
-		if(message.content.includes((temp[x]))){
-			message.channel.send('WHAT UNBELIEVABLE GARBAGE :recycle::newspaper2:');
-		}
+		message.channel.send("**私ですね~ (=^3^=) にゃー、ごしゅじんさま〜 :cat:**")
 	}
 	//custom commands and responses shit
 	if(message.content.includes("gtg")){
