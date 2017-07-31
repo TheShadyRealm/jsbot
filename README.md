@@ -30,5 +30,11 @@
 - **stopwatch** (start/stop) - start/stop/check on your stopwatch :watch: 
 - **weather [zip code]** - WIP but it shows a bunch of stuff with the weather
 - **copypasta** [name]/copypasta list - in case you're in need of a quick chat filler... :wink: 
+- **regionaltype** [text A-Z or 0-9] - turns text into regional emots :b:
+- **whoisagoodgirl** - this bot is a GIRL 
+- **react [text]** - reacts to the previous message with text (NEW! - NOW SUPPORTS (some) DOUBLE LETTERS) 
+- **space [text]** - annoy people 
+- **flip** - flip a coin and you get a second to call it while it's in midair 
+- **reverse [text]** - reverses text 
 - Code for this bot can be found here: https://github.com/TheShadyRealm/jsbot :smile: (holy crap jsbot is in javascript??? :scream:) 
 - Invite link (highly not recommended): :smiley:: http://bit.ly/JSBot
