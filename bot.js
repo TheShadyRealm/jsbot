@@ -24,6 +24,30 @@ var mutedArr = [];
 var Forecast = require('forecast');
 var stopwatchID = [];
 var stopwatchDate = [];
+var async = require('asyncawait/async');
+var await = require('asyncawait/await');
+var Bitfield = require("bitfield");
+var translate = require('node-google-translate-skidz');
+var customtriggerlist = ['arcanestrats',
+	'calculus',
+	'cancer',
+	'ecksdee',
+	'exposed',
+	'fail',
+	'fidgetspinner',
+	'gj',
+	'gotem',
+	'hate',
+	'heckoff',
+	'hierarchy',
+	'justno',
+	'pranked',
+	'questionmark',
+	'roflcopter',
+	'salty',
+	'siblingdrama',
+	'trash'
+	]; //for ending couple lines
 let points = JSON.parse(fs.readFileSync("./points.json", "utf8"));
 var forecast = new Forecast({
   service: 'darksky',
@@ -35,6 +59,9 @@ var forecast = new Forecast({
     seconds: 45
   }
 });
+function sleep(ms) {
+	return new Promise(resolve => setTimeout(resolve, ms));
+}		
 function mts(s){
 	return(s-(s%=60))/60+(9<s?':':':0')+s
 }
@@ -45,8 +72,28 @@ function strip(s) {
 function toLetters(x){
 	return x.replace(/[^A-Za-z0-9]/g, '');
 }
+function toReact(x){
+	return x.replace(/[^A-Za-z0-9\t]/g, '');
+}
 function get_fen_img(id) {
     return 'http://www.fen-to-image.com/image/20/single/coords/' + chesses[id].fen().split(' ')[0];
+}
+
+function combined(array){
+    var a = array.concat();
+	var x = [];
+    for(var i = 0; i < a.length; ++i) {
+        for(var j=i+1; j<a.length; ++j) {
+            if(a[i] === a[j]){
+				x.push(a[j])
+                a.splice(j--, 1)
+			}
+        }
+    }
+	for(var f = 0; f < x.length; f++){
+		a.splice(a.indexOf(x[f]), 1)
+	}
+    return a;
 }
 
 function convert(t){
@@ -115,12 +162,438 @@ client.on('ready', () => {
 	this.date = Date.now();
 });
 
+client.on('messageReactionAdd', (messageReaction, user) => {	
+	if(messageReaction.emoji.toString() === '📌' && messageReaction.count === 3){
+		messageReaction.message.pin()
+	}
+});
+//message logs
+client.on('messageDelete', message => {
+	var server = message.guild.id;
+	var channeltosend;
+	if(server === '310224842735616020'){
+		channeltosend = '324667410605015041';
+	} else if(server === '333471257838485524'){
+		channeltosend = '340740982544793600';
+	} else if(server === '272473930520854529'){
+		channeltosend = '293840751836659714';
+	} else {
+		return;
+	}
+	message.guild.channels.get(channeltosend).send({embed: {
+		color: 15784782,
+		description: '**Message sent by ' + message.author + ' deleted in <#' + message.channel.id + '>**\n' + message.content,
+		author: {
+			name: message.member.displayName,
+			icon_url: message.author.displayAvatarURL
+		},
+		timestamp: new Date()
+	}});
+});
+
+client.on('messageDeleteBulk', messages => {
+	var message = messages.first();
+	var server = messages.first().guild.id
+	var mcontent = messages.map(c=>c.content)
+	var channeltosend;
+	if(server === '310224842735616020'){
+		channeltosend = '324667410605015041';
+	} else if(server === '333471257838485524'){
+		channeltosend = '340740982544793600';
+	} else if(server === '272473930520854529'){
+		channeltosend = '293840751836659714';
+	} else {
+		return;
+	}
+	for(var i = 0; i < mcontent.length; i++){
+		message.guild.channels.get(channeltosend).send({embed: {
+			color: 15784782,
+			description: '**Message sent by ' + message.author + ' deleted in <#' + message.channel.id + '>**\n' + mcontent[i],
+			author: {
+			name: message.member.displayName,
+				icon_url: message.author.displayAvatarURL
+			},
+			timestamp: new Date()
+		}});
+	}
+});
+	
+client.on('messageUpdate', (oldMessage, newMessage) => {
+	var message = oldMessage;
+	if(message.author.bot) return;
+	var server = message.guild.id;
+	var channeltosend;
+	if(server === '310224842735616020'){
+		channeltosend = '324667410605015041';
+	} else if(server === '333471257838485524'){
+		channeltosend = '340740982544793600';
+	} else if(server === '272473930520854529'){
+		channeltosend = '293840751836659714';
+	} else {
+		return;
+	}
+	message.guild.channels.get(channeltosend).send({embed: {
+		color: 15784782,
+		title: 'Message Edited :pencil2:',
+		description: '**Message sent by ' + message.author + ' edited from**\n' + oldMessage + '\n**to** \n' + newMessage + '\n**in channel <#' + message.channel.id + '>**',
+		timestamp: new Date()
+	}});
+});
+//member logs
+client.on('guildMemberUpdate', (oldMember, newMember) => {
+	var oldroles = oldMember.roles.map(c=>c.id);
+	var newroles = newMember.roles.map(c=>c.id);
+	var rolechange = (combined(oldroles.concat(newroles)));
+	var message = oldMember;
+	var server = message.guild.id;
+	var channeltosend;
+	var tosend;
+	if(oldroles.length > newroles.length){
+		tosend = '**Role:** <@&' + rolechange + '> removed from ' + message  
+	} else if(oldroles.length < newroles.length){
+		tosend = '**Role:** <@&' + rolechange + '> added to ' + message
+	} else if(oldMember.displayName != newMember.displayName){
+		tosend = message + "**'s nickname changed from** `" + oldMember.displayName + '`** to** `' + newMember.displayName + '`'
+	} else {
+		return;
+	}
+	if(server === '310224842735616020'){
+		channeltosend = '324667410605015041';
+	} else if(server === '333471257838485524'){
+		channeltosend = '340740982544793600';
+	} else if(server === '272473930520854529'){
+		channeltosend = '293840751836659714';
+	} else {
+		return;
+	}
+	message.guild.channels.get(channeltosend).send({embed: {
+		color: 15784782,
+		title: 'User Change :arrows_clockwise:',
+		description: tosend,
+		timestamp: new Date()
+	}});
+});
+//role logs
+client.on('roleCreate', role => {
+	var server = role.guild.id
+	var channeltosend;
+	if(server === '310224842735616020'){
+		channeltosend = '324667410605015041';
+	} else if(server === '333471257838485524'){
+		channeltosend = '340740982544793600';
+	} else if(server === '272473930520854529'){
+		channeltosend = '293840751836659714';
+	} else {
+		return;
+	}
+	role.guild.channels.get(channeltosend).send({embed: {
+		color: 15784782,
+		title: 'Role Creation :crossed_swords:',
+		description: '**New Role:** `' + role.name + '` **created **', 
+		timestamp: new Date()
+	}});
+});
+
+client.on('roleUpdate', (oldRole, newRole) => {
+	console.log(oldRole.permissions, newRole.permissions)
+	var server = oldRole.guild.id
+	var channeltosend;
+	if(server === '310224842735616020'){
+		channeltosend = '324667410605015041';
+	} else if(server === '333471257838485524'){
+		channeltosend = '340740982544793600';
+	} else if(server === '272473930520854529'){
+		channeltosend = '293840751836659714';
+	} else {
+		return;
+	}
+	if(oldRole.permissions != newRole.permissions){
+		return;
+	}
+	oldRole.guild.channels.get(channeltosend).send({embed: {
+		color: 15784782,
+		title: 'Role Name Edit :pencil:',
+		description: '**Role name changed from** `' + oldRole.name + '` **to** `' + newRole.name + '`', 
+		timestamp: new Date()
+	}});
+});
+
+client.on('roleDelete', role => {
+	var server = role.guild.id
+	var channeltosend;
+	if(server === '310224842735616020'){
+		channeltosend = '324667410605015041';
+	} else if(server === '333471257838485524'){
+		channeltosend = '340740982544793600';
+	} else if(server === '272473930520854529'){
+		channeltosend = '293840751836659714';
+	} else {
+		return;
+	}
+	role.guild.channels.get(channeltosend).send({embed: {
+		color: 15784782,
+		title: 'Role Deletion :recycle:',
+		description: '**Role:** `' + role.name + '` **deleted**', 
+		timestamp: new Date()
+	}});
+});
+//ban logs
+client.on('guildBanAdd', (guild, user) => {
+	var server = guild.id
+	var channeltosend;
+	if(server === '310224842735616020'){
+		channeltosend = '324667410605015041';
+	} else if(server === '333471257838485524'){
+		channeltosend = '340740982544793600';
+	} else if(server === '272473930520854529'){
+		channeltosend = '293840751836659714';
+	} else {
+		return;
+	}
+	guild.channels.get(channeltosend).send({embed: {
+		color: 15784782,
+		title: 'User banned from server :hammer:',
+		description: user.username + '** was banned from **' + guild.name, 
+		timestamp: new Date()
+	}});
+});
+
+client.on('guildBanRemove', (guild, user) => {
+	var server = guild.id
+	var channeltosend;
+	if(server === '310224842735616020'){
+		channeltosend = '324667410605015041';
+	} else if(server === '333471257838485524'){
+		channeltosend = '340740982544793600';
+	} else if(server === '272473930520854529'){
+		channeltosend = '293840751836659714';
+	} else {
+		return;
+	}
+	guild.channels.get(channeltosend).send({embed: {
+		color: 15784782,
+		title: 'User unbanned from server :white_check_mark:',
+		description: user.username + '** was unbanned from **' + guild.name, 
+		timestamp: new Date()
+	}});
+});
+
+client.on('channelCreate', channel => {
+	if(channel.type != 'text' || channel.type != 'voice') return;
+	var server = channel.guild.id
+	var channeltosend;
+	if(server === '310224842735616020'){
+		channeltosend = '324667410605015041';
+	} else if(server === '333471257838485524'){
+		channeltosend = '340740982544793600';
+	} else if(server === '272473930520854529'){
+		channeltosend = '293840751836659714';
+	} else {
+		return;
+	}
+	channel.guild.channels.get(channeltosend).send({embed: {
+		color: 15784782,
+		title: 'Channel Created :tools: ',
+		description: '**New channel created: **<#' + channel.id + '>', 
+		timestamp: new Date()
+	}});
+});
+
+client.on('channelDelete', channel => {
+	if(channel.type != 'text' || channel.type != 'voice') return;
+	var server = channel.guild.id
+	var channeltosend;
+	if(server === '310224842735616020'){
+		channeltosend = '324667410605015041';
+	} else if(server === '333471257838485524'){
+		channeltosend = '340740982544793600';
+	} else if(server === '272473930520854529'){
+		channeltosend = '293840751836659714';
+	} else {
+		return;
+	}
+	channel.guild.channels.get(channeltosend).send({embed: {
+		color: 15784782,
+		title: 'Channel Deleted :x: ',
+		description: '**Channel deleted: **' + channel.name, 
+		timestamp: new Date()
+	}});
+});
+
 client.on('message', message => {
 	if(message.author.bot) return;
 	var args = message.content.split(/[ ]+/);
 	var msg1 = strip(message.content);
 	var randomN;
 	var maxN;
+	if(message.content.startsWith(prefix + "react")){
+		var a = 0; var b = 0; var c = 0; var d = 0; var e = 0; var f = 0; var g = 0; var h = 0; var letteri = 0; var j = 0; var k = 0; var l = 0; var m = 0; var n = 0; var o = 0; var p = 0; var q = 0; var r = 0; var s = 0; var t = 0; var u = 0; var v = 0; var w = 0; var x = 0; var y = 0;
+		var reactarray = [];
+		if(args.length === 1){
+			return;
+		} else {
+			var msgReact = (toReact(args.join(' ').substring(7))).toLowerCase().split('')
+			for(var i = 0; i < msgReact.length; i++){
+				if(msgReact[i] === 'a' && msgReact[i+1] === 'b' && msgReact[i+2] === 'c'){
+					msgReact.splice(i, 2)
+					reactarray.push('🔤')
+				} else if(msgReact[i] === 'i' && msgReact[i+1] === 'i'){
+					msgReact.splice(i, 1)
+					reactarray.push('⏸')
+				} else if(msgReact[i] === 'o' && msgReact[i+1] === 'o'){
+					msgReact.splice(i, 1)
+					reactarray.push('🈁')
+				} else if(msgReact[i] === 's' && msgReact[i+1] === 'o' && msgReact[i+2] === 's'){
+					msgReact.splice(i, 2)
+					reactarray.push('🆘')
+				} else if(msgReact[i] === 'i' && msgReact[i+1] === 'd'){
+					msgReact.splice(i, 1)
+					reactarray.push('🆔')
+				} else if(msgReact[i] === '1' && msgReact[i+1] === '0' && msgReact[i+1] === '0'){
+					msgReact.splice(i, 2)
+					reactarray.push('💯')
+				} else if(msgReact[i] === 'n' && msgReact[i+1] === 'g'){
+					msgReact.splice(i, 1)
+					reactarray.push('🆖')
+				} else if(msgReact[i] === 'o' && msgReact[i+1] === 'k'){
+					msgReact.splice(i, 1)
+					reactarray.push('🆗')
+				} else if(msgReact[i] === 'a'){
+					var aa = ['🇦', '🅰', '🍙', '🔼']
+					reactarray.push(aa[a])
+					a++
+				} else if(msgReact[i] === 'b'){
+					var aa = ['🇧', '🅱']
+					reactarray.push(aa[b])
+					b++
+				} else if(msgReact[i] === 'c'){
+					var aa = ['🇨', '©', '🗜', '☪']
+					reactarray.push(aa[c])
+					c++
+				} else if(msgReact[i] === 'd'){
+					var aa = ['🇩', '↩'] 
+					reactarray.push(aa[d])
+					d++
+				} else if(msgReact[i] === 'e'){
+					var aa = ['🇪', '📧', '💶']
+					reactarray.push(aa[e])
+					e++
+				} else if(msgReact[i] === 'f'){
+					var aa = ['🇫', '🎏']
+					reactarray.push(aa[f])
+					f++
+				} else if(msgReact[i] === 'g'){
+					var aa = ['🇬', '⛽'] 
+					reactarray.push(aa[g])
+					g++
+				} else if(msgReact[i] === 'h'){
+					var aa = ['🇭', '♓']
+					reactarray.push(aa[h])
+					h++
+				} else if(msgReact[i] === 'i'){
+					var aa = ['🇮', 'ℹ', '🚹']  
+					reactarray.push(aa[letteri])
+					letteri++
+				} else if(msgReact[i] === 'j'){
+					var aa = ['🇯', '🗾']
+					reactarray.push(aa[j])
+					j++
+				} else if(msgReact[i] === 'k'){
+					var aa = ['🇰', '🎋']
+					reactarray.push(aa[k])
+					k++
+				} else if(msgReact[i] === 'l'){
+					var aa = ['🇱', '👢', '💷']
+					reactarray.push(aa[l])
+					l++
+				} else if(msgReact[i] === 'm'){
+					var aa = ['🇲', '📉', 'Ⓜ']
+					reactarray.push(aa[m])
+					m++
+				} else if(msgReact[i] === 'n'){
+					var aa = ['🇳', '♑', '🎵']
+					reactarray.push(aa[n])
+					n++
+				} else if(msgReact[i] === 'o'){
+					var aa = ['🇴', '🅾', '⭕', '🔘', '⏺', '⚪', '⚫', '🔵', '🔴', '💫']
+					reactarray.push(aa[o])
+					o++
+				} else if(msgReact[i] === 'p'){
+					var aa = ['🇵', '🅿']
+					reactarray.push(aa[p])
+					p++
+				} else if(msgReact[i] === 'q'){
+					var aa = ['🇶', '♌']
+					reactarray.push(aa[q])
+					q++
+				} else if(msgReact[i] === 'r'){
+					var aa = ['🇷', '®']
+					reactarray.push(aa[r])
+					r++
+				} else if(msgReact[i] === 's'){
+					var aa = ['🇸', '💲', '⚡', '💰']
+					reactarray.push(aa[s])
+					s++
+				} else if(msgReact[i] === 't'){
+					var aa = ['🇹', '✝', '➕', '🎚', '🌴']
+					reactarray.push(aa[t])
+					t++
+				} else if(msgReact[i] === 'u'){
+					var aa = ['🇺', '⛎', '🐉']
+					reactarray.push(aa[u])
+					u++
+				} else if(msgReact[i] === 'v'){
+					var aa = ['🇻', '♈', '☑']
+					reactarray.push(aa[v])
+					v++
+				} else if(msgReact[i] === 'w'){
+					var aa = ['🇼', '〰', '📈']
+					reactarray.push(aa[w])
+					w++
+				} else if(msgReact[i] === 'x'){
+					var aa = ['🇽', '❎', '✖', '❌', '⚒']
+					reactarray.push(aa[x])
+					x++
+				} else if(msgReact[i] === 'y'){
+					var aa = ['🇾', '💴', '✌']
+					reactarray.push(aa[y])
+					y++
+				} else if(msgReact[i] === 'msgReact'){
+					var aa = ['🇿']
+					reactarray.push(aa[z])
+				}
+				if(msgReact[i] === '1'){
+					reactarray.push('1⃣')
+				} else if(msgReact[i] === '2'){
+					reactarray.push('2⃣')
+				} else if(msgReact[i] === '3'){
+					reactarray.push('3⃣')
+				} else if(msgReact[i] === '4'){
+					reactarray.push('4⃣')
+				} else if(msgReact[i] === '5'){
+					reactarray.push('5⃣')
+				} else if(msgReact[i] === '6'){
+					reactarray.push('6⃣')
+				} else if(msgReact[i] === '7'){
+					reactarray.push('7⃣')
+				} else if(msgReact[i] === '8'){
+					reactarray.push('8⃣')
+				} else if(msgReact[i] === '9'){
+					reactarray.push('9⃣')
+				} else if(msgReact[i] === '0'){
+					reactarray.push('0⃣')
+				} 
+			}
+			(async (function demo() {
+                var kms = message.channel.fetchMessages({limit: 2})
+                for(var fuk = 0; fuk < reactarray.length; fuk++){
+				kms.then(m =>                     
+                    m.last().react(reactarray[fuk]))
+                    await(sleep(595));
+                }
+            }))();
+		}
+	}
 	if(message.content.startsWith(prefix + "guessnumberstart")){
 		var authorID = message.author.id;
         var difficulty = ['easy', 'medium', 'hard', 'expert'];
@@ -407,6 +880,57 @@ client.on('message', message => {
 		message.channel.send({embed})
 		message.channel.send('**Full Emoji List:** ' + emojis.join(''))
 	}
+	if(message.content.startsWith(prefix + "flip")){
+		var coin;
+		var flip = ~~((Math.random()* 2) + 1)
+		console.log(flip)
+		if(flip === 1){
+			coin = 'heads'
+		} else if(flip === 2){
+			coin = 'tails'
+		}
+		(async (function(){
+			message.channel.send({embed: {
+				color: 15784782,
+				author: {
+					name: message.member.displayName,
+					icon_url: message.author.displayAvatarURL
+				},
+				title: 'Flip a coin! :moneybag:',
+				description: "Call the flip!"
+			}}).then(message => message.delete(2250))
+            await(sleep(2350));
+			message.channel.send({embed: {
+				color: 15784782,
+				author: {
+					name: message.member.displayName,
+					icon_url: message.author.displayAvatarURL
+				},
+				title: 'Flip a coin! :moneybag:',
+				description: "Flipped a coin... it's " + coin + '!'
+			}})
+        }))();
+		
+	}
+	if(message.content.startsWith(prefix + "reverse")){
+		var reverse = args.join(" ").substring(9)
+		var arr = (reverse.split('')).reverse()
+		message.channel.send({embed: {
+			color: 15784782,
+			author: {
+				name: message.member.displayName,
+				icon_url: message.author.displayAvatarURL
+			},
+			title: 'Reverse text :upside_down:',
+			description: "**Original**\n" + reverse + "\n**Reversed**\n" + arr.join('')
+		}})
+	}
+	if(message.content.startsWith(prefix + "space")){
+		message.delete()
+		var space = args.join(" ").substring(7)
+		var tosend = space.split('')
+		message.channel.send(tosend.join(' ') + ' **- ' + message.author.username + ' 2017**')
+	}
 	var regional = [];
 	if(message.content.startsWith(prefix + "regionaltype")){
 		if(args.length === 1){
@@ -588,7 +1112,7 @@ client.on('message', message => {
 					message.channel.send("Make sure it's a positive integer...")
 				} else {
 					message.channel.fetchMessages({limit: msg}).then(messages => message.channel.bulkDelete(messages)).catch(console.error);
-					message.reply(msg-1 + ' messages successfully deleted!').then(message => message.delete(1575))
+					message.reply((msg-1) + ' messages successfully deleted!').then(message => message.delete(1575))
 				}
 			}
 		} else {
@@ -721,7 +1245,8 @@ client.on('message', message => {
 	}
 	//help commands
 	if(message.content.startsWith(prefix + "help")){
-		message.author.send("Commands List:\n **Global Prefix: .**\n __Mod commands__ \n **help** - shows this message \n **botinfo** - info about the bot... \n **ping** - pings server and returns with ms \n **uptime** - shows bot uptime \n **warn [user] (reason)** - warns a user for being a meme \n **purge [# of msgs]** - clears the last x messages \n **kick/ban [user]** - kicks/bans the user mentioned \n **mute/unmute [user]** - mutes and unmutes a user \n **repeat [text]** - repeats stuff \n __For Fun Commands__ \n **8ball [question]** - 8-ball? \n **add/deltrash [text]** - add trashy triggers \n **roll (amt of dice)** - roll dice \n **kill [user]** - become a serial killer =) \n **count [min, max] (count by)** - count from min to max \n **rng [min, max, amt of numbers]** - pick x numbers between min and max \n **happiness [user]** - tell a user to stop being salty :) \n **cclist** - lists all custom commands \n **rem** - ゼロから始める異世界生活 :heart: \n **sans** - \"It's a beautiful day outside... birds are singing... flowers are blooming... on days like these kids like you... should be burning in HELL :fire:\n **duel [user]** - duel a user (this is totally rng btw) \n **playchess [move in algebraic notation]** - play the bot in a game of chess... but you'll lose...\n **guessnumberstart [easy, medium, hard, expert]/guessnumber [number]** - guessnumberstart to start a game of guess the number and guessnumber to guess the number :eyes:\n **weather [zip code]** - WIP but it shows a bunch of stuff with the weather\n **calc [expression]** - simple calculator `x (+, -, /, *, ^ for now) y` \n **lovecalc/lc [user 1] [user 2]** - calculate love chances between 2 users... :kissing_heart:\n **stopwatch (start/stop)** - start/stop/check on your stopwatch :watch: \n **copypasta [name]/copypasta list** - in case you're in need of a quick chat filler... :wink: \n **regionaltype [text A-Z or 0-9]** - turns text into regional emots :b: \n__Code for this bot can be found here: https://github.com/TheShadyRealm/jsbot :smile: (holy crap jsbot is in javascript??? :scream:)__ \n **Invite link (highly not recommended):** :smiley:: http://bit.ly/JSBot")
+		message.author.send("Commands List:\n **Global Prefix: .**\n __Mod commands__ \n **help** - shows this message \n **botinfo** - info about the bot... \n **ping** - pings server and returns with ms \n **uptime** - shows bot uptime \n **warn [user] (reason)** - warns a user for being a meme \n **purge [# of msgs]** - clears the last x messages \n **kick/ban [user]** - kicks/bans the user mentioned \n **mute/unmute [user]** - mutes and unmutes a user \n **repeat [text]** - repeats stuff \n __For Fun Commands__ \n **8ball [question]** - 8-ball? \n **add/deltrash [text]** - add trashy triggers \n **roll (amt of dice)** - roll dice \n **kill [user]** - become a serial killer =) \n **count [min, max] (count by)** - count from min to max \n **rng [min, max, amt of numbers]** - pick x numbers between min and max \n **happiness [user]** - tell a user to stop being salty :) \n **cclist** - lists all custom commands \n **rem** - ゼロから始める異世界生活 :heart: \n **sans** - \"It's a beautiful day outside... birds are singing... flowers are blooming... on days like these kids like you... should be burning in HELL :fire:\n **duel [user]** - duel a user (this is totally rng btw) \n **playchess [move in algebraic notation]** - play the bot in a game of chess... but you'll lose...\n **guessnumberstart [easy, medium, hard, expert]/guessnumber [number]** - guessnumberstart to start a game of guess the number and guessnumber to guess the number :eyes:\n **weather [zip code]** - WIP but it shows a bunch of stuff with the weather\n **calc [expression]** - simple calculator `x (+, -, /, *, ^ for now) y` \n **lovecalc/lc [user 1] [user 2]** - calculate love chances between 2 users... :kissing_heart:\n **stopwatch (start/stop)** - start/stop/check on your stopwatch :watch: \n **copypasta [name]/copypasta list** - in case you're in need of a quick chat filler... :wink: \n **regionaltype [text A-Z or 0-9]** - turns text into regional emots :b:")
+		message.author.send(" ** whoisagoodgirl** - this bot is a GIRL \n **react [text]** - reacts to the previous message with text (NEW! - NOW SUPPORTS (some) DOUBLE LETTERS) \n **space [text]** - annoy people \n **flip** - flip a coin and you get a second to call it while it's in midair \n **reverse [text]** - reverses text \n__Code for this bot can be found here: https://github.com/TheShadyRealm/jsbot :smile: (holy crap jsbot is in javascript??? :scream:)__ \n **Invite link (highly not recommended):** :smiley: http://bit.ly/JSBot")
 		message.channel.send({embed: {
 			color: 15784782,
 			description: '<@' + message.author.id + '>, a list of commands and stuff has been sent to your DMs :smiley:'
@@ -874,7 +1399,11 @@ client.on('message', message => {
 			}
 		}
 	} else if(message.content.startsWith(prefix + "cclist")){
-		message.reply("**list of custom (useless af) commands:** 'arcanestrats', 'calculus', 'cancer', 'ecksdee', 'exposed', 'fail', 'fidgetspinner', 'gj', 'gotem', 'hate', 'heckoff', 'hierarchy', 'justno', 'pranked', 'questionmark', 'roflcopter', 'salty', 'siblingdrama', 'trash'")
+		message.channel.send({embed: {
+			color: 15784782,
+			title: ':newspaper: List of custom (useless af) commands:',
+			description: customtriggerlist.join(', ')
+		}})
 	}
 	if(message.content.startsWith(prefix + "rem")){
 		var list = ['https://vignette1.wikia.nocookie.net/rezero/images/0/02/Rem_Anime.png/revision/latest?cb=20160730213532',
@@ -1273,7 +1802,8 @@ client.on('message', message => {
 		"stop" : "gooooooooooooooooooo",
 		"let's go" : "lensko",
 		"LET'S GO" : "LENSKO",
-		":thinkerizing:" : ":thinking: **[deep breathing]** :thinking: "
+		":thinkerizing:" : ":thinking: **[deep breathing]** :thinking: ",
+		"haHAA" : ":joy: :ok_hand: :joy: :ok_hand: :joy: :ok_hand: :joy: :ok_hand: :joy: :ok_hand: :joy: :ok_hand: :joy: :ok_hand: :joy: :ok_hand: :joy: :ok_hand: :joy: :ok_hand: :joy: :ok_hand: :joy: :ok_hand: :joy: :ok_hand:"
 	};
 	if(responseObject[message.content]){
 		message.channel.send(responseObject[message.content]);
@@ -1297,26 +1827,6 @@ client.on('message', message => {
 	'https://cdn.discordapp.com/attachments/275334819737501696/320019929233489940/salted.png',
 	'https://cdn.discordapp.com/attachments/275334819737501696/320008151904813056/siblingdrama.png',
 	'https://cdn.discordapp.com/attachments/275334819737501696/320017022308057090/realtrash.png'
-	];
-	var customtriggerlist = ['arcanestrats',
-	'calculus',
-	'cancer',
-	'ecksdee',
-	'exposed',
-	'fail',
-	'fidgetspinner',
-	'gj',
-	'gotem',
-	'hate',
-	'heckoff',
-	'hierarchy',
-	'justno',
-	'pranked',
-	'questionmark',
-	'roflcopter',
-	'salty',
-	'siblingdrama',
-	'trash'
 	];
 	var customresponselist = ['get your very own arcane wizard today for 6 easy payments of $69.99!',
 	'right like i would know that (actually i do) now get back to work!',
