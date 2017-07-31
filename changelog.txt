@@ -43,3 +43,11 @@ v2.2.0
 - copypastas!
 - stopwatches!
 - this way of changelogging is dumb!
+v2.3.0
+- sans command added
+- react command added
+- regional text converter added
+v2.4.0
+- react command faster/substitution letters added (still number bugs!)
+- space and reverse command added
+- flip a coin
