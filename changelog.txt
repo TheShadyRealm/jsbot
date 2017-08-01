@@ -51,3 +51,7 @@ v2.4.0
 - react command faster/substitution letters added (still number bugs!)
 - space and reverse command added
 - flip a coin
+v2.5.0
+- translate shet
+- have the bot decide whether you should stop staying up till 3 playing osu or not
+- play the unlimited slot machine where you literally can't lose
