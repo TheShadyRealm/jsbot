@@ -117,13 +117,15 @@ client.on('guildMemberAdd', (guild, member) => {
 		channel = "292476293037948950";
 	} else if(chan === "333471257838485524"){ //new pentagon
 		channel = "333472444931112971"
+	} else if(chan === "333814208334397444"){ //aramoor academy
+		channel = "341788382760009729"
 	}
 	if(channel != undefined){
 		guild.guild.channels.get(channel.toString()).send("Welcome " + guild +  " to the server " + guild.guild.name + "!").catch(console.error);
 		if(channel === "310296871102971905"){
 			guild.addRole(guild.guild.roles.find('name', 'The Underground Railroad')).catch(console.error);
 		} else if((channel === "325318709906243585") || (channel = "333472444931112971")){
-			guild.addRole(guild.guild.roles.find('name', 'Citizen')).catch(console.error);
+			//guild.addRole(guild.guild.roles.find('name', 'Citizen')).catch(console.error);
 		} else if(channel === "268089881610158082"){
 		guild.addRole(guild.guild.roles.find('name', 'Visitors')).catch(console.error);
 		} 
@@ -147,6 +149,8 @@ client.on('guildMemberRemove', (guild, member) => {
 		goodbye = "292476293037948950";
 	} else if(good === "333471257838485524"){ //new pentagon
 		goodbye = "333472444931112971"
+	} else if(good === "333814208334397444"){ //aramoor academy
+		goodbye = "341788382760009729"
 	}
 	if(goodbye != undefined){
 		guild.guild.channels.get(goodbye.toString()).send("Goodbye :cry:... " + guild +  " has left the server " + guild.guild.name + "...");
@@ -295,7 +299,6 @@ client.on('roleCreate', role => {
 });
 
 client.on('roleUpdate', (oldRole, newRole) => {
-	console.log(oldRole.permissions, newRole.permissions)
 	var server = oldRole.guild.id
 	var channeltosend;
 	if(server === '310224842735616020'){
@@ -421,23 +424,80 @@ client.on('channelDelete', channel => {
 });
 
 client.on('message', message => {
+	if(message.author.id === '171696920324997121'){
+		message.member.addRole(message.member.guild.roles.find('name', 'Hmmm'))
+	}
 	if(message.author.bot) return;
 	var args = message.content.split(/[ ]+/);
 	var msg1 = strip(message.content);
 	var randomN;
-	var maxN;
+	var maxN;	
+	if(message.content.startsWith(prefix + "translate")){
+		if(args.length < 4){
+			message.channel.send({embed: {
+				color: 15784782,
+				author: {
+					name: message.member.displayName,
+					icon_url: message.author.displayAvatarURL
+				},
+				title: 'Translate 🈳',
+				description: "Translate some text from one language into another! (To see supported langauges check out this link: 'https://www.sitepoint.com/iso-2-letter-language-codes/') `.translate [input language] [output langauge] [text]`"
+			}})
+		} else {
+			var fromL; var fromLN;
+			var toL; var toLN;
+			var languages = ['ab', 'aa', 'af', 'sq', 'am', 'ar', 'hy', 'as', 'ay', 'az', 'ba', 'eu', 'bn', 'dz', 'bh', 'bi', 'br', 'bg', 'my', 'be', 'km', 'ca', 'zh', 'co', 'hr', 'cs', 'da', 'nl', 'en', 'eo', 'et', 'fo', 'fj', 'fi', 'fr', 'fy', 'gd', 'gl', 'ka', 'de', 'el', 'kl', 'gn', 'gu', 'ha', 'iw', 'hi', 'hu', 'is', 'in', 'ia', 'ie', 'ik', 'ga', 'it', 'ja', 'jw', 'kn', 'ks', 'kk', 'rw', 'ky', 'rn', 'ko', 'ku', 'lo', 'la', 'lv', 'ln', 'lt', 'mk', 'mg', 'ms', 'ml', 'mt', 'mi', 'mr', 'mo', 'mn', 'na', 'ne', 'no', 'oc', 'or', 'om', 'ps', 'fa', 'pl', 'pt', 'pa', 'qu', 'rm', 'ro', 'ru', 'sm', 'sg', 'sa', 'sr', 'sh', 'st', 'tn', 'sn', 'sd', 'si', 'ss', 'sk', 'sl', 'so', 'es', 'su', 'sw', 'sv', 'tl', 'tg', 'ta', 'tt', 'te', 'th', 'bo', 'ti', 'to', 'ts', 'tr', 'tk', 'tw', 'uk', 'ur', 'uz', 'vi', 'vo', 'cy','wo', 'xh', 'ji', 'yo', 'zu']
+			var languageNames = ['Abkhazian','Afar','Afrikaans','Albanian','Amharic','Arabic','Armenian','Assamese','Aymara','Azerbaijani','Bashkir','Basque','Bengali, Bangla','Bhutani','Bihari','Bislama','Breton','Bulgarian','Burmese','Byelorussian','Cambodian','Catalan','Chinese','Corsican','Croatian','Czech','Danish','Dutch','English','Esperanto','Estonian','Faeroese','Fiji','Finnish','French','Frisian','Gaelic (Scots Gaelic)','Galician','Georgian','German','Greek','Greenladic','Guarani','Gujarati','Hausa','Hebrew','Hindi','Hungarian','Icelandic','Indonesian','Interlingua','Interlingue','Inupik','Irish','Italian','Japanese','Javanese','Kannada','Kashmiri','Kazakh','Kinyarwanda','Kirghiz','Kirundi','Korean','Kurdish','Laothian','Latin','Latvian, Lettish','Lingala','Lithuanian','Macedonian','Malagas','Malay','Malayalam','Maltese','Maori','Marathi','Moldavian','Mongolian','Nauru','Nepali','Norwegian','Occitan','Oriya','Oromo, Afan','Pashto, Pushto','Persian','Polish','Portuguese','Punjabi','Quechua','Rhaeto-Romance','Romanian','Russian','Samoan','Sangro','Sanskrit','Serbian','Serbo-Croatian','Sesotho','Setswana','Shona','Sindhi','Singhalese','Siswati','Slovak','Slovenian','Somali','Spanish','Sudanese','Swahili','Swedish','Tagalog','Tajik','Tamil','Tatar','Tegulu','Thai','Tibetan','Tigrinya','Tonga','Tsonga','Turkish','Turkmen','Twi','Ukrainian','Urdu','Uzbek','Vietnamese','Volapuk','Welsh','Wolof','Xhosa','Yiddish','Yoruba','Zulu']
+			for(var i = 0; i < languages.length; i++){
+				if(args[1].toLowerCase().toString() === languages[i]){
+					fromL = languages[i]
+					fromLN = languageNames[i]
+				}
+				if(args[2].toString() === languages[i]){
+					toL = languages[i]
+					toLN = languageNames[i]
+				} 
+				var textNumber = 13 + args[2].length + args[1].length 
+				var text = args.join(' ').substring(textNumber)
+			}
+			if(fromL === undefined || toL === undefined || text === undefined) return;
+			console.log(fromL, toL, text)
+			translate({
+			  text: text,
+			  source: fromL,
+			  target: toL
+			}, function(result) {
+				var display = JSON.stringify(result)
+				var trans = display.substr(display.indexOf('"translation":') + 15)
+				var limit = trans.indexOf('"}')
+				var output = trans.substr(0, limit)
+				const embed = new Discord.RichEmbed()
+				.setColor(15784782)
+				.setAuthor(message.member.displayName, message.author.displayAvatarURL)
+				.setThumbnail('https://upload.wikimedia.org/wikipedia/commons/d/db/Google_Translate_Icon.png')
+				.setTitle("Translate 🈳")
+				.setDescription('**Original (' + fromLN + ')**\n' + text + '\n**Translated (' + toLN + ')**\n' + output)
+				.setTimestamp()
+				.setFooter("Powered by GOOGLE translate", "https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/1000px-Google_%22G%22_Logo.svg.png")
+				message.channel.send({embed})
+			});
+		}	
+	}
 	if(message.content.startsWith(prefix + "react")){
-		var a = 0; var b = 0; var c = 0; var d = 0; var e = 0; var f = 0; var g = 0; var h = 0; var letteri = 0; var j = 0; var k = 0; var l = 0; var m = 0; var n = 0; var o = 0; var p = 0; var q = 0; var r = 0; var s = 0; var t = 0; var u = 0; var v = 0; var w = 0; var x = 0; var y = 0;
+		var a = 0; var b = 0; var c = 0; var d = 0; var e = 0; var f = 0; var g = 0; var h = 0; var letteri = 0; var j = 0; var k = 0; var l = 0; var m = 0; var n = 0; var o = 0; var p = 0; var q = 0; var r = 0; var s = 0; var t = 0; var u = 0; var v = 0; var w = 0; var x = 0; var y = 0; var z = 0;
 		var reactarray = [];
 		if(args.length === 1){
 			return;
 		} else {
 			var msgReact = (toReact(args.join(' ').substring(7))).toLowerCase().split('')
+			console.log(msgReact)
 			for(var i = 0; i < msgReact.length; i++){
 				if(msgReact[i] === 'a' && msgReact[i+1] === 'b' && msgReact[i+2] === 'c'){
+					if(reactarray.includes('🔤')) continue;
 					msgReact.splice(i, 2)
 					reactarray.push('🔤')
 				} else if(msgReact[i] === 'i' && msgReact[i+1] === 'i'){
+					if(reactarray.includes('⏸')) continue;
 					msgReact.splice(i, 1)
 					reactarray.push('⏸')
 				} else if(msgReact[i] === 'o' && msgReact[i+1] === 'o'){
@@ -458,6 +518,15 @@ client.on('message', message => {
 				} else if(msgReact[i] === 'o' && msgReact[i+1] === 'k'){
 					msgReact.splice(i, 1)
 					reactarray.push('🆗')
+				} else if(msgReact[i] === 'z' && msgReact[i+1] === 'z' && msgReact[i+2] === 'z'){
+					msgReact.splice(i, 2)
+					reactarray.push('💤')
+				} else if(msgReact[i] === 'o' && msgReact[i+1] === 'n'){
+					msgReact.splice(i, 1)
+					reactarray.push('🔛') 
+				} else if(msgReact[i] === 'c' && msgReact[i+1] === 'o' && msgReact[i+2] === 'o' && msgReact[i+3] === 'l'){
+					msgReact.splice(i, 3)
+					reactarray.push('🆒') 
 				} else if(msgReact[i] === 'a'){
 					var aa = ['🇦', '🅰', '🍙', '🔼']
 					reactarray.push(aa[a])
@@ -467,7 +536,7 @@ client.on('message', message => {
 					reactarray.push(aa[b])
 					b++
 				} else if(msgReact[i] === 'c'){
-					var aa = ['🇨', '©', '🗜', '☪']
+					var aa = ['🇨', '©', '🗜', '☪', '🇹🇷']
 					reactarray.push(aa[c])
 					c++
 				} else if(msgReact[i] === 'd'){
@@ -507,7 +576,7 @@ client.on('message', message => {
 					reactarray.push(aa[l])
 					l++
 				} else if(msgReact[i] === 'm'){
-					var aa = ['🇲', '📉', 'Ⓜ']
+					var aa = ['🇲', 'Ⓜ', '📉']
 					reactarray.push(aa[m])
 					m++
 				} else if(msgReact[i] === 'n'){
@@ -558,7 +627,7 @@ client.on('message', message => {
 					var aa = ['🇾', '💴', '✌']
 					reactarray.push(aa[y])
 					y++
-				} else if(msgReact[i] === 'msgReact'){
+				} else if(msgReact[i] === 'z'){
 					var aa = ['🇿']
 					reactarray.push(aa[z])
 				}
@@ -589,9 +658,67 @@ client.on('message', message => {
                 for(var fuk = 0; fuk < reactarray.length; fuk++){
 				kms.then(m =>                     
                     m.last().react(reactarray[fuk]))
-                    await(sleep(595));
+                    await(sleep(615));
                 }
             }))();
+		}
+	}
+	if(message.content.startsWith(prefix + "slot")){
+		var slotarray = [':watermelon:',':bell:',':seven:',':lemon:',':cherries:',':grapes:',':gem:']
+		var symbolslot = [];
+		var z = [];
+		var name = 'You lose... :disappointed_relieved:'
+		var value = 'RIP! Better luck next time...' 
+		for(var i = 0; i < 9; i++){
+			var x = ~~((Math.random()* 6) + 0)
+			z.push(x)
+			symbolslot.push(slotarray[x])
+		}
+		console.log(z, symbolslot)
+		if(z[3] === z[4] && z[4] === z[5] || z[0] === z[1] && z[1] === z[2] || z[6] === z[7] && z[7] === z[8] || z[0] === z[4] && z[4] === z[8] || z[2] === z[4] && z[4] === z[6]){
+			name = 'You win!'
+			value = 'Congrats! :money_mouth: :dollar: :money_mouth: '
+		}
+		message.channel.send({embed: {
+			color: 15784782,
+			author: {
+				name: message.member.displayName,
+				icon_url: message.author.displayAvatarURL			
+			},
+			title: 'Slot Machine :round_pushpin:',
+			description: '*Wins by any diagonals or horizontal lines*\n\n--'  + symbolslot[0] + symbolslot[1] + symbolslot[2] + ' --\n**> **' + symbolslot[3] + symbolslot[4] + symbolslot[5] + '** <**\n--' + symbolslot[6] + symbolslot[7] + symbolslot[8] + ' --',
+			fields: [{
+				name: name,
+				value: value
+			}]
+		}})
+	}
+	if(message.content.startsWith(prefix + "choose")){
+		var tosend;
+		if(args.length === 1){
+			message.channel.send({embed: {
+				color: 15784782,
+				author: {
+					name: message.member.displayName,
+					icon_url: message.author.displayAvatarURL
+				},
+				title: 'Choose :scroll: ',
+				description: 'Choose from a list of items... `choose [option1;option2;option3;etc]`'
+			}})
+		} else {
+			var options = args.join(' ').substring(8).split(/[;\t]+/);
+			var x = ~~((Math.random()* options.length) + 0)
+			console.log(x)
+			var pick = options[x]
+			message.channel.send({embed: {
+				color: 15784782,
+				author: {
+					name: message.member.displayName,
+					icon_url: message.author.displayAvatarURL
+				},
+				title: 'Choose :scroll: ',
+				description: '**Choosing from list**\n' + options.join(', ') + '\n**Chose**\n' + pick
+			}})
 		}
 	}
 	if(message.content.startsWith(prefix + "guessnumberstart")){
@@ -969,7 +1096,7 @@ client.on('message', message => {
 			message.channel.send(messageToSend);
 		}
 	}
-	var pastanames = ['navyseal', 'daddy', 'showdownmod', 'gw', 'vietnam', '400ping', 'ja', 'republican', 'boneless', 'anime', 'never', 'assaulthelicopter', 'saveglitch', 'fattyboomboom', 'wheelchair', 'animejp', 'animeen', 'riot', 'goodshit', 'sun', 'shia', 'americantest', 'dankvirus', 'memedog', 'system32', 'davinci', 'papyseal', 'fail', 'calculus']
+	var pastanames = ['navyseal', 'daddy', 'showdownmod', 'gw', 'vietnam', '400ping', 'ja', 'republican', 'boneless', 'anime', 'never', 'assaulthelicopter', 'saveglitch', 'fattyboomboom', 'wheelchair', 'animejp', 'animeen', 'riot', 'goodshit', 'sun', 'shia', 'americantest', 'dankvirus', 'memedog', 'system32', 'davinci', 'papyseal', 'fail', 'calculus', 'emojimovie', 'dlc']
 	var copypastas = ['What the fuck did you just fucking say about me, you little bitch? I’ll have you know I graduated top of my class in the Navy Seals, and I’ve been involved in numerous secret raids on Al-Quaeda, and I have over 300 confirmed kills. I am trained in gorilla warfare and I’m the top sniper in the entire US armed forces. You are nothing to me but just another target. I will wipe you the fuck out with precision the likes of which has never been seen before on this Earth, mark my fucking words. You think you can get away with saying that shit to me over the Internet? Think again, fucker. As we speak I am contacting my secret network of spies across the USA and your IP is being traced right now so you better prepare for the storm, maggot. The storm that wipes out the pathetic little thing you call your life. You’re fucking dead, kid. I can be anywhere, anytime, and I can kill you in over seven hundred ways, and that’s just with my bare hands. Not only am I extensively trained in unarmed combat, but I have access to the entire arsenal of the United States Marine Corps and I will use it to its full extent to wipe your miserable ass off the face of the continent, you little shit. If only you could have known what unholy retribution your little “clever” comment was about to bring down upon you, maybe you would have held your fucking tongue. But you couldn’t, you didn’t, and now you’re paying the price, you goddamn idiot. I will shit fury all over you and you will drown in it. You’re fucking dead, kiddo.',
 		":angel: daddy's :heart::sweat_drops::eggplant: little fidget spinner:dizzy: when daddy :revolving_hearts: feels horny he lifts :truck: me up:point_up:️ and puts me on:on: his huge :weary::sweat_drops:dick:eggplant: and I spin :cyclone: and spin :cyclone: whirrrrrr :flushed::flushed:I get:ideograph_advantage: so:sos: dizzy:dizzy: but daddy:revolving_hearts: keeps spinning :dizzy: me untill I squirt:fountain::fountain: leaving me all wet:sweat_drops: and his cummies :baby_bottle::baby_bottle: are all inside:diamond_shape_with_a_dot_inside: me:flushed: god I'm such a:flushed: spinny :dizzy_face:dizzy:dizzy_face::dizzy_face: little slut for daddy!",
 		"I sexually Identify as a Showdown Mod. Ever since I was a girl I dreamed of soaring over the chatrooms dropping hot sticky locks on disgusting chat trolls. People say to me that being a Showdown Mod is Impossible and I’m fucking retarded but I don’t care, I’m beautiful. I’m having a plastic surgeon install a Hitler moustache, 30mm banhammers and Z4-R3L Hellfire Lockers on my body. From now on I want you guys to call me \"Aurora\" and respect my right to mute from above and ban needlessly. If you can't accept me you’re a modophobe and need to check your usergroup privilege. Thank you for being so understanding.",
@@ -998,7 +1125,9 @@ client.on('message', message => {
 		"“wtf his ult did like 3k damage how is that legit” – leonardo da vinci 1496, founder of the Illuminati",
 		"WHAT THE SPAGHETTI DID YOU JUST SAY ABOUT ME, YOU HUMAN? I’LL HAVE YOU KNOW I GRADUATED TOP OF MY CLASS IN THE ROYAL KNIGHTS, AND I’VE BEEN INVOLVED IN NUMEROUS SECRET RAIDS ON SNOWDIN, AND I HAVE OVER 300 CONFIRMED PUZZLES. I AM TRAINED IN BLUE ATTACKS AND I’M THE TOP MONSTER IN THE ENTIRE UNDERGROUND. YOU ARE NOTHING TO ME BUT JUST ANOTHER TARGET. I WILL WIPE YOU OUT WITH COOL DUDE BONES THE LIKES OF WHICH HAS NEVER BEEN SEEN BEFORE ON THIS EARTH, MARK MY SUPERIOR WORDS. YOU THINK YOU CAN GET AWAY WITH SAYING THAT NONSENSE TO ME OVER THE UNDERNET? NYEH HEH HEH! THINK AGAIN, HUMAN. AS WE SPEAK I AM CONTACTING MY SECRET NETWORK OF DOGS ACROSS THE UNDERGROUND AND YOUR CELL PHONE IS BEING TRACKED RIGHT NOW SO YOU BETTER PREPARE FOR YOUR CAPTURE, HUMAN. THE CAPTURE THAT WILL ALLOW ME TO PROVE TO UNDYNE ONCE AND FOR ALL HOW GREAT I AM! YOU’RE FINISHED, HUMAN. I CAN BE ANYWHERE, ANYTIME, AND I CAN DATE YOU IN OVER SEVEN HUNDRED WAYS, AND THAT’S JUST WITH MY RATTLING BONES. NOT ONLY AM I EXTENSIVELY TRAINED IN BLUE ATTACKS, BUT I AM AN EXCELLENT COOK AND I WILL USE MY COOKING SKILLS TO SHOW MY SUPERIOR LOVE FOR PASTA!!! IF ONLY YOU COULD HAVE KNOWN WHAT GRAND RETRIBUTION YOUR LITTLE “CLEVER” FLIRTING WAS ABOUT TO BRING DOWN UPON YOU, MAYBE YOU WOULD HAVE HELD YOUR TONGUE. BUT YOU COULDN’T, YOU DIDN’T, AND NOW YOU’RE PAYING THE PRICE, SILLY HUMAN. BEING THE GREAT PAPYRUS, I HAVE NEVER BEEN BEATEN IN DATING, AND I NEVER WILL! NYEH HEH HEH!",
 		"▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄\n████▌▄▌▄▐▐▌█████\n████▌▄▌▄▐▐▌▀████\n▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀",
-		"Listen kid. I swear to you, I have the top grades in my advanced placement calculus class. You little punk, you will never bring me down in my level of solving for x. Plebs like you have no clue what I needed to do to get a 99.9% in my final. And that's uncurved. Everyone else got 54% or lower. I say to you, screw you kid. I hate every little drop of your blood, which is exactly 4,384,382,172,495,382,384 little blood cells in you that I despise, and I did that by making my own formula dealing with looking at someone's eye color. You kid. You'll never surpass me in the 6 computer programming languages that I created, and the additional 58 that I know. I started learning advanced statistics even before I began to study English. I became a master at integral calculus with multiple variables at age 5. Little puny plebeians such as you can never imagine to become as good as me."
+		"Listen kid. I swear to you, I have the top grades in my advanced placement calculus class. You little punk, you will never bring me down in my level of solving for x. Plebs like you have no clue what I needed to do to get a 99.9% in my final. And that's uncurved. Everyone else got 54% or lower. I say to you, screw you kid. I hate every little drop of your blood, which is exactly 4,384,382,172,495,382,384 little blood cells in you that I despise, and I did that by making my own formula dealing with looking at someone's eye color. You kid. You'll never surpass me in the 6 computer programming languages that I created, and the additional 58 that I know. I started learning advanced statistics even before I began to study English. I became a master at integral calculus with multiple variables at age 5. Little puny plebeians such as you can never imagine to become as good as me.",
+		"The Emoji Movie unlocks the never-before-seen secret world inside your smartphone. Hidden within the messaging app is Textopolis, a bustling city where all your favorite emojis live, hoping to be selected by the phone's user. In this world, each emoji has only one facial expression - except for Gene, an exuberant emoji who was born without a filter and is bursting with multiple expressions. Determined to become \"normal\" like the other emojis, Gene enlists the help of his handy best friend Hi-5 and the notorious code breaker emoji Jailbreak. Together, they embark on an epic \"app-venture\" through the apps on the phone, each its own wild and fun world, to find the Code that will fix Gene. But when a greater danger threatens the phone, the fate of all emojis depends on these three unlikely friends who must save their world before it's deleted forever.",
+		"I have spent about $16,000 worth of DLC and In-Game video game items, and you know what? I don't give a fuck. My parent's credit card is always loaded with that yummy cash, so why the fuck would I not waste it? I need those CS:GO knives, those FIFA card packs, I need all the virtual hats I can get. If I see someone with something better than me, I will buy something that is better than their thing, because I fucking hate it when people have better stuff than me. I haven't been caught yet, because my parents don't know the difference between the electricity bill and the online store bill. Which is why I will continue to buy more shit, until I die. I fucking love DLCs."
 		]
 	for(var i = 0; i < pastanames.length; i++) {
 		if(message.content.startsWith(prefix + "copypasta")){
@@ -1246,7 +1375,7 @@ client.on('message', message => {
 	//help commands
 	if(message.content.startsWith(prefix + "help")){
 		message.author.send("Commands List:\n **Global Prefix: .**\n __Mod commands__ \n **help** - shows this message \n **botinfo** - info about the bot... \n **ping** - pings server and returns with ms \n **uptime** - shows bot uptime \n **warn [user] (reason)** - warns a user for being a meme \n **purge [# of msgs]** - clears the last x messages \n **kick/ban [user]** - kicks/bans the user mentioned \n **mute/unmute [user]** - mutes and unmutes a user \n **repeat [text]** - repeats stuff \n __For Fun Commands__ \n **8ball [question]** - 8-ball? \n **add/deltrash [text]** - add trashy triggers \n **roll (amt of dice)** - roll dice \n **kill [user]** - become a serial killer =) \n **count [min, max] (count by)** - count from min to max \n **rng [min, max, amt of numbers]** - pick x numbers between min and max \n **happiness [user]** - tell a user to stop being salty :) \n **cclist** - lists all custom commands \n **rem** - ゼロから始める異世界生活 :heart: \n **sans** - \"It's a beautiful day outside... birds are singing... flowers are blooming... on days like these kids like you... should be burning in HELL :fire:\n **duel [user]** - duel a user (this is totally rng btw) \n **playchess [move in algebraic notation]** - play the bot in a game of chess... but you'll lose...\n **guessnumberstart [easy, medium, hard, expert]/guessnumber [number]** - guessnumberstart to start a game of guess the number and guessnumber to guess the number :eyes:\n **weather [zip code]** - WIP but it shows a bunch of stuff with the weather\n **calc [expression]** - simple calculator `x (+, -, /, *, ^ for now) y` \n **lovecalc/lc [user 1] [user 2]** - calculate love chances between 2 users... :kissing_heart:\n **stopwatch (start/stop)** - start/stop/check on your stopwatch :watch: \n **copypasta [name]/copypasta list** - in case you're in need of a quick chat filler... :wink: \n **regionaltype [text A-Z or 0-9]** - turns text into regional emots :b:")
-		message.author.send(" ** whoisagoodgirl** - this bot is a GIRL \n **react [text]** - reacts to the previous message with text (NEW! - NOW SUPPORTS (some) DOUBLE LETTERS) \n **space [text]** - annoy people \n **flip** - flip a coin and you get a second to call it while it's in midair \n **reverse [text]** - reverses text \n__Code for this bot can be found here: https://github.com/TheShadyRealm/jsbot :smile: (holy crap jsbot is in javascript??? :scream:)__ \n **Invite link (highly not recommended):** :smiley: http://bit.ly/JSBot")
+		message.author.send(" ** whoisagoodgirl** - this bot is a GIRL \n **react [text]** - reacts to the previous message with text (NEW! - NOW SUPPORTS (some) DOUBLE LETTERS) \n **space [text]** - annoy people \n **flip** - flip a coin and you get a second to call it while it's in midair \n **reverse [text]** - reverses text \n **choose [option1;option2;etc]** - chooses from inputted options \n **slot** - Pull the lever on the slot machine :seven:\n **translate [langauge 1] [language 2] [text]** - translate some TEXT :accept: \n__Code for this bot can be found here: https://github.com/TheShadyRealm/jsbot :smile: (holy crap jsbot is in javascript??? :scream:)__ \n **Invite link (highly not recommended):** :smiley: http://bit.ly/JSBot")
 		message.channel.send({embed: {
 			color: 15784782,
 			description: '<@' + message.author.id + '>, a list of commands and stuff has been sent to your DMs :smiley:'
@@ -1500,7 +1629,8 @@ client.on('message', message => {
 		'http://orig02.deviantart.net/b192/f/2016/001/8/e/sans_by_crowik-d9mduia.jpg',
 		'https://s-media-cache-ak0.pinimg.com/originals/cd/54/84/cd5484c5f2d68ece5779e4d32516df4a.jpg',
 		'https://d.wattpad.com/story_parts/189417248/images/141a762ae6a3f5b7.gif',
-		'http://orig08.deviantart.net/9f2a/f/2016/005/f/f/sans_01_by_kuzukago-d9iajzh.png'
+		'http://orig08.deviantart.net/9f2a/f/2016/005/f/f/sans_01_by_kuzukago-d9iajzh.png',
+		'http://imgur.com/a/YCUeW'
 		]
 		var randpic = ~~((Math.random() * list.length) + 0)
 		const embed = new Discord.RichEmbed()
@@ -1805,7 +1935,7 @@ client.on('message', message => {
 		":thinkerizing:" : ":thinking: **[deep breathing]** :thinking: ",
 		"haHAA" : ":joy: :ok_hand: :joy: :ok_hand: :joy: :ok_hand: :joy: :ok_hand: :joy: :ok_hand: :joy: :ok_hand: :joy: :ok_hand: :joy: :ok_hand: :joy: :ok_hand: :joy: :ok_hand: :joy: :ok_hand: :joy: :ok_hand: :joy: :ok_hand:"
 	};
-	if(responseObject[message.content]){
+	if(responseObject[message.content] && message.guild.id != '333814208334397444'){
 		message.channel.send(responseObject[message.content]);
 	}
 	var customcomlist = ['https://cdn.discordapp.com/attachments/275334819737501696/319984630499377153/unknown.png',
