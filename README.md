@@ -36,5 +36,8 @@
 - **space [text]** - annoy people 
 - **flip** - flip a coin and you get a second to call it while it's in midair 
 - **reverse [text]** - reverses text 
+- **choose [option1;option2;etc]** - chooses from inputted options 
+- **slot** - Pull the lever on the slot machine :seven:
+- **translate [langauge 1] [language 2] [text]** - translate some TEXT :accept: 
 - Code for this bot can be found here: https://github.com/TheShadyRealm/jsbot :smile: (holy crap jsbot is in javascript??? :scream:) 
 - Invite link (highly not recommended): :smiley:: http://bit.ly/JSBot
