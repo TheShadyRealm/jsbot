@@ -4,6 +4,9 @@ const client = new Discord.Client();
 const fs = require("fs");
 const config = require("./config.json");
 const prefix = ".";
+const music = require('discord.js-music-v11');
+const wordListPath = require('word-list');
+const wordArray = fs.readFileSync(wordListPath, 'utf8').split('\n');
 var Stockfish = require('stockfish');
 var Chess = require('chess.js').Chess;
 var temp = [];
@@ -28,6 +31,13 @@ var async = require('asyncawait/async');
 var await = require('asyncawait/await');
 var Bitfield = require("bitfield");
 var translate = require('node-google-translate-skidz');
+var upsidedown = require('upsidedown');
+var urban = require('urban');
+var hexRgb = require('hex-rgb');
+const rgbHex = require('rgb-hex');
+var wordnet = require('wordnet');
+var oneLinerJoke = require('one-liner-joke');
+const osu = require("osu")(config.osukey);
 var customtriggerlist = ['arcanestrats',
 	'calculus',
 	'cancer',
@@ -46,22 +56,31 @@ var customtriggerlist = ['arcanestrats',
 	'roflcopter',
 	'salty',
 	'siblingdrama',
+	'shutup',
 	'trash'
 	]; //for ending couple lines
+music(client, {
+	prefix: '.',        // Prefix of '-'.
+	global: false,      // Server-specific queues.
+	maxQueueSize: 10,   // Maximum queue size of 10.
+	clearInvoker: false, // If permissions applicable, allow the bot to delete the messages that invoke it (start with prefix)
+    //channel: 'music'  // Name of voice channel to join. If omitted, will instead join user's voice channel.
+});
+
 let points = JSON.parse(fs.readFileSync("./points.json", "utf8"));
 var forecast = new Forecast({
   service: 'darksky',
   key: config.apikey,
   units: 'fahrenheit',
-  cache: true,     
-  ttl: {            
+  cache: true,
+  ttl: {
     minutes: 27,
     seconds: 45
   }
 });
 function sleep(ms) {
 	return new Promise(resolve => setTimeout(resolve, ms));
-}		
+}
 function mts(s){
 	return(s-(s%=60))/60+(9<s?':':':0')+s
 }
@@ -85,9 +104,9 @@ function combined(array){
     for(var i = 0; i < a.length; ++i) {
         for(var j=i+1; j<a.length; ++j) {
             if(a[i] === a[j]){
-				x.push(a[j])
-                a.splice(j--, 1)
-			}
+							x.push(a[j])
+              a.splice(j--, 1)
+						}
         }
     }
 	for(var f = 0; f < x.length; f++){
@@ -106,7 +125,7 @@ function convert(t){
 
 client.on('guildMemberAdd', (guild, member) => {
 	var channel;
-	var chan = guild.guild.id; 
+	var chan = guild.guild.id;
 	if(chan === "310224842735616020"){ //blueberries
 		channel = "310296871102971905";
 	} else if(chan === "317717365485862922"){ //pentagon
@@ -128,8 +147,8 @@ client.on('guildMemberAdd', (guild, member) => {
 			//guild.addRole(guild.guild.roles.find('name', 'Citizen')).catch(console.error);
 		} else if(channel === "268089881610158082"){
 		guild.addRole(guild.guild.roles.find('name', 'Visitors')).catch(console.error);
-		} 
-		console.log("server.welcome.id " + guild.guild.id + " " + guild.guild.name); console.log("member.welcome.id " + guild.id + " " + guild.displayName); console.log("channel.welcome.id " + chan); 
+		}
+		console.log("server.welcome.id " + guild.guild.id + " " + guild.guild.name); console.log("member.welcome.id " + guild.id + " " + guild.displayName); console.log("channel.welcome.id " + chan);
 	} else {
 		return;
 	}
@@ -137,7 +156,7 @@ client.on('guildMemberAdd', (guild, member) => {
 
 client.on('guildMemberRemove', (guild, member) => {
 	var goodbye;
-	var good = guild.guild.id; 
+	var good = guild.guild.id;
 	console.log(good, goodbye);
 	if(good === "310224842735616020"){ //blueberries
 		goodbye = "310296871102971905";
@@ -154,7 +173,7 @@ client.on('guildMemberRemove', (guild, member) => {
 	}
 	if(goodbye != undefined){
 		guild.guild.channels.get(goodbye.toString()).send("Goodbye :cry:... " + guild +  " has left the server " + guild.guild.name + "...");
-		console.log("server.goodbye.id " + guild.guild.id + " " + guild.guild.name); console.log("member.goodbye.id " + guild.id + " " + guild.displayName); console.log("channel.goodbye.id " + good); 
+		console.log("server.goodbye.id " + guild.guild.id + " " + guild.guild.name); console.log("member.goodbye.id " + guild.id + " " + guild.displayName); console.log("channel.goodbye.id " + good);
 	} else {
 		return;
 	}
@@ -166,7 +185,7 @@ client.on('ready', () => {
 	this.date = Date.now();
 });
 
-client.on('messageReactionAdd', (messageReaction, user) => {	
+client.on('messageReactionAdd', (messageReaction, user) => {
 	if(messageReaction.emoji.toString() === '📌' && messageReaction.count === 3){
 		messageReaction.message.pin()
 	}
@@ -178,9 +197,11 @@ client.on('messageDelete', message => {
 	if(server === '310224842735616020'){
 		channeltosend = '324667410605015041';
 	} else if(server === '333471257838485524'){
-		channeltosend = '340740982544793600';
+		channeltosend = '342207572700299264';
 	} else if(server === '272473930520854529'){
 		channeltosend = '293840751836659714';
+	} else if(server === '333814208334397444'){
+		channeltosend = '341805947641135105';
 	} else {
 		return;
 	}
@@ -203,10 +224,12 @@ client.on('messageDeleteBulk', messages => {
 	if(server === '310224842735616020'){
 		channeltosend = '324667410605015041';
 	} else if(server === '333471257838485524'){
-		channeltosend = '340740982544793600';
+		channeltosend = '342207572700299264';
 	} else if(server === '272473930520854529'){
 		channeltosend = '293840751836659714';
-	} else {
+	} else if(server === '333814208334397444'){
+		channeltosend = '341805947641135105';
+	}  else {
 		return;
 	}
 	for(var i = 0; i < mcontent.length; i++){
@@ -221,8 +244,9 @@ client.on('messageDeleteBulk', messages => {
 		}});
 	}
 });
-	
+
 client.on('messageUpdate', (oldMessage, newMessage) => {
+	if(oldMessage.content === newMessage.content) return;
 	var message = oldMessage;
 	if(message.author.bot) return;
 	var server = message.guild.id;
@@ -230,10 +254,12 @@ client.on('messageUpdate', (oldMessage, newMessage) => {
 	if(server === '310224842735616020'){
 		channeltosend = '324667410605015041';
 	} else if(server === '333471257838485524'){
-		channeltosend = '340740982544793600';
+		channeltosend = '342207572700299264';
 	} else if(server === '272473930520854529'){
 		channeltosend = '293840751836659714';
-	} else {
+	} else if(server === '333814208334397444'){
+		channeltosend = '341805947641135105';
+	}  else {
 		return;
 	}
 	message.guild.channels.get(channeltosend).send({embed: {
@@ -253,7 +279,7 @@ client.on('guildMemberUpdate', (oldMember, newMember) => {
 	var channeltosend;
 	var tosend;
 	if(oldroles.length > newroles.length){
-		tosend = '**Role:** <@&' + rolechange + '> removed from ' + message  
+		tosend = '**Role:** <@&' + rolechange + '> removed from ' + message
 	} else if(oldroles.length < newroles.length){
 		tosend = '**Role:** <@&' + rolechange + '> added to ' + message
 	} else if(oldMember.displayName != newMember.displayName){
@@ -264,10 +290,12 @@ client.on('guildMemberUpdate', (oldMember, newMember) => {
 	if(server === '310224842735616020'){
 		channeltosend = '324667410605015041';
 	} else if(server === '333471257838485524'){
-		channeltosend = '340740982544793600';
+		channeltosend = '342207572700299264';
 	} else if(server === '272473930520854529'){
 		channeltosend = '293840751836659714';
-	} else {
+	} else if(server === '333814208334397444'){
+		channeltosend = '341805947641135105';
+	}  else {
 		return;
 	}
 	message.guild.channels.get(channeltosend).send({embed: {
@@ -284,29 +312,34 @@ client.on('roleCreate', role => {
 	if(server === '310224842735616020'){
 		channeltosend = '324667410605015041';
 	} else if(server === '333471257838485524'){
-		channeltosend = '340740982544793600';
+		channeltosend = '342207572700299264';
 	} else if(server === '272473930520854529'){
 		channeltosend = '293840751836659714';
+	} else if(server === '333814208334397444'){
+		channeltosend = '341805947641135105';
 	} else {
 		return;
 	}
 	role.guild.channels.get(channeltosend).send({embed: {
 		color: 15784782,
 		title: 'Role Creation :crossed_swords:',
-		description: '**New Role:** `' + role.name + '` **created **', 
+		description: '**New Role:** `' + role.name + '` **created **',
 		timestamp: new Date()
 	}});
 });
 
 client.on('roleUpdate', (oldRole, newRole) => {
+	if(oldRole.name === newRole.name) return;
 	var server = oldRole.guild.id
 	var channeltosend;
 	if(server === '310224842735616020'){
 		channeltosend = '324667410605015041';
 	} else if(server === '333471257838485524'){
-		channeltosend = '340740982544793600';
+		channeltosend = '342207572700299264';
 	} else if(server === '272473930520854529'){
 		channeltosend = '293840751836659714';
+	} else if(server === '333814208334397444'){
+		channeltosend = '341805947641135105';
 	} else {
 		return;
 	}
@@ -316,7 +349,7 @@ client.on('roleUpdate', (oldRole, newRole) => {
 	oldRole.guild.channels.get(channeltosend).send({embed: {
 		color: 15784782,
 		title: 'Role Name Edit :pencil:',
-		description: '**Role name changed from** `' + oldRole.name + '` **to** `' + newRole.name + '`', 
+		description: '**Role name changed from** `' + oldRole.name + '` **to** `' + newRole.name + '`',
 		timestamp: new Date()
 	}});
 });
@@ -327,16 +360,18 @@ client.on('roleDelete', role => {
 	if(server === '310224842735616020'){
 		channeltosend = '324667410605015041';
 	} else if(server === '333471257838485524'){
-		channeltosend = '340740982544793600';
+		channeltosend = '342207572700299264';
 	} else if(server === '272473930520854529'){
 		channeltosend = '293840751836659714';
+	} else if(server === '333814208334397444'){
+		channeltosend = '341805947641135105';
 	} else {
 		return;
 	}
 	role.guild.channels.get(channeltosend).send({embed: {
 		color: 15784782,
 		title: 'Role Deletion :recycle:',
-		description: '**Role:** `' + role.name + '` **deleted**', 
+		description: '**Role:** `' + role.name + '` **deleted**',
 		timestamp: new Date()
 	}});
 });
@@ -347,16 +382,18 @@ client.on('guildBanAdd', (guild, user) => {
 	if(server === '310224842735616020'){
 		channeltosend = '324667410605015041';
 	} else if(server === '333471257838485524'){
-		channeltosend = '340740982544793600';
+		channeltosend = '342207572700299264';
 	} else if(server === '272473930520854529'){
 		channeltosend = '293840751836659714';
+	} else if(server === '333814208334397444'){
+		channeltosend = '341805947641135105';
 	} else {
 		return;
 	}
 	guild.channels.get(channeltosend).send({embed: {
 		color: 15784782,
 		title: 'User banned from server :hammer:',
-		description: user.username + '** was banned from **' + guild.name, 
+		description: user.username + '** was banned from **' + guild.name,
 		timestamp: new Date()
 	}});
 });
@@ -367,16 +404,18 @@ client.on('guildBanRemove', (guild, user) => {
 	if(server === '310224842735616020'){
 		channeltosend = '324667410605015041';
 	} else if(server === '333471257838485524'){
-		channeltosend = '340740982544793600';
+		channeltosend = '342207572700299264';
 	} else if(server === '272473930520854529'){
 		channeltosend = '293840751836659714';
+	} else if(server === '333814208334397444'){
+		channeltosend = '341805947641135105';
 	} else {
 		return;
 	}
 	guild.channels.get(channeltosend).send({embed: {
 		color: 15784782,
 		title: 'User unbanned from server :white_check_mark:',
-		description: user.username + '** was unbanned from **' + guild.name, 
+		description: user.username + '** was unbanned from **' + guild.name,
 		timestamp: new Date()
 	}});
 });
@@ -388,16 +427,18 @@ client.on('channelCreate', channel => {
 	if(server === '310224842735616020'){
 		channeltosend = '324667410605015041';
 	} else if(server === '333471257838485524'){
-		channeltosend = '340740982544793600';
+		channeltosend = '342207572700299264';
 	} else if(server === '272473930520854529'){
 		channeltosend = '293840751836659714';
+	} else if(server === '333814208334397444'){
+		channeltosend = '341805947641135105';
 	} else {
 		return;
 	}
 	channel.guild.channels.get(channeltosend).send({embed: {
 		color: 15784782,
 		title: 'Channel Created :tools: ',
-		description: '**New channel created: **<#' + channel.id + '>', 
+		description: '**New channel created: **<#' + channel.id + '>',
 		timestamp: new Date()
 	}});
 });
@@ -409,29 +450,147 @@ client.on('channelDelete', channel => {
 	if(server === '310224842735616020'){
 		channeltosend = '324667410605015041';
 	} else if(server === '333471257838485524'){
-		channeltosend = '340740982544793600';
+		channeltosend = '342207572700299264';
 	} else if(server === '272473930520854529'){
 		channeltosend = '293840751836659714';
+	} else if(server === '333814208334397444'){
+		channeltosend = '341805947641135105';
 	} else {
 		return;
 	}
 	channel.guild.channels.get(channeltosend).send({embed: {
 		color: 15784782,
 		title: 'Channel Deleted :x: ',
-		description: '**Channel deleted: **' + channel.name, 
+		description: '**Channel deleted: **' + channel.name,
 		timestamp: new Date()
 	}});
 });
 
 client.on('message', message => {
-	if(message.author.id === '171696920324997121'){
-		message.member.addRole(message.member.guild.roles.find('name', 'Hmmm'))
-	}
 	if(message.author.bot) return;
 	var args = message.content.split(/[ ]+/);
 	var msg1 = strip(message.content);
 	var randomN;
-	var maxN;	
+	var maxN;
+	if(message.content.startsWith(prefix + "osub")){
+		if(args.length === 1) return;
+		var checkmap = args[1].replace(/[\D]/g, '')
+		var checkset = args[1].replace(/[/]+[^/]+\w|[:]/g, '')
+		console.log(checkmap, checkset)
+		if(checkset === 'https/s'){
+			osu.get_beatmaps({
+				"s": checkmap,
+				"limit" : 1
+				}).then(function(result) {
+					console.log(result)
+					var b = JSON.stringify(result)
+					var a = b.substr(b.indexOf('artist') + 9)
+					var acount = a.indexOf('title')
+					var artist = a.substr(0, acount - 3)
+					var n = b.substr(b.indexOf('title') + 8)
+					var ncount = n.indexOf('creator')
+					var name = n.substr(0, ncount - 3)
+					var c = b.substr(b.indexOf('creator') + 10)
+					var ccount = c.indexOf('bpm')
+					var creator = c.substr(0, ccount - 3)
+					var bpmf = b.substr(b.indexOf('bpm') + 6)
+					var bpmcount = bpmf.indexOf('source')
+					var bpm = bpmf.substr(0, bpmcount - 3)
+					var l = b.substr(b.indexOf('total_length') + 15)
+					var lcount = l.indexOf('hit_length')
+					var length = mts(l.substr(0, lcount - 3))
+					var max = b.substr(b.indexOf('max_combo') + 12)
+					var maxcount = max.indexOf('difficultyrating')
+					var maxcombo = max.substr(0, maxcount - 3)
+					var d = b.substr(b.indexOf('difficultyrating') + 19)
+					var dcount = d.indexOf(']')
+					var diff = (d.substr(0, dcount - 2))
+					var v = b.substr(b.indexOf('version') + 10)
+					var vcount = v.indexOf('file_md5')
+					var version = v.substr(0, vcount - 3)
+					const embed = new Discord.RichEmbed()
+					.setAuthor(message.member.displayName, message.author.displayAvatarURL)
+					.setColor(15784782)
+					.setTitle('Osu Beatmap Lookup: ID - ' + checkmap)
+					.setThumbnail('http://pre09.deviantart.net/141d/th/pre/f/2016/115/a/8/osu__logo_by_shadowthegod-da05j13.png')
+					.addField('Title', '**[' + artist + ' - ' + name + ']** by ' + creator, true)
+					.addField('BPM', bpm, true)
+					.addField('Length', length, true)
+					.addField('Max Combo', maxcombo, true)
+					.addField('Difficulty', parseFloat(diff).toFixed(2) + '☆', true)
+					.addField('Version', version, true)
+					message.channel.send({embed})
+			});
+		} else if(checkset === 'https/b'){
+			osu.get_beatmaps({
+				"b": checkmap
+				}).then(function(result) {
+					console.log(result)
+					var b = JSON.stringify(result)
+					var a = b.substr(b.indexOf('artist') + 9)
+					var acount = a.indexOf('title')
+					var artist = a.substr(0, acount - 3)
+					var n = b.substr(b.indexOf('title') + 8)
+					var ncount = n.indexOf('creator')
+					var name = n.substr(0, ncount - 3)
+					var c = b.substr(b.indexOf('creator') + 10)
+					var ccount = c.indexOf('bpm')
+					var creator = c.substr(0, ccount - 3)
+					var bpmf = b.substr(b.indexOf('bpm') + 6)
+					var bpmcount = bpmf.indexOf('source')
+					var bpm = bpmf.substr(0, bpmcount - 3)
+					var l = b.substr(b.indexOf('total_length') + 15)
+					var lcount = l.indexOf('hit_length')
+					var length = mts(l.substr(0, lcount - 3))
+					var max = b.substr(b.indexOf('max_combo') + 12)
+					var maxcount = max.indexOf('difficultyrating')
+					var maxcombo = max.substr(0, maxcount - 3)
+					var d = b.substr(b.indexOf('difficultyrating') + 19)
+					var dcount = d.indexOf(']')
+					var diff = (d.substr(0, dcount - 2))
+					var v = b.substr(b.indexOf('version') + 10)
+					var vcount = v.indexOf('file_md5')
+					var version = v.substr(0, vcount - 3)
+					const embed = new Discord.RichEmbed()
+					.setAuthor(message.member.displayName, message.author.displayAvatarURL)
+					.setColor(15784782)
+					.setTitle('Osu Beatmap Lookup: ID - ' + checkmap)
+					.setThumbnail('http://pre09.deviantart.net/141d/th/pre/f/2016/115/a/8/osu__logo_by_shadowthegod-da05j13.png')
+					.addField('Title', '**[' + artist + ' - ' + name + ']** by ' + creator, true)
+					.addField('BPM', bpm, true)
+					.addField('Length', length, true)
+					.addField('Max Combo', maxcombo, true)
+					.addField('Difficulty', parseFloat(diff).toFixed(2) + '☆', true)
+					.addField('Version', version, true)
+					message.channel.send({embed})
+			});
+		} else {
+			return;
+		}
+	}
+	if(message.content.startsWith(prefix + "joke")){
+		var getRandomJoke = oneLinerJoke.getRandomJoke();
+		var s = JSON.stringify(getRandomJoke)
+		var body = s.substr(s.indexOf('body') + 7)
+		var bodycount = body.indexOf('tags') - 3
+		var fullbody = body.substr(0, bodycount)
+		console.log(fullbody)
+		message.channel.send({embed: {
+			color: 15784782,
+			title: 'One-Line Jokes :laughing:',
+			description: fullbody
+		}})
+	}
+	if(message.content.startsWith(prefix + "avatar")){
+		var getUser = message.guild.member(message.mentions.users.first())
+		var getAvatar = getUser.user.displayAvatarURL
+		console.log(getAvatar)
+		const embed = new Discord.RichEmbed()
+		.setTitle(getUser.user.username + '#' + getUser.user.discriminator + "'s avatar")
+		.setColor(15784782)
+		.setImage(getAvatar)
+		message.channel.send({embed})
+	}
 	if(message.content.startsWith(prefix + "translate")){
 		if(args.length < 4){
 			message.channel.send({embed: {
@@ -456,8 +615,8 @@ client.on('message', message => {
 				if(args[2].toString() === languages[i]){
 					toL = languages[i]
 					toLN = languageNames[i]
-				} 
-				var textNumber = 13 + args[2].length + args[1].length 
+				}
+				var textNumber = 13 + args[2].length + args[1].length
 				var text = args.join(' ').substring(textNumber)
 			}
 			if(fromL === undefined || toL === undefined || text === undefined) return;
@@ -481,7 +640,7 @@ client.on('message', message => {
 				.setFooter("Powered by GOOGLE translate", "https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/1000px-Google_%22G%22_Logo.svg.png")
 				message.channel.send({embed})
 			});
-		}	
+		}
 	}
 	if(message.content.startsWith(prefix + "react")){
 		var a = 0; var b = 0; var c = 0; var d = 0; var e = 0; var f = 0; var g = 0; var h = 0; var letteri = 0; var j = 0; var k = 0; var l = 0; var m = 0; var n = 0; var o = 0; var p = 0; var q = 0; var r = 0; var s = 0; var t = 0; var u = 0; var v = 0; var w = 0; var x = 0; var y = 0; var z = 0;
@@ -523,10 +682,10 @@ client.on('message', message => {
 					reactarray.push('💤')
 				} else if(msgReact[i] === 'o' && msgReact[i+1] === 'n'){
 					msgReact.splice(i, 1)
-					reactarray.push('🔛') 
+					reactarray.push('🔛')
 				} else if(msgReact[i] === 'c' && msgReact[i+1] === 'o' && msgReact[i+2] === 'o' && msgReact[i+3] === 'l'){
 					msgReact.splice(i, 3)
-					reactarray.push('🆒') 
+					reactarray.push('🆒')
 				} else if(msgReact[i] === 'a'){
 					var aa = ['🇦', '🅰', '🍙', '🔼']
 					reactarray.push(aa[a])
@@ -540,7 +699,7 @@ client.on('message', message => {
 					reactarray.push(aa[c])
 					c++
 				} else if(msgReact[i] === 'd'){
-					var aa = ['🇩', '↩'] 
+					var aa = ['🇩', '↩']
 					reactarray.push(aa[d])
 					d++
 				} else if(msgReact[i] === 'e'){
@@ -552,7 +711,7 @@ client.on('message', message => {
 					reactarray.push(aa[f])
 					f++
 				} else if(msgReact[i] === 'g'){
-					var aa = ['🇬', '⛽'] 
+					var aa = ['🇬', '⛽']
 					reactarray.push(aa[g])
 					g++
 				} else if(msgReact[i] === 'h'){
@@ -560,7 +719,7 @@ client.on('message', message => {
 					reactarray.push(aa[h])
 					h++
 				} else if(msgReact[i] === 'i'){
-					var aa = ['🇮', 'ℹ', '🚹']  
+					var aa = ['🇮', 'ℹ', '🚹']
 					reactarray.push(aa[letteri])
 					letteri++
 				} else if(msgReact[i] === 'j'){
@@ -651,24 +810,43 @@ client.on('message', message => {
 					reactarray.push('9⃣')
 				} else if(msgReact[i] === '0'){
 					reactarray.push('0⃣')
-				} 
+				}
 			}
 			(async (function demo() {
                 var kms = message.channel.fetchMessages({limit: 2})
                 for(var fuk = 0; fuk < reactarray.length; fuk++){
-				kms.then(m =>                     
+				kms.then(m =>
                     m.last().react(reactarray[fuk]))
                     await(sleep(615));
                 }
             }))();
 		}
 	}
+	if(message.content.startsWith(prefix + "flipuser")){
+		if(args.length === 1){
+			message.channel.send({embed: {
+			color: 15784782,
+			title: 'Flip a user (╯°□°）╯︵ ┻━┻',
+			description: 'Flip a user in this server... it also flips their username (if i have the permissions to)... so be careful NO ABUSE KK?'
+		}})
+		return;
+		}
+		if(message.guild.member(message.mentions.users.first()) === null) return;
+		var text = message.guild.member(message.mentions.users.first()).displayName
+		message.channel.send({embed: {
+			color: 15784782,
+			title: 'OwO! ' + message.guild.member(message.mentions.users.first()).displayName + ' has been flipped! :scream:',
+			description: '(╯°□°）╯︵ ' + upsidedown(text)
+		}})
+		if(!message.member.permissionsIn(message.channel).has('ADMINISTRATOR')) return;
+		message.guild.member(message.mentions.users.first()).setNickname(upsidedown(text)).catch(console.error)
+	}
 	if(message.content.startsWith(prefix + "slot")){
 		var slotarray = [':watermelon:',':bell:',':seven:',':lemon:',':cherries:',':grapes:',':gem:']
 		var symbolslot = [];
 		var z = [];
 		var name = 'You lose... :disappointed_relieved:'
-		var value = 'RIP! Better luck next time...' 
+		var value = 'RIP! Better luck next time...'
 		for(var i = 0; i < 9; i++){
 			var x = ~~((Math.random()* 6) + 0)
 			z.push(x)
@@ -683,7 +861,7 @@ client.on('message', message => {
 			color: 15784782,
 			author: {
 				name: message.member.displayName,
-				icon_url: message.author.displayAvatarURL			
+				icon_url: message.author.displayAvatarURL
 			},
 			title: 'Slot Machine :round_pushpin:',
 			description: '*Wins by any diagonals or horizontal lines*\n\n--'  + symbolslot[0] + symbolslot[1] + symbolslot[2] + ' --\n**> **' + symbolslot[3] + symbolslot[4] + symbolslot[5] + '** <**\n--' + symbolslot[6] + symbolslot[7] + symbolslot[8] + ' --',
@@ -720,6 +898,38 @@ client.on('message', message => {
 				description: '**Choosing from list**\n' + options.join(', ') + '\n**Chose**\n' + pick
 			}})
 		}
+	}
+	if(message.content.startsWith(prefix + "define")){
+		if(args.length === 1) return;
+		var word = args[1]
+		var defArray = []
+		if(!wordArray.includes(word)){
+			message.channel.send({embed: {
+				color: 15784782,
+				author: {
+					name: message.member.displayName,
+					icon_url: message.author.displayAvatarURL
+				},
+				title: ':notebook_with_decorative_cover: Definition(s) for "' + word + '"',
+				description: 'I don\'t think that word is english... or it\'s probably super obvious :thinking:'
+			}})
+			return;
+		}
+		wordnet.lookup(word, function(err, definitions) {
+			definitions.forEach(function(definition) {
+				var s = definition.glossary.replace(/[;]/g, '\n')
+				defArray.push(s)
+			});
+			const embed = new Discord.RichEmbed()
+			.setAuthor(message.member.displayName, message.author.displayAvatarURL)
+			.setColor(15784782)
+			.setThumbnail('https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Wikt_dynamic_dictionary_logo.svg/2000px-Wikt_dynamic_dictionary_logo.svg.png')
+			.setTitle(':notebook_with_decorative_cover: Definition(s) for "' + word + '"')
+			.setDescription(defArray.join('\n'))
+			.setFooter('Provided by WordNet LMAO', 'https://lh3.googleusercontent.com/klzb6YkXqOtUhJ0ToAu9H1-FW5p-ORdeiSedoezeiyGPe_FYHUtC-EMs1AhqSyJG1OU=w170')
+			.setTimestamp()
+			message.channel.send({embed})
+		});
 	}
 	if(message.content.startsWith(prefix + "guessnumberstart")){
 		var authorID = message.author.id;
@@ -795,7 +1005,7 @@ client.on('message', message => {
 			if(checkGuess === checkNum){
 				descIncr1 = 2; incr1 = 2;
 				userID.splice(checkID, 1);
-				numID.splice(checkID, 1); 
+				numID.splice(checkID, 1);
 				guessNumID.splice(checkID, 1);
 			} else if(checkGuess > checkNum){
 				descIncr1 = 1; incr1 = 1;
@@ -885,7 +1095,7 @@ client.on('message', message => {
 			.setTimestamp()
 			message.channel.send({embed})
 			});
-		});		
+		});
 	return;
 	}
 	if(message.content.startsWith(prefix + "lovecalc") || message.content.startsWith(prefix + "lc")){
@@ -912,7 +1122,7 @@ client.on('message', message => {
 		for(var i = 0; i < alg.length; i++){
 			if(parseInt(alg[i]) === 3){
 				numcount++;
-			} 
+			}
 			if(parseInt(alg[i]) === 4 || parseInt(alg[i]) === 9 || parseInt(alg[i]) === 8){
 				multiplier++;
 			}
@@ -924,7 +1134,7 @@ client.on('message', message => {
 		finalnumber = numcount*multiplier+addiplier;
 		if(finalnumber > 100){
 			finalnumber = finalnumber - 80;
-		} 
+		}
 		if(finalnumber <= 40){
 			symbol = ':broken_heart:'
 		} else if(finalnumber < 80 && finalnumber > 40){
@@ -1007,7 +1217,103 @@ client.on('message', message => {
 		message.channel.send({embed})
 		message.channel.send('**Full Emoji List:** ' + emojis.join(''))
 	}
-	if(message.content.startsWith(prefix + "flip")){
+	if(message.content.startsWith(prefix + 'ud')){
+		var search = args.join(' ').substring(4).toString()
+		var keyword = urban(search)
+		keyword.first(function(json) {
+			if(json === undefined) {
+				message.channel.send({embed: {
+					color: 15784782,
+					title: 'Urban Dictionary Search :mag_right:',
+					description: 'Could not find that term on the urban dictionary... how rare... :thinking:'
+				}})
+				return;
+			}
+			var r = JSON.stringify(json)
+			var def2 = ''
+			var defstart = r.substr(r.indexOf('definition') + 13)
+			var defcount = defstart.indexOf('permalink')
+			var def = defstart.substr(0, defcount - 3).replace(/((\s)+(\\[r])+(\\[n])|(^\d))|(\\[r])+(\\[n])/g, '\n')
+			var authorstart = r.substr(r.indexOf('author') + 9)
+			var authorcount = authorstart.indexOf('word')
+			var author = authorstart.substr(0, authorcount - 3)
+			var upstart = r.substr(r.indexOf('thumbs_up') + 11)
+			var upcount = upstart.indexOf('author')
+			var up = upstart.substr(0, upcount - 2)
+			var downstart = r.substr(r.indexOf('thumbs_down') + 13)
+			var downcount = downstart.indexOf('}')
+			var down = downstart.substr(0, downcount)
+			var examplestart = r.substr(r.indexOf('example') + 10)
+			var examplecount = examplestart.indexOf('thumbs_down')
+			var example = examplestart.substr(0, examplecount - 3).replace(/((\s)+(\\[r])+(\\[n])|(^\d))|(\\[r])+(\\[n])/g, '\n')
+			if(example === ''){
+				example = 'No example found :cry:'
+			}
+			if(def.split('').length > 2048){
+				def2 = def.substr(2048)
+				def = def.substr(0, 2047)
+				const embed = new Discord.RichEmbed()
+				.setColor(15784782)
+				.setTitle('Urban Dictionary Search :mag_right:  "' + search + '"')
+				.setThumbnail('https://d2gatte9o95jao.cloudfront.net/assets/apple-touch-icon-55f1ee4ebfd5444ef5f8d5ba836a2d41.png')
+				.setAuthor(message.member.displayName, message.author.displayAvatarURL)
+				.setDescription(def)
+				.addField('Description Continued (bc it was more than 2048 characters... :stuck_out_tongue:', def2)
+				.addField('Example', example)
+				.addField('Author', author, true)
+				.addField('Ratings', ':thumbsup: ' + up + ' :thumbsdown: ' + down, true)
+				message.channel.send({embed})
+				return;
+			}
+			const embed = new Discord.RichEmbed()
+			.setColor(15784782)
+			.setTitle('Urban Dictionary Search :mag_right:  "' + search + '"')
+			.setThumbnail('https://d2gatte9o95jao.cloudfront.net/assets/apple-touch-icon-55f1ee4ebfd5444ef5f8d5ba836a2d41.png')
+			.setAuthor(message.member.displayName, message.author.displayAvatarURL)
+			.setDescription(def + def2)
+			.addField('Example', example)
+			.addField('Author', author, true)
+			.addField('Ratings', ':thumbsup: ' + up + ' :thumbsdown: ' + down, true)
+			message.channel.send({embed})
+		});
+	}
+	if(message.content.startsWith(prefix + 'userinfo')){
+		if(args.length === 1){
+			message.channel.send({embed: {
+				color: 15784782,
+				title: ':information_source: User Info',
+				description: '`.userinfo [user]` shows some top secret spy-level 5/7 :ok_hand: information about said user :mag:'
+			}})
+			return;
+		}
+		var user = message.guild.member(message.mentions.users.first())
+		var userRoles = (user.roles.map(c=>c.name))
+		var game;
+		if(user.presence.game === null){
+			game = 'None'
+		} else {
+			game = user.presence.game.name
+		}
+		var roles = []
+		for(var i = 1; i < userRoles.length; i++){
+			roles.push(userRoles[i])
+		}
+		const embed = new Discord.RichEmbed()
+		.setColor(15784782)
+		.setTitle(':information_source: User Info')
+		.setThumbnail(user.user.avatarURL)
+		.addField("Name", user.user.username + '#' + user.user.discriminator, true)
+		.addField("Server Nickname", user.displayName, true)
+		.addField("ID", user.id, true)
+		.addField("Roles (" + roles.length + ")", roles.reverse().join(', '), true)
+		.addField("Name Color", user.displayHexColor, true)
+		.addField("Status", user.presence.status, true)
+		.addField("Now playing", game, true)
+		.addField("Joined server at", user.joinedAt, true)
+		.addField("Joined Discord at", user.user.createdAt, true)
+		message.channel.send({embed})
+	}
+	if(message.content.startsWith(prefix + "coinflip")){
 		var coin;
 		var flip = ~~((Math.random()* 2) + 1)
 		console.log(flip)
@@ -1037,7 +1343,7 @@ client.on('message', message => {
 				description: "Flipped a coin... it's " + coin + '!'
 			}})
         }))();
-		
+
 	}
 	if(message.content.startsWith(prefix + "reverse")){
 		var reverse = args.join(" ").substring(9)
@@ -1058,11 +1364,30 @@ client.on('message', message => {
 		var tosend = space.split('')
 		message.channel.send(tosend.join(' ') + ' **- ' + message.author.username + ' 2017**')
 	}
+	if(message.content.startsWith(prefix + "hex")){
+		if(args.length > 2) return;
+		if(args.length === 1){
+			message.channel.send({embed: {
+				color: 15784782,
+				title: 'Color Hex/RGB',
+				description: "Specify a hex color and get some info about it"
+			}})
+		}
+		var toconvert = args.join(' ').substring(5)
+		var converted = (hexRgb(toconvert)).join(', ')
+		var hex = '#' + rgbHex(converted)
+		const embed = new Discord.RichEmbed()
+		.setColor(hex)
+		.setTitle('Color Hex/RGB')
+		.addField('Hex Input', '**' + hex + '**')
+		.addField('RGB Equivalent', '**' + converted + '**')
+		message.channel.send({embed})
+	}
 	var regional = [];
 	if(message.content.startsWith(prefix + "regionaltype")){
 		if(args.length === 1){
 			message.reply("Regionalize some text... :smiley: `.regionaltype [text a-z letters, 1-9 numbers]`")
-		} else { 
+		} else {
 			for(var x = 1; x < args.length; x++){
 				var z = toLetters(args[x].toString()).toLowerCase().split('');
 				for(var i = 0; i < z.length; i++){
@@ -1134,7 +1459,7 @@ client.on('message', message => {
 			if(args[1] === undefined){return;}
 			var checkpasta = args[1].toString();
 			if(args.length === 1 || args.length > 2){return;}
-			if(checkpasta === pastanames[i]){						
+			if(checkpasta === pastanames[i]){
 				message.channel.send(copypastas[i])
 				return;
 			} else if(checkpasta === 'list'){
@@ -1146,7 +1471,7 @@ client.on('message', message => {
 				break;
 			}
 		}
-	}		
+	}
 	var tosend;
 	var loc = stopwatchID.indexOf(message.author.id);
 	var stopwatchTime = (Date.now() - stopwatchDate[loc])/1000;
@@ -1194,6 +1519,7 @@ client.on('message', message => {
 		message.reply('You are currently level ' + userData.level + ' with ' + userData.points + ' points.');
 	}
 	fs.writeFile("./points.json", JSON.stringify(points), (err) => {
+		if (err) console.error(err)
 		if (err) console.error(err)
 	});
 	*/
@@ -1251,11 +1577,19 @@ client.on('message', message => {
 		var tosend;
 		this.vic = message.guild.member(message.mentions.users.first())
 		if(args.length === 1){
-			message.reply("Kick a user (u sure about dat boi?) Usage: `.kick [user to kick]`")
+			message.channel.send({embed: {
+				color: 15784782,
+				title: ':boot: Kick user ',
+				description: "Kick a user (u sure about dat boi?) Usage: `.kick [user to kick]`"
+			}})
 			return;
 		}
 		if(message.guild.member(message.mentions.users.first()) === null){
-			message.reply("be sure you mention the person you want to kick...")
+			message.channel.send({embed: {
+				color: 15784782,
+				title: ':boot: Kick user',
+				description: "be sure you mention the person you want to kick..."
+			}})
 			return;
 		} else {
 			if(message.member.permissionsIn(message.channel).has('KICK_MEMBERS') && this.vic.kickable === true){
@@ -1279,11 +1613,19 @@ client.on('message', message => {
 		var tosend;
 		this.vic = message.guild.member(message.mentions.users.first())
 		if(args.length === 1){
-			message.reply("BAN a user :hammer: Usage: `.ban [user to totally demolish]`")
+			message.channel.send({embed: {
+				color: 15784782,
+				title: ':hammer: Ban user ',
+				description: "BAN a user :hammer: Usage: `.ban [user to totally demolish]`"
+			}})
 			return;
 		}
 		if(this.vic === null){
-			message.reply("be sure you mention the person you want to ban...")
+			message.channel.send({embed: {
+				color: 15784782,
+				title: ':hammer: Ban user ',
+				description: "be sure you mention the person you want to ban..."
+			}})
 			return;
 		} else {
 			if(message.member.permissionsIn(message.channel).has('BAN_MEMBERS') && this.vic.bannable === true){
@@ -1304,25 +1646,39 @@ client.on('message', message => {
 			description: message.author + ", " + tosend
 		}})
 	} else if(message.content.startsWith(prefix + "warn")){
+		var tosend;
 		if(message.member.permissionsIn(message.channel).has('MANAGE_MESSAGES', 'MANAGE_ROLES')){
 			if(args.length === 1){
-				message.channel.send("Warn a user for misbehaving... :smiling_imp: Usage: `.warn [user] (reason)`")
+				tosend = "Warn a user for misbehaving... :smiling_imp: Usage: `.warn [user] (reason)`"
 			} else {
 				console.log(args[1].length)
 				var x = args[1].length + 1;
 				console.log(x);
 				message.mentions.users.first().send("You have been warned in the server " + message.guild.name + " for **" + (args.join(" ").substring(6 + x)) + "**")
-				message.reply("user " + (message.mentions.users.first()) + " has been warned for **" + (args.join(" ").substring(6 + x)) + "**")
+				tosend = "user " + (message.mentions.users.first()) + " has been warned for **" + (args.join(" ").substring(6 + x)) + "**"
 			}
 		}
+		message.channel.send({embed: {
+			color: 15784782,
+			title: 'Warn user :smiling_imp: ',
+			description: message.author + ", " + tosend
+		}})
 	} else if(message.content.startsWith(prefix + "mute")){
 		var tosend;
 		if(args.length === 1){
-			message.reply("channel mute someone :mute: from the channel. Usage: `.mute [user]`")
+			message.channel.send({embed: {
+				color: 15784782,
+				title: 'Mute User :mute: ',
+				description: 'Mute a user from the channel :x:'
+			}})
 			return;
-		} 
+		}
 		if(message.guild.member(message.mentions.users.first()) === null){
-			message.reply("What are trying to do... mute air?")
+			message.channel.send({embed: {
+				color: 15784782,
+				title: 'Mute User :mute: ',
+				description: 'What are you trying to do... mute air?'
+			}})
 			return;
 		} else {
 			if(message.member.permissionsIn(message.channel).has('MANAGE_ROLES') && !message.guild.member(message.mentions.users.first()).permissionsIn(message.channel).has('ADMINISTRATOR')){
@@ -1345,13 +1701,21 @@ client.on('message', message => {
 			description: ':loudspeaker: ' + message.author + ', ' + tosend
 		}})
 	} else if(message.content.startsWith(prefix + "unmute")){
-		var tosend;
+		var tosend = "You can't unmute this person..."
 		if(args.length === 1){
-			message.reply("unmute someone from the channel. Usage: `.unmute [user]`")
+			message.channel.send({embed: {
+				color: 15784782,
+				title: 'Unmute User :speaker: ',
+				description: 'Unmute someone from the channel :no_mouth:'
+			}})
 			return;
 		}
 		if(message.guild.member(message.mentions.users.first()) === null){
-			message.reply("So first you tried to mute air... now you're trying to unmute the protons and electrons?")
+			message.channel.send({embed: {
+				color: 15784782,
+				title: 'Mute User :mute: ',
+				description: "So first you tried to mute air... now you're trying to unmute the protons and electrons? :atom: "
+			}})
 			return;
 		} else {
 			if(message.member.permissionsIn(message.channel).has('MANAGE_ROLES')){
@@ -1374,8 +1738,8 @@ client.on('message', message => {
 	}
 	//help commands
 	if(message.content.startsWith(prefix + "help")){
-		message.author.send("Commands List:\n **Global Prefix: .**\n __Mod commands__ \n **help** - shows this message \n **botinfo** - info about the bot... \n **ping** - pings server and returns with ms \n **uptime** - shows bot uptime \n **warn [user] (reason)** - warns a user for being a meme \n **purge [# of msgs]** - clears the last x messages \n **kick/ban [user]** - kicks/bans the user mentioned \n **mute/unmute [user]** - mutes and unmutes a user \n **repeat [text]** - repeats stuff \n __For Fun Commands__ \n **8ball [question]** - 8-ball? \n **add/deltrash [text]** - add trashy triggers \n **roll (amt of dice)** - roll dice \n **kill [user]** - become a serial killer =) \n **count [min, max] (count by)** - count from min to max \n **rng [min, max, amt of numbers]** - pick x numbers between min and max \n **happiness [user]** - tell a user to stop being salty :) \n **cclist** - lists all custom commands \n **rem** - ゼロから始める異世界生活 :heart: \n **sans** - \"It's a beautiful day outside... birds are singing... flowers are blooming... on days like these kids like you... should be burning in HELL :fire:\n **duel [user]** - duel a user (this is totally rng btw) \n **playchess [move in algebraic notation]** - play the bot in a game of chess... but you'll lose...\n **guessnumberstart [easy, medium, hard, expert]/guessnumber [number]** - guessnumberstart to start a game of guess the number and guessnumber to guess the number :eyes:\n **weather [zip code]** - WIP but it shows a bunch of stuff with the weather\n **calc [expression]** - simple calculator `x (+, -, /, *, ^ for now) y` \n **lovecalc/lc [user 1] [user 2]** - calculate love chances between 2 users... :kissing_heart:\n **stopwatch (start/stop)** - start/stop/check on your stopwatch :watch: \n **copypasta [name]/copypasta list** - in case you're in need of a quick chat filler... :wink: \n **regionaltype [text A-Z or 0-9]** - turns text into regional emots :b:")
-		message.author.send(" ** whoisagoodgirl** - this bot is a GIRL \n **react [text]** - reacts to the previous message with text (NEW! - NOW SUPPORTS (some) DOUBLE LETTERS) \n **space [text]** - annoy people \n **flip** - flip a coin and you get a second to call it while it's in midair \n **reverse [text]** - reverses text \n **choose [option1;option2;etc]** - chooses from inputted options \n **slot** - Pull the lever on the slot machine :seven:\n **translate [langauge 1] [language 2] [text]** - translate some TEXT :accept: \n__Code for this bot can be found here: https://github.com/TheShadyRealm/jsbot :smile: (holy crap jsbot is in javascript??? :scream:)__ \n **Invite link (highly not recommended):** :smiley: http://bit.ly/JSBot")
+		message.author.send("Commands List:\n **Global Prefix: .**\n __Mod commands__ \n **help** - shows this message \n **botinfo** - info about the bot... \n **ping** - pings server and returns with ms \n **uptime** - shows bot uptime \n **warn [user] (reason)** - warns a user for being a meme \n **purge [# of msgs]** - clears the last x messages \n **kick/ban [user]** - kicks/bans the user mentioned \n **mute/unmute [user]** - mutes and unmutes a user \n **repeat [text]** - repeats stuff \n __For Fun Commands__ \n **8ball [question]** - 8-ball? \n **add/deltrash [text]** - add trashy triggers \n **roll (amt of dice)** - roll dice \n **kill [user]** - become a serial killer =) \n **count [min, max] (count by)** - count from min to max \n **rng [min, max, amt of numbers]** - pick x numbers between min and max \n **happiness [user]** - tell a user to stop being salty :) \n **cclist** - lists all custom commands \n **rem/emilia** - ゼロから始める異世界生活 :heart: \n **sans** - \"It's a beautiful day outside... birds are singing... flowers are blooming... on days like these kids like you... should be burning in HELL :fire:\n **duel [user]** - duel a user (this is totally rng btw) \n **playchess [move in algebraic notation]** - play the bot in a game of chess... but you'll lose...\n **guessnumberstart [easy, medium, hard, expert]/guessnumber [number]** - guessnumberstart to start a game of guess the number and guessnumber to guess the number :eyes:\n **weather [zip code]** - WIP but it shows a bunch of stuff with the weather\n **calc [expression]** - simple calculator `x (+, -, /, *, ^ for now) y` \n **lovecalc/lc [user 1] [user 2]** - calculate love chances between 2 users... :kissing_heart:\n **stopwatch (start/stop)** - start/stop/check on your stopwatch :watch: \n **copypasta [name]/copypasta list** - in case you're in need of a quick chat filler... :wink: \n **regionaltype [text A-Z or 0-9]** - turns text into regional emots :b:")
+		message.author.send(" ** whoisagoodgirl** - this bot is a GIRL \n **react [text]** - reacts to the previous message with text (NEW! - NOW SUPPORTS (some) DOUBLE LETTERS) \n **space [text]** - annoy people \n **coinflip** - flip a coin and you get a second to call it while it's in midair \n **reverse [text]** - reverses text \n **choose [option1;option2;etc]** - chooses from inputted options \n **slot** - Pull the lever on the slot machine :seven:\n **translate [langauge 1] [language 2] [text]** - translate some TEXT :accept: \n **flipuser [user]** - flip a user (and their name if permissions) upside-down :upside_down:\n **ud [term]** searches urban dictionary for the term \n **serverinfo/userinfo [user]** - shows info about the user/server \n **define [word]** - WIP definitions \n **osub [beatmap link]** - looks up basic info about the beatmap \n **joke** - don't expect all of them to be funny :laughing:\n **hex [hex code]** - shows info about the hex color (the embed color will be the hex color) \n__Code for this bot can be found here: https://github.com/TheShadyRealm/jsbot :smile: (holy crap jsbot is in javascript??? :scream:)__ \n **Invite link (highly not recommended):** :smiley: http://bit.ly/JSBot")
 		message.channel.send({embed: {
 			color: 15784782,
 			description: '<@' + message.author.id + '>, a list of commands and stuff has been sent to your DMs :smiley:'
@@ -1412,7 +1776,7 @@ client.on('message', message => {
 		var pluralcheck;
 		if(args.length === 1){
 			nbr = 1;
-		} 
+		}
 		if(nbr > 0 && nbr < 101){
 			for(var r = 0; r < nbr; r++){
 				arr.push(Math.floor((Math.random() * 6) + 1))
@@ -1428,14 +1792,22 @@ client.on('message', message => {
 				description: arr.join(', ')
 			}})
 		} else {
-			message.reply("1-100 dice... stop trying to exploit the system :nerd:")
+			message.channel.send({embed: {
+				color: 15784782,
+				title: 'Roll some dice... :game_die:',
+				description: "1-100 dice... stop trying to exploit the system :nerd:"
+			}})
 		}
 	} else if(message.content.startsWith(prefix + "happiness")){
 		if(message.guild.member(message.mentions.users.first()) === null){
-			message.reply("https://www.youtube.com/watch?v=8anp1xJXkU0")
+			message.channel.send(":thinking: https://www.youtube.com/watch?v=8anp1xJXkU0")
 		} else {
 			if(args.length === 1){
-				message.reply("Mention someone first (to make them happy)!")
+				message.channel.send({embed: {
+				color: 15784782,
+				title: 'Happiness... :smile:',
+				description: "Mention someone and make their day... :sunrise_over_mountains: "
+			}})
 			} else {
 				message.channel.send({embed: {
 					color: 15784782,
@@ -1447,7 +1819,11 @@ client.on('message', message => {
 	} else if(message.content.startsWith(prefix + "count")){
 		var count = [];
 		if(args.length != 4){
-			message.reply("Input a number between 0-999... Usage: `.count min max interval` and NO COUNTING BACKWARDS k?")
+			message.channel.send({embed: {
+				color: 15784782,
+				title: 'Count :one::two::three:',
+				description: 'Input a number between 0-999... Usage: `.count min max interval` and NO COUNTING BACKWARDS k?"'
+			}})
 		} else {
 			var n1 = parseInt(args[1]);
 			var n2 = parseInt(args[2]);
@@ -1464,7 +1840,11 @@ client.on('message', message => {
 				.setTimestamp()
 				message.channel.send({embed})
 			} else {
-				message.reply("Input a number between 0-999... Usage: `.count min max interval` and NO COUNTING BACKWARDS k?")
+				message.channel.send({embed: {
+				color: 15784782,
+				title: 'Count :one::two::three:',
+				description: 'Input a number between 0-999... Usage: `.count min max interval` and NO COUNTING BACKWARDS k?"'
+			}})
 			}
 		}
 	} else if(message.content.startsWith(prefix + "rng")){
@@ -1485,7 +1865,11 @@ client.on('message', message => {
 					description: rnum.join(', ')
 				}})
 			} else {
-				message.reply("Input a number between one and a million... Usage: `.rng min max # of numbers to generate`")
+				message.channel.send({embed: {
+					color: 15784782,
+					title: 'RNG :hotsprings: ',
+					description: "Input a number between one and a million... Usage: `.rng min max # of numbers to generate`"
+				}})
 			}
 		}
 	} else if(message.content.startsWith(prefix + "uptime")){
@@ -1505,15 +1889,15 @@ client.on('message', message => {
 			message.reply("you really think you can kill me? HA think again!")
 			return;
 		} else {
-			var method = [" 360 noscoped ", 
-			" knifed ", 
-			" threw a combustable lemon at ", 
-			" shot a portal inside of ", 
-			" threw a knife that lodged into ", 
-			" took a gun from the table and immediately turned and shot ", 
-			" attached a grenade to an arrow and shot ", 
-			" blew a poison dart at ", 
-			" thrusted a sword hard into ", 
+			var method = [" 360 noscoped ",
+			" knifed ",
+			" threw a combustable lemon at ",
+			" shot a portal inside of ",
+			" threw a knife that lodged into ",
+			" took a gun from the table and immediately turned and shot ",
+			" attached a grenade to an arrow and shot ",
+			" blew a poison dart at ",
+			" thrusted a sword hard into ",
 			" ate "];
 			this.res = (Math.floor(Math.random() * (method.length - 1)) + 0)
 			if(message.author.id === message.guild.member(message.mentions.users.first()).id){
@@ -1637,6 +2021,42 @@ client.on('message', message => {
 		.setColor(15784782)
 		.setImage(list[randpic])
 		message.channel.send({embed})
+	} else if(message.content.startsWith(prefix + "emilia")){
+		var list = ['https://vignette1.wikia.nocookie.net/rezero/images/c/c0/Emilia_Anime_2.png/revision/latest?cb=20160408203829',
+		'http://static.zerochan.net/Emilia.%28Re%3AZero%29.full.2040725.jpg',
+		'http://static.zerochan.net/Emilia.%28Re%3AZero%29.full.2016181.jpg',
+		'http://vignette3.wikia.nocookie.net/r2da/images/1/16/Emilia-Puck-Re-Zero-Kara-Hajimeru-Isekai-Seikatsu.png/revision/latest?cb=20160913145140',
+		'http://s3.zerochan.net/Emilia.%28Re%3AZero%29.240.2099795.jpg',
+		'https://cafekuyer.files.wordpress.com/2016/04/screen-shot-2016-04-25-at-9-31-13-am.png?w=980&h=720&crop=1',
+		'https://images7.alphacoders.com/695/thumb-1920-695212.png',
+		'https://vignette2.wikia.nocookie.net/rezero/images/5/52/Emilia_-_Re_Zero_Anime_BD_-_12.png/revision/latest?cb=20160915153630',
+		'https://s-media-cache-ak0.pinimg.com/originals/6a/13/b0/6a13b076f46cef2941840e707e080866.jpg',
+		'http://i.giphy.com/3o6ozi4YPwqFPE1GsU.gif',
+		'http://s3.zerochan.net/Emilia.%28Re%3AZero%29.240.2108865.jpg',
+		'https://avatarfiles.alphacoders.com/845/84582.png',
+		'https://images8.alphacoders.com/711/thumb-1920-711901.png',
+		'http://static.zerochan.net/Emilia.%28Re%3AZero%29.full.2014890.jpg',
+		'http://vignette2.wikia.nocookie.net/rezero/images/c/cc/Emilia_-_Re_Zero_Anime_BD_-_13.png/revision/latest?cb=20160915153714',
+		'http://img00.deviantart.net/4e40/i/2016/224/9/6/emilia_re_zero_by_analibi-dadms3c.jpg',
+		'https://i0.wp.com/howdrawmanga.com/wp-content/uploads/2016/06/rezero-Emilia-re-zero-thumb-1.jpg',
+		'https://i.ytimg.com/vi/6mNd4ELobBs/maxresdefault.jpg',
+		'http://static.zerochan.net/Emilia.%28Re%3AZero%29.full.2010881.jpg',
+		'http://img1.reactor.cc/pics/post/full/Anime-pack-(re-zero)-Emilia-(re-3053543.jpeg',
+		'http://img04.deviantart.net/3dfb/i/2016/126/0/3/fanart_emilia___re_zero_by_makki09-da1jclp.jpg',
+		'http://i.imgur.com/GiJurP6.jpg',
+		'https://wallpapersite.com/images/wallpapers/emilia-2560x1440-rezero-female-protagonist-half-elf-hd-2299.jpg',
+		'https://www.rightstufanime.com/images/productImages/4934054784219_figure-emilia-re-zero-altB.jpg',
+		'http://orig06.deviantart.net/38fb/f/2016/247/b/b/vektor_wallpaper__emilia_re_zero_by_iwdraw-dagf0w8.jpg',
+		'http://image.diyidan.net/post/2017/3/15/wzTWYH3B78vGksy7.jpg',
+		'https://cloudedanime.files.wordpress.com/2016/05/re-zero-07-emilia-01.jpg',
+		'https://images5.alphacoders.com/729/thumb-1920-729306.png',
+		'http://orig12.deviantart.net/27a1/f/2016/187/d/8/emilia___re_zero_wallpaper__hd__by_say0chi-da8xw93.png'
+		]
+		var randpic = ~~((Math.random() * list.length) + 0)
+		const embed = new Discord.RichEmbed()
+		.setColor(15784782)
+		.setImage(list[randpic])
+		message.channel.send({embed})
 	}
 	if(message.content.startsWith(prefix + "duel")){
 		if(args.length === 1){
@@ -1652,15 +2072,15 @@ client.on('message', message => {
 		} else if((message.guild.member(message.mentions.users.first()).id) === '275334018214658060'){ //if duels me
 			message.channel.send("Let the duel between " + message.author + " and " + message.guild.member(message.mentions.users.first()) + " begin! " + message.guild.member(message.mentions.users.first()) + " will go first!")
 			message.channel.send('**' + message.guild.member(message.mentions.users.first()).displayName + '** fires a particle accelerator at **' + message.member.displayName + '** for infinity and beyond damage!')
-			message.channel.send("After 1 round... **" + message.author + "** has been defeated by **<@275334018214658060>, who wins with 1 HP remaining! (cuz he's a human unlike you all)**")	
+			message.channel.send("After 1 round... **" + message.author + "** has been defeated by **<@275334018214658060>, who wins with 1 HP remaining! (cuz he's a human unlike you all)**")
 		} else if(message.author.id === '275334018214658060'){ //if i duel
 			message.channel.send("Let the duel between " + message.author + " and " + message.guild.member(message.mentions.users.first()) + " begin! " + message.author + " will go first!")
 			message.channel.send('**' + message.member.displayName + '** fires a particle accelerator at **' + message.guild.member(message.mentions.users.first()).displayName + '** for infinity and beyond damage!')
-			message.channel.send("After 1 round... **" + message.guild.member(message.mentions.users.first()) + "** has been defeated by **<@275334018214658060>, who wins with 1 HP remaining! (cuz he's a human unlike you all)**")	
+			message.channel.send("After 1 round... **" + message.guild.member(message.mentions.users.first()) + "** has been defeated by **<@275334018214658060>, who wins with 1 HP remaining! (cuz he's a human unlike you all)**")
 		} else if((message.guild.member(message.mentions.users.first()).id) === '324427383849353219'){ //if duels jsbot
 			message.channel.send("Let the duel between " + message.author + " and " + message.guild.member(message.mentions.users.first()) + " begin! " + message.guild.member(message.mentions.users.first()) + " will go first!")
 			message.channel.send('**JSBot** aimed its rocket launcher at **' + message.member.displayName + '** ... it deals 99999999 damage!')
-			message.channel.send("After 1 round... **" + message.author + "** has been defeated by **<@324427383849353219>, who wins with ∞ HP remaining!**")	
+			message.channel.send("After 1 round... **" + message.author + "** has been defeated by **<@324427383849353219>, who wins with ∞ HP remaining!**")
 		} else {
 			var dn1 = [];
 			var dn2 = [];
@@ -1740,7 +2160,7 @@ client.on('message', message => {
 					set2++;
 				}
 				if(hp1 <= 0){
-					message.channel.send("After " + (p+1) + " rounds... **" + message.guild.member(message.mentions.users.first()) + "** has been defeated by **" + message.author + ", who wins with " + hp2 + " HP remaining!**")	
+					message.channel.send("After " + (p+1) + " rounds... **" + message.guild.member(message.mentions.users.first()) + "** has been defeated by **" + message.author + ", who wins with " + hp2 + " HP remaining!**")
 					return;
 				} else if(hp2 <= 0){
 					message.channel.send("After " + (p+1) + " rounds... **" + message.author + "** has been defeated by **" + message.guild.member(message.mentions.users.first()) + ", who wins with " + hp1 + " HP remaining!**")
@@ -1748,7 +2168,7 @@ client.on('message', message => {
 				}
 			}
 		}
-	} else if(msg1.indexOf(CHESS) === 0) { 
+	} else if(msg1.indexOf(CHESS) === 0) {
 	/*
 	* original code: https://github.com/daniel-lawrence-lu/discord-woofbot
 	* that original code was very broken and required some fixing... so i fixed it all and added a better GUI :3
@@ -1769,7 +2189,7 @@ client.on('message', message => {
 					winner = 'Draw by insufficient material!';
 				} else if(chesses[id].in_draw()) {
 					winner = 'Draw!';
-				}	
+				}
 				const embed = new Discord.RichEmbed()
 				.setColor('#D3D3D3')
 				.setAuthor(message.member.displayName, message.author.displayAvatarURL)
@@ -1777,7 +2197,7 @@ client.on('message', message => {
 				.setImage('http://pm1.narvii.com/5949/392c549cd5a6700d724f12d9bfcd0ac5e3261814_hq.jpg')
 				.addField(winner, chesses[id].pgn({newline_char: '\n'}), true)
 				message.reply({embed})
-			}	
+			}
 			console.log('Chess game end: ', message.member.nickname, message.guild.name);
 			delete chesses[id];
 			delete stockfishes[id];
@@ -1831,7 +2251,7 @@ client.on('message', message => {
             return;
         }
         if(move !== 'skip' && chesses[id].move(move, {sloppy: true}) === null) {
-            message.reply(chessmsg1[id] + ':thinking: That, sir, looks like an illegal move... Your valid moves are: **' + chesses[id].moves().join(', ') + 
+            message.reply(chessmsg1[id] + ':thinking: That, sir, looks like an illegal move... Your valid moves are: **' + chesses[id].moves().join(', ') +
                     '**\n' + get_fen_img(id));
             return;
         }
@@ -1862,7 +2282,7 @@ client.on('message', message => {
 		var ymbol;
 		if(method.includes("+")){
 			symbol = '+'
-			num2 = parseInt(method.substr(method.indexOf(symbol) + 1));	
+			num2 = parseInt(method.substr(method.indexOf(symbol) + 1));
 			var returns = num1 + num2;
 		} else if(method.includes("-")){
 			symbol = '-'
@@ -1903,8 +2323,8 @@ client.on('message', message => {
 	}
 	if(message.content.toLowerCase().includes("ravi") && message.guild.id === "333471257838485524"){
 		message.channel.send("absolutely desipses anime")
-	} 
-	if(message.content === "?" && message.guild.id != '268057683804946437' && message.guild.id != "272473930520854529"){
+	}
+	if(message.content === "?" && message.guild.id != '268057683804946437' && message.guild.id != "272473930520854529" && message.guild.id != '333814208334397444'){
 		message.delete();
 		message.reply('KYS')
 	}
@@ -1956,6 +2376,7 @@ client.on('message', message => {
 	'http://i1.kym-cdn.com/photos/images/newsfeed/000/296/199/9ff.gif',
 	'https://cdn.discordapp.com/attachments/275334819737501696/320019929233489940/salted.png',
 	'https://cdn.discordapp.com/attachments/275334819737501696/320008151904813056/siblingdrama.png',
+	'https://cdn.discordapp.com/attachments/310290782097637398/342327793855758337/Screenshot_2017-08-02_at_11.27.07_AM.png',
 	'https://cdn.discordapp.com/attachments/275334819737501696/320017022308057090/realtrash.png'
 	];
 	var customresponselist = ['get your very own arcane wizard today for 6 easy payments of $69.99!',
@@ -1976,6 +2397,7 @@ client.on('message', message => {
 	'R O F L',
 	'u 2 SALTI? just admit it :)',
 	'the only *PROPER* way to sibling drama',
+	'ladies ladies ur both pretty now shut up pls kthxbye',
 	'what is this TRASH :/'
 	]
 	for(var i = 0; i < customcomlist.length; i++){
