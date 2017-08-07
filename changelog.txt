@@ -55,3 +55,6 @@ v2.5.0
 - translate shet
 - have the bot decide whether you should stop staying up till 3 playing osu or not
 - play the unlimited slot machine where you literally can't lose
+v3.0.0
+- new bot code organization
+- more commands
