@@ -34,6 +34,7 @@ exports.run = (client, message, args) => {
   if(vl === '4'){
     vlText = "┻━┻彡 ヽ(ಠ益ಠ)ノ彡┻━┻"
   }
+  console.log(message.guild.members.filter(m=>m.type==='bot').size)
   const embed = new Discord.RichEmbed()
   .setColor(15784782)
   .setImage(message.guild.iconURL)

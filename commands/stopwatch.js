@@ -19,7 +19,7 @@ exports.run = (client, message, args, stopwatchID, stopwatchDate, stopwatchTime,
     if(!args[1] && !stopwatchID.includes(message.author.id)){
       tosend = 'Start, stop, and keep track of your stopwatch... `.stopwatch (start/stop)` to start/end and `.stopwatch` to see how your stopwatch is doing... :watch:'
     } else if(!args[1] && stopwatchID.includes(message.author.id)){
-      tosend =  message.author + ", your stopwatch has been running for: " + mts(stopwatchTime)
+      tosend =  message.author + ", your stopwatch has been running for: **" + mts(stopwatchTime) + '**'
     }
   }
   message.channel.send({embed: {

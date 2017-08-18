@@ -23,60 +23,40 @@ exports.run = (client, message, args) => {
   var zip = (args.join(" ").substring(8));
   yw.getSimpleWeather(zip).then(function(res){
   ans=res;
-  var t = JSON.stringify(res)
-  var high = t.substr(t.indexOf('"day"') + 20, 2);
-  var low = t.substr(t.indexOf('"day"') + 31, 2);
-  var descDesc = t.substr(t.indexOf('condition') + 12);
-  var sub = descDesc.indexOf('"}')
-  var desc = descDesc.substr(0, sub);
   var emoji;
-  var latString = (t.substr(t.indexOf('lat')+6));
-  var findLat = latString.indexOf("long")-3;
-  var lat = latString.substr(0, findLat);
-  var longString = (t.substr(t.indexOf('long')+7));
-  var findLong = longString.indexOf("}")-1;
-  var lonG = longString.substr(0, findLong);
-  forecast.get([lat + ',' + lonG], true, function(err, weather) {
+  forecast.get([res.location.lat + ',' + res.location.long], true, function(err, weather) {
     if(err) return console.dir(err);
     var o = JSON.stringify(weather);
-    var temp = parseInt(o.substr(o.indexOf('temperature')+13, 5));
-    var feelslike = Math.round(o.substr(o.indexOf('apparentTemperature')+21, 5));
-    var humidityH = o.substr(o.indexOf('humidity')+12);
-    var humidityCount = humidityH.indexOf(',');
-    var humidity = humidityH.substr(0, humidityCount)
-    var precipProb = o.substr(o.indexOf('precipProbability')+19);
-    var precipCount = (precipProb.indexOf(',"'));
-    var precip = precipProb.substr(0, precipCount);
     var sunriseSun = o.substr(o.indexOf('sunriseTime')+13);
     var sunriseCount = sunriseSun.indexOf(",");
     var sunrise = convert(sunriseSun.substr(0, sunriseCount));
     var sunsetSun = o.substr(o.indexOf('sunsetTime')+12);
     var sunsetCount = sunsetSun.indexOf(",");
     var sunset = convert(sunsetSun.substr(0, sunsetCount));
-    if(desc === 'Sunny'){
+    if(res.weather.condition === 'Sunny'){
       emoji = ":sunny:"
-    } else if(desc === 'Cloudy'){
+    } else if(res.weather.condition === 'Cloudy'){
       emoji = ":cloud:"
-    } else if(desc === 'Mostly Sunny'){
+    } else if(res.weather.condition === 'Mostly Sunny'){
       emoji = ":white_sun_cloud:"
-    } else if(desc === 'Partly Cloudy'){
+    } else if(res.weather.condition === 'Partly Cloudy'){
       emoji = ":partly_sunny:"
-    } else if(desc === 'Mostly Clear'){
+    } else if(res.weather.condition === 'Mostly Clear'){
       emoji = ":large_blue_circle:"
-    } else if(desc === 'Mostly Cloudy'){
+    } else if(res.weather.condition === 'Mostly Cloudy'){
       emoji = ":cloud::cloud:"
-    } else if(desc === 'Scattered Showers'){
+    } else if(res.weather.condition === 'Scattered Showers'){
       emoji = ":cloud_rain:"
-    } else if(desc === 'Thunderstorms'){
+    } else if(res.weather.condition === 'Thunderstorms'){
       emoji = ":thunder_cloud_rain:"
-    } else if(desc === 'Clear'){
+    } else if(res.weather.condition === 'Clear'){
       emoji = ':white_circle:'
     }
     const embed = new Discord.RichEmbed()
     .setAuthor(message.member.displayName, message.author.displayAvatarURL)
     .setColor('#F0DB4E')
     .setTitle('Weather and other info for `' + zip + '`')
-    .addField(emoji + ' ' + desc + ' ' + temp + '°F', ':arrow_up: High: ' + high + '°F \n:arrow_down: Low: ' + low + '°F\n:dash: Feels Like: ' + feelslike + '°F\n:thermometer: Humidity: ' + humidity + '%\n:droplet: Chance of Precipitation: ' + precip + '%\n:sunrise_over_mountains: Sunrise: ' + sunrise + ' PST\n:city_sunset: Sunset: ' + sunset + ' PST\n:straight_ruler: Coordinates: [' + lat + ', ' + lonG + ']')
+    .addField(emoji + ' ' + res.weather.condition + ' ' + weather.currently.temperature + '°F', ':arrow_up: High: ' + res.forecast[0].high + '°F \n:arrow_down: Low: ' + res.forecast[0].low + '°F\n:dash: Feels Like: ' + weather.currently.apparentTemperature + '°F\n:thermometer: Humidity: ' + weather.currently.humidity.toString().replace(/[\d]+[.]/g, '') + '%\n:droplet: Chance of Precipitation: ' + weather.currently.precipProbability + '%\n:sunrise_over_mountains: Sunrise: ' + sunrise + ' PST\n:city_sunset: Sunset: ' + sunset + ' PST\n:straight_ruler: Coordinates: [' + res.location.lat + ', ' + res.location.long + ']')
     .setFooter('Provided by darksky and YAHOO WEATHER', 'https://canoe-camping.com/wp-content/uploads/2016/06/weather-ying-and-yang.jpg')
     .setTimestamp()
     message.channel.send({embed})

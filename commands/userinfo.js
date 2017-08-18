@@ -1,4 +1,20 @@
 const Discord = require('discord.js');
+function combined(array){
+  var a = array.concat();
+	var x = [];
+    for(var i = 0; i < a.length; ++i) {
+        for(var j=i+1; j<a.length; ++j) {
+            if(a[i] === a[j]){
+							x.push(a[j])
+              a.splice(j--, 1)
+						}
+        }
+    }
+for(var f = 0; f < x.length; f++){
+		a.splice(a.indexOf(x[f]), 1)
+	}
+    return a;
+}
 exports.run = (client, message, args) => {
   if(args.length === 1){
     message.channel.send({embed: {

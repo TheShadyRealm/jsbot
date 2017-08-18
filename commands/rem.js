@@ -59,7 +59,9 @@ exports.run = (client, message, args) => {
   'https://images-ext-2.discordapp.net/external/DJ-2lHK2u2qQ426cipqXO6r3PwOlyJxlneRhfgVYgD4/https/cdn.discordapp.com/attachments/333500092382314516/333779130489372672/re-zero-19-03-rem.jpg?width=400&height=225',
   'https://camo.githubusercontent.com/96fa5ff82f824fe2fd6cb6f2d026794aff39ed3d/68747470733a2f2f63646e2e646973636f72646170702e636f6d2f656d6f6a69732f3233303631303830333131383730323539332e706e67',
   'https://camo.githubusercontent.com/7b758b6979c5e18375bdcac9a97725a472a3625c/68747470733a2f2f63646e2e646973636f72646170702e636f6d2f656d6f6a69732f3331323033363835323538323434393135322e706e67',
-  'https://camo.githubusercontent.com/9889b97ceb46ee1310ff70d159f66477f48621bc/68747470733a2f2f63646e2e646973636f72646170702e636f6d2f656d6f6a69732f3233303631303830323737303537353336302e706e67'
+  'https://camo.githubusercontent.com/9889b97ceb46ee1310ff70d159f66477f48621bc/68747470733a2f2f63646e2e646973636f72646170702e636f6d2f656d6f6a69732f3233303631303830323737303537353336302e706e67',
+  'https://images-ext-2.discordapp.net/external/QJoEGgYNe3YAFku6ma9nHgj6FMdGfLwVPSXMb-FWHaY/https/cdn.discordapp.com/attachments/333740780852084736/333782192201269271/rem_by_aeigus-daf7sgp.jpg?width=476&height=501',
+  'https://images-ext-1.discordapp.net/external/N9_rveAi2ac1knw_1AfdFdMRWozVMQRWGv4CatOeeMQ/https/cdn.discordapp.com/attachments/333500092382314516/333775296073302017/re-zero-game-v5.jpg?width=400&height=222'
   ];
   var randpic = ~~((Math.random() * list.length) + 0)
   const embed = new Discord.RichEmbed()

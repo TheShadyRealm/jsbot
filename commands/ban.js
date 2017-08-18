@@ -19,9 +19,10 @@ exports.run = (client, message, args) => {
 		} else {
 			if(message.member.permissionsIn(message.channel).has('BAN_MEMBERS') && this.vic.bannable === true){
 				if(message.member.highestRole.position > this.vic.highestRole.position){
-					this.vic.ban().catch(console.error);
-					tosend = ("user " + this.vic + " has been banned from the server. :rage:")
-					console.log(this.vic + ' was banned from the server')
+					var reason = args.join(' ').substring(5+args[1].length)
+					this.vic.ban(reason).catch(console.error);
+					tosend = ("user " + this.vic + " has been banned from the server for `" + reason + "` :rage:")
+					console.log(this.vic + ' was banned from the server ' + message.guild.name)
 				} else {
 					tosend = "Are you trying to ban someone that has a higher role than you...?"
 				}

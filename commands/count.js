@@ -1,3 +1,4 @@
+const Discord = require('discord.js');
 exports.run = (client, message, args) => {
   var count = [];
   if(args.length != 4){

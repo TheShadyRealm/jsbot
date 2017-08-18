@@ -24,10 +24,15 @@ exports.run = (client, message, args) => {
             description: "You can't delete a letter amount of messages... that's like going ':b:oneless' miles per hour..."
             }})
 					}
-				} else if((args.join(" ").substring(7)) < 0){
+				} else if(parseInt(args.join(" ").substring(7)) < 0){
           message.channel.send({embed: {
           color: 15784782,
           description: "D1CKHEAD! just explain to me htf purging messages can be negative..."
+          }})
+				} else if(parseInt(args.join(' ').substring(7)) > 100){
+					message.channel.send({embed: {
+          color: 15784782,
+          description: "Keep the message purging below 100 messages..."
           }})
 				} else {
 					message.channel.fetchMessages({limit: msg}).then(messages => message.channel.bulkDelete(messages)).catch(console.error);
@@ -37,7 +42,7 @@ exports.run = (client, message, args) => {
 		} else {
       message.channel.send({embed: {
       color: 15784782,
-      description: "D1CKHEAD! just explain to me htf purging messages can be negative..."
+      description: "YOU do not have the PERMISSIONS to purge messages... SON"
       }}).catch(console.error)
 		}
-	} 
+	}

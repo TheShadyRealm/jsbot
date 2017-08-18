@@ -19,6 +19,38 @@ exports.run = (client, message, args) => {
         if(reactarray.includes('🔤')) continue;
         msgReact.splice(i, 2)
         reactarray.push('🔤')
+      } else if(msgReact[i+0] === 'b' && msgReact[i+1] === 'r' && msgReact[i+2] === 'e' && msgReact[i+3] === 'a' && msgReact[i+4] === 'd'){ //bread
+        if(reactarray.includes('🍞')) continue;
+        msgReact.splice(i, 4)
+        reactarray.push('🍞')
+      } else if(msgReact[i+0] === 'g' && msgReact[i+1] === 'r' && msgReact[i+2] === 'a' && msgReact[i+3] === 'p' && msgReact[i+4] === 'e'){ //grape
+        if(reactarray.includes('🍇')) continue;
+        msgReact.splice(i, 4)
+        reactarray.push('🍇')
+      } else if(msgReact[i+0] === 'b' && msgReact[i+1] === 'e' && msgReact[i+2] === 'e' && msgReact[i+3] === 'r'){ //beer
+        if(reactarray.includes('🍺')) continue;
+        msgReact.splice(i, 3)
+        reactarray.push('🍺')
+      } else if(msgReact[i+0] === 'p' && msgReact[i+1] === 'i' && msgReact[i+2] === 'z' && msgReact[i+3] === 'z'&& msgReact[i+4] === 'a'){ //pizza
+        if(reactarray.includes('🍕')) continue;
+        msgReact.splice(i, 4)
+        reactarray.push('🍕')
+      } else if(msgReact[i+0] === 'c' && msgReact[i+1] === 'h' && msgReact[i+2] === 'e' && msgReact[i+3] === 'e' && msgReact[i+4] === 'r' && msgReact[i+5] === 's'){ //cheers
+        if(reactarray.includes('🍻')) continue;
+        msgReact.splice(i, 5)
+        reactarray.push('🍻')
+      } else if(msgReact[i+0] === 'i' && msgReact[i+1] === 'c' && msgReact[i+2] === 'e' && msgReact[i+3] === 'c' && msgReact[i+4] === 'r' && msgReact[i+5] === 'e' && msgReact[i+6] === 'a' && msgReact[i+7] === 'm'){ //icecream
+        if(reactarray.includes('🍦')) continue;
+        msgReact.splice(i, 7)
+        reactarray.push('🍦')
+      } else if(msgReact[i+0] === 't' && msgReact[i+1] === 'h' && msgReact[i+2] === 'i' && msgReact[i+3] === 'n' && msgReact[i+4] === 'k' && msgReact[i+5] === 'i' && msgReact[i+6] === 'n' && msgReact[i+7] === 'g'){ //thinking
+        if(reactarray.includes('🤔')) continue;
+        msgReact.splice(i, 7)
+        reactarray.push('🤔')
+      } else if(msgReact[i+0] === 'c' && msgReact[i+1] === 'a' && msgReact[i+2] === 's' && msgReact[i+3] === 'h'){ //cash
+				if(reactarray.includes('💸')) continue;
+        msgReact.splice(i, 3)
+        reactarray.push('💸')
       } else if(msgReact[i] === 'i' && msgReact[i+1] === 'i'){
         if(reactarray.includes('⏸')) continue;
         msgReact.splice(i, 1)
