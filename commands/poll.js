@@ -93,7 +93,7 @@ exports.run = (client, message, args) => {
   var pollresults = p.map(m=>m.count);
   var messagepollreactions = [];
   for(var j = 0; j < pollreactions.length; j++){
-    messagepollreactions.push((j+1) + ' - ' + poll[j] + ' **(' + pollresults[j] + ' votes)**')
+    messagepollreactions.push((j+1) + ' - ' + poll[j] + ' **(' + pollresults[j]-1 + ' votes)**')
   }
   message.channel.send({embed: {
     color: 15784782,

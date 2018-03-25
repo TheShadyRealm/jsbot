@@ -1,5 +1,13 @@
 const Discord = require('discord.js');
 exports.run = (client, message, args) => {
+  if(args.length === 1){
+    message.channel.send({embed: {
+      color: 15784782,
+      title: "Get a user's avatar",
+      description: 'Mention the user you want to get the avatar of...'
+    }})
+    return;
+  }
   var getUser = message.guild.member(message.mentions.users.first())
   var getAvatar = getUser.user.displayAvatarURL
   console.log(getAvatar)

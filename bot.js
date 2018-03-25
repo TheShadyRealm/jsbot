@@ -9,6 +9,10 @@ var await = require('asyncawait/await');
 const { promisify } = require("util");
 const readdir = promisify(require("fs").readdir);
 const PersistentCollection = require("djs-collection-persistent");
+var datenow = Date.now()
+exports.time = function(){
+	return datenow;
+}
 music(client, {
 	prefix: '.',        // Prefix of '-'.
 	global: false,      // Server-specific queues.
@@ -21,7 +25,6 @@ music(client, {
 	 evtFiles.forEach(file => {
 		 const eventName = file.split(".")[0];
 		 const event = require(`./events/${file}`);
-		 // This line is awesome by the way. Just sayin'.
 		 client.on(eventName, event.bind(null, client));
 		 delete require.cache[require.resolve(`./events/${file}`)];
 	 });

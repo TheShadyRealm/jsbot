@@ -1,5 +1,8 @@
 var async = require('asyncawait/async');
 var await = require('asyncawait/await');
+function sleep(ms) {
+	return new Promise(resolve => setTimeout(resolve, ms));
+}
 exports.run = (client, message, args) => {
   var coin;
   var flip = ~~((Math.random()* 2) + 1)

@@ -25,6 +25,7 @@ exports.run = (client, message, args) => {
   ans=res;
   var emoji;
   forecast.get([res.location.lat + ',' + res.location.long], true, function(err, weather) {
+    console.log(res);
     if(err) return console.dir(err);
     var o = JSON.stringify(weather);
     var sunriseSun = o.substr(o.indexOf('sunriseTime')+13);

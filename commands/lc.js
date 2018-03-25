@@ -47,13 +47,29 @@ exports.run = (client, message, args) => {
     finalnumber = 100;
     symbol = '::kissing_heart: :two_hearts: :kissing_heart:'
   }
-  if(args[1] === '<@!275334018214658060>' && args[2] === '<@!245342510598062080>' || args[2] === '<@!275334018214658060>' && args[1] === '<@!245342510598062080>'){
+  if(args[1] === '<@!275334018214658060>' && args[2] === '<@245342510598062080>' || args[2] === '<@!275334018214658060>' && args[1] === '<@245342510598062080>'){
     finalnumber = 100;
     symbol = '::kissing_heart: :two_hearts: :kissing_heart:'
   }
   if(args[1] === '<@!275334018214658060>' && args[2] === '<@!272473368840634378>' || args[2] === '<@!275334018214658060>' && args[1] === '<@!272473368840634378>'){
     finalnumber = 101;
     symbol = '::kissing_heart: :two_hearts: :kissing_heart:'
+  }
+  if(args[1] === '<@!164439274761093120>' && args[2] === '<@!275334018214658060>' || args[2] === '<@!164439274761093120>' && args[1] === '<@!275334018214658060>'){
+    finalnumber = 100;
+    symbol = '::kissing_heart: :two_hearts: :kissing_heart:'
+  }
+  if(args[1] === '<@397916409184911371>' || args[2] === '<@397916409184911371>'){
+	  finalnumber = 0;
+	  symbol = ':broken_heart:';
+  }
+  if(args[1] === '<@!294340347432009729>' && args[2] === '<@404405733564874754>' || args[2] === '<@!294340347432009729>' && args[1] === '<@404405733564874754>'){
+    finalnumber = 100;
+    symbol = '::kissing_heart: :two_hearts: :kissing_heart:'
+  }
+  if(args[1] === '<@!387339321860030464>' && args[2] === '<@412844568791482368>' || args[2] === '<@!387339321860030464>' && args[1] === '<@412844568791482368>'){
+    finalnumber = 0;
+	  symbol = ':broken_heart:';
   }
   const embed = new Discord.RichEmbed()
   .setAuthor(message.member.displayName, message.author.displayAvatarURL)

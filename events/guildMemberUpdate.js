@@ -1,10 +1,25 @@
+function combined(array){
+  var a = array.concat();
+	var x = [];
+    for(var i = 0; i < a.length; ++i) {
+        for(var j=i+1; j<a.length; ++j) {
+            if(a[i] === a[j]){
+							x.push(a[j])
+              a.splice(j--, 1)
+						}
+        }
+    }
+for(var f = 0; f < x.length; f++){
+		a.splice(a.indexOf(x[f]), 1)
+	}
+    return a;
+}
 module.exports = (client, oldMember, newMember) => {
 	var oldroles = oldMember.roles.map(c=>c.id);
 	var newroles = newMember.roles.map(c=>c.id);
 	var rolechange = (combined(oldroles.concat(newroles)));
 	var message = oldMember;
 	var server = message.guild.id;
-	var channeltosend;
 	var tosend;
 	if(oldroles.length > newroles.length){
 		tosend = '**Role:** <@&' + rolechange + '> removed from ' + message
@@ -15,18 +30,8 @@ module.exports = (client, oldMember, newMember) => {
 	} else {
 		return;
 	}
-	if(server === '310224842735616020'){
-		channeltosend = '324667410605015041';
-	} else if(server === '333471257838485524'){
-		channeltosend = '342207572700299264';
-	} else if(server === '272473930520854529'){
-		channeltosend = '293840751836659714';
-	} else if(server === '333814208334397444'){
-		channeltosend = '341805947641135105';
-	}  else {
-		return;
-	}
-	message.guild.channels.get(channeltosend).send({embed: {
+var channeltosend = '417437351766392834';
+oldMember.guild.channels.get(channeltosend).send({embed: {
 		color: 15784782,
 		title: 'User Change :arrows_clockwise:',
 		description: tosend,

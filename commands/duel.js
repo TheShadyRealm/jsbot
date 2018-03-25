@@ -21,7 +21,15 @@ exports.run = (client, message, args) => {
     message.channel.send("Let the duel between " + message.author + " and " + message.guild.member(message.mentions.users.first()) + " begin! " + message.guild.member(message.mentions.users.first()) + " will go first!")
     message.channel.send('**JSBot** aimed its rocket launcher at **' + message.member.displayName + '** ... it deals 99999999 damage!')
     message.channel.send("After 1 round... **" + message.author + "** has been defeated by **<@324427383849353219>, who wins with ∞ HP remaining!**")
-  } else {
+  } else if(message.author.id === '164178706003132417'){
+    message.channel.send("Let the duel between " + message.author + " and " + message.guild.member(message.mentions.users.first()) + " begin! " + message.author + " will go first!")
+    message.channel.send('**' + message.member.displayName + '** fires a particle accelerator at **' + message.guild.member(message.mentions.users.first()).displayName + '** for infinity and beyond damage!')
+    message.channel.send("After 1 round... **" + message.guild.member(message.mentions.users.first()) + "** has been defeated by **" + message.author + ", who wins with 1 HP remaining! (cuz he's a human unlike you all)**")
+  } else if((message.guild.member(message.mentions.users.first()).id) === '164178706003132417'){ //if duels jsbot
+    message.channel.send("Let the duel between " + message.author + " and " + message.guild.member(message.mentions.users.first()) + " begin! " + message.guild.member(message.mentions.users.first()) + " will go first!")
+    message.channel.send('**' + message.guild.member(message.mentions.users.first()).displayName + '** fires a particle accelerator at **' + message.member.displayName + '** for infinity and beyond damage!')
+    message.channel.send("After 1 round... **" + message.author + "** has been defeated by **" + message.guild.member(message.mentions.users.first()).id + ", who wins with ∞ HP remaining!**")
+  }else {
     var dn1 = [];
     var dn2 = [];
     var decr;

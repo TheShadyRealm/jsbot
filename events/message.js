@@ -1,6 +1,7 @@
 const Discord = require('discord.js');
 const config = require("./../config.json");
 const prefix = ".";
+const CaptainHook = new Discord.WebhookClient("412380738672132098", "HmVO63RFwzyz6AZ4ozHGy1kPqyB7TtFh-TSXg7pThvSIGbw9AIck9yY6Hkcrj6s7Pvqn");
 var Stockfish = require('stockfish');
 var Chess = require('chess.js').Chess;
 var temp = [];
@@ -19,11 +20,17 @@ var ans = {};
 var mutedArr = [];
 var stopwatchID = [];
 var stopwatchDate = [];
+var colorrole = [];
+var async = require('asyncawait/async');
+var await = require('asyncawait/await');
 function strip(s) {
     return s.replace(/^\s+|\s+$/g, '');
 }
 function get_fen_img(id) {
     return 'http://www.fen-to-image.com/image/20/single/coords/' + chesses[id].fen().split(' ')[0];
+}
+function sleep(ms) {
+	return new Promise(resolve => setTimeout(resolve, ms));
 }
 function combined(array){
   var a = array.concat();
@@ -36,14 +43,16 @@ function combined(array){
 						}
         }
     }
-	for(var f = 0; f < x.length; f++){
+for(var f = 0; f < x.length; f++){
 		a.splice(a.indexOf(x[f]), 1)
 	}
     return a;
 }
+let HookPrefix = "~";
 module.exports = (client, message) => {
-	if(message.author.bot) return;
-	if(message.content.indexOf(config.prefix) !== 0) return;
+	var commands = ['8ball', 'addrole', 'avatar', 'ban', 'botinfo', 'calc', 'cclist', 'choose', 'coinflip', 'colorrole', 'cookie', 'copypasta', 'count', 'daystillschool', 'define', 'duel', 'emilia', 'emoji', 'fitmn', 'flipuser', 'fml', 'gdl', 'google', 'guessnumber', 'guessnumberstart', 'happiness', 'help', 'hex', 'invite', 'joke', 'kick', 'kill', 'lc', 'mute', 'osub', 'osup', 'pin', 'ping', 'poll', 'purge', 'quote', 'rabg', 'react', 'regionaltype', 'rem', 'reverse', 'rng', 'roleinfo', 'roll', 'roti', 'rps', 'sagiri', 'sans', 'serverinfo', 'slot', 'space', 'stopwatch', 'test', 'translate', 'try', 'ud', 'unmute', 'uptime', 'userinfo', 'warn', 'weather'];
+
+  if(message.author.bot) return;
 	var loc = stopwatchID.indexOf(message.author.id);
 	var stopwatchTime = (Date.now() - stopwatchDate[loc])/1000;
 	var args = message.content.split(/[ ]+/);
@@ -51,6 +60,7 @@ module.exports = (client, message) => {
 	var msg1 = strip(message.content);
 	var randomN;
 	var maxN;
+	if(message.content.startsWith(prefix) && commands.includes(args[0].substr(1))){
 	if(message.content.startsWith(prefix + 'guessnumberstart') | message.content.startsWith(prefix + 'guessnumber')){
 		try {
 			let commandFile = require(`./../commands/${itscommand}.js`);
@@ -72,6 +82,13 @@ module.exports = (client, message) => {
  			 } catch (err) {
  				 console.error(err);
  			 }
+	} else if(message.content.startsWith(prefix + 'colorrole')){
+			 try {
+ 				 let commandFile = require(`./../commands/${itscommand}.js`);
+ 				 commandFile.run(client, message, args, colorrole);
+ 			 } catch (err) {
+ 				 console.error(err);
+ 			 }
 	} else {
 			 try {
 				 let commandFile = require(`./../commands/${itscommand}.js`);
@@ -80,11 +97,13 @@ module.exports = (client, message) => {
 				 console.error(err);
 			 }
 	 }
+ }
 if(msg1.indexOf(CHESS) === 0) {
 	/*
 	* original code: https://github.com/daniel-lawrence-lu/discord-woofbot
 	* that original code was very broken and required some fixing... so i fixed it all and added a better GUI :3
 	*/
+	//so im too lazy to figure out how to put this in a command form and require it so i just left it in the original message loop lmao
 		function end_game(id, resign, quiet) {
 			if(chesses[id] === undefined) return;
 			if(!quiet) {
@@ -177,20 +196,55 @@ if(msg1.indexOf(CHESS) === 0) {
 		message.channel.send("**私ですね~ (=^3^=) にゃー、ごしゅじんさま〜 :cat:**")
 	}
 	//custom commands and responses shit
+  if(message.content === '^'){
+    const embed = new Discord.RichEmbed()
+    .setColor(15784782)
+    .setImage('https://d30y9cdsu7xlg0.cloudfront.net/png/196766-200.png')
+    message.channel.send({embed})
+  }
+  if(message.content.includes("discord.gg/")){
+	  message.delete();
+	  message.reply("shameless advertising smh just stop pls")
+  }
+  if((message.content.toString().replace(/[!?@#$%^&*()<>]/g, '')).length === 0 && message.author.id === "228732195114582016"){
+	  message.delete();
+  }
+  if(message.content.toLowerCase().includes("value")){
+	  message.channel.send("V A L U E");
+  }
 	if(message.content.includes("gtg")){
 		message.channel.send(":wave: Bye, " + message.author + ", see you later! :raised_hands: ")
 	}
-	if(message.content.toLowerCase().includes("ravi") && message.guild.id === "333471257838485524"){
-		message.channel.send("absolutely desipses anime")
+	/*if(message.content.startsWith("?")){
+    if(message.channel === "399051478314254347") return;
+    (async (function(){
+		  message.delete();
+      message.channel.send({embed: {
+        color: 13959168,
+        author: {
+          name: "!?",
+          icon_url: "https://images-ext-2.discordapp.net/external/j54mKISgUCq97dPStacT36ceRFA0qjHbnT1xffzO1yU/https/i.imgur.com/SPeiFGu.png"
+        },
+        title: message.member.displayName + ", you have been timed out for an hour for the use of a question mark!",
+        description: "Refrain from using them please, thanks =)"
+      }})
+      message.member.addRole(message.guild.roles.find('name', 'Bad Child'))
+      await(sleep(60000))
+      message.member.removeRole(message.guild.roles.find('name', 'Bad Child'))
+    }))();
 	}
-	if(message.content === "?" && message.guild.id != '268057683804946437' && message.guild.id != "272473930520854529" && message.guild.id != '333814208334397444'){
-		message.delete();
-		message.reply('KYS')
+  */
+	/*if(message.content.includes("=_=") && message.author.id === '294489458554961930' || message.author.id === "294340347432009729" || message.author.id === "311574958511882240" || message.author.id === "351239539903430656" || message.author.id === '324085520940662784' || message.author.id === '382433952872267776' || message.author.id === '308486307665936387'){
+		message.member.kick();
+		message.channel.send(message.author.username + ", fuck off");
 	}
-	if(message.content.includes("=_=") && message.author.id === '272473368840634378'){
-		message.delete();
-		message.reply("STOP IT")
-	}
+	*/
+  if(message.content.includes("🤔")){
+    message.react("🤔")
+  }
+  if(message.content.startsWith(">>") && message.author.id === '275334018214658060'){
+	  message.guild.channels.get('310224842735616020').send(args.join(' ').substring(2));
+  }
 	let responseObject = {
 		"ayy": "ayylmao",
 		"wat": "say what?",
@@ -212,7 +266,8 @@ if(msg1.indexOf(CHESS) === 0) {
 		"let's go" : "lensko",
 		"LET'S GO" : "LENSKO",
 		":thinkerizing:" : ":thinking: **[deep breathing]** :thinking: ",
-		"haHAA" : ":joy: :ok_hand: :joy: :ok_hand: :joy: :ok_hand: :joy: :ok_hand: :joy: :ok_hand: :joy: :ok_hand: :joy: :ok_hand: :joy: :ok_hand: :joy: :ok_hand: :joy: :ok_hand: :joy: :ok_hand: :joy: :ok_hand: :joy: :ok_hand:"
+		"haHAA" : ":joy: :ok_hand: :joy: :ok_hand: :joy: :ok_hand: :joy: :ok_hand: :joy: :ok_hand: :joy: :ok_hand: :joy: :ok_hand: :joy: :ok_hand: :joy: :ok_hand: :joy: :ok_hand: :joy: :ok_hand: :joy: :ok_hand: :joy: :ok_hand:",
+    "wait" : "waiting... :hourglass:",
 	};
 	if(responseObject[message.content] && message.guild.id != '333814208334397444'){
 		message.channel.send(responseObject[message.content]);
@@ -236,7 +291,11 @@ if(msg1.indexOf(CHESS) === 0) {
 		'salty',
 		'siblingdrama',
 		'shutup',
-		'trash'
+		'trash',
+    'give',
+    'retart',
+    'afraid',
+    'detect'
 		];
 	var customcomlist = ['https://cdn.discordapp.com/attachments/275334819737501696/319984630499377153/unknown.png',
 	'http://www.mast.queensu.ca/~mikeroth/oldteaching/calculus/handouts/anigraph.gif',
@@ -257,7 +316,11 @@ if(msg1.indexOf(CHESS) === 0) {
 	'https://cdn.discordapp.com/attachments/275334819737501696/320019929233489940/salted.png',
 	'https://cdn.discordapp.com/attachments/275334819737501696/320008151904813056/siblingdrama.png',
 	'https://cdn.discordapp.com/attachments/310290782097637398/342327793855758337/Screenshot_2017-08-02_at_11.27.07_AM.png',
-	'https://cdn.discordapp.com/attachments/275334819737501696/320017022308057090/realtrash.png'
+	'https://cdn.discordapp.com/attachments/275334819737501696/320017022308057090/realtrash.png',
+  'https://cdn.discordapp.com/attachments/146404426746167296/323686669754564609/give_account.png',
+  'http://food.fnr.sndimg.com/content/dam/images/food/fullset/2010/5/5/0/PA0611_Fruit-Tart_s4x3.jpg.rend.hgtvcom.616.462.suffix/1382539261816.jpeg',
+  'https://vignette3.wikia.nocookie.net/chuckecheese/images/9/9b/Resized_creepy-willy-wonka-meme-generator-oh-my-i-m-so-afraid-20912a.jpg/revision/latest?cb=20150118004327',
+  'https://cdn.discordapp.com/attachments/299763571955335178/350463983372730368/detectroom502.png'
 	];
 	var customresponselist = ['get your very own arcane wizard today for 6 easy payments of $69.99!',
 	'right like i would know that (actually i do) now get back to work!',
@@ -278,7 +341,11 @@ if(msg1.indexOf(CHESS) === 0) {
 	'u 2 SALTI? just admit it :)',
 	'the only *PROPER* way to sibling drama',
 	'ladies ladies ur both pretty now shut up pls kthxbye',
-	'what is this TRASH :/'
+	'what is this TRASH :/',
+  'some next level carrying',
+  "Son look, it's a retart!",
+  'look at all these threats...',
+  'I traipsed into the classroom... ROFL'
 	]
 	for(var i = 0; i < customcomlist.length; i++){
 		if(message.content === prefix + customtriggerlist[i]){

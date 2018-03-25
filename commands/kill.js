@@ -1,4 +1,5 @@
 exports.run = (client, message, args) => {
+  const Discord = require('discord.js');
   if(message.guild.member(message.mentions.users.first()) === null){
     message.reply("stop trying to exploit this bot smh...")
     return;
